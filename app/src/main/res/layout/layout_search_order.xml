@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <RadioGroup
+        android:id="@+id/rgOrder01"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <RadioButton
+            android:id="@+id/rbHeadnum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/search_headnum" 
+            android:textColor="@color/text_default"/>
+
+        <RadioButton
+            android:id="@+id/rbHit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search_hit" 
+            android:textColor="@color/text_default"/>
+
+        <RadioButton
+            android:id="@+id/rbVote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search_vote" 
+            android:textColor="@color/text_default"/>
+    </RadioGroup>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="#f4f4f4" />
+
+    <RadioGroup
+        android:id="@+id/rgOrder02"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <RadioButton
+            android:id="@+id/rbAsc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/search_asc"
+            android:textColor="@color/text_default" />
+
+        <RadioButton
+            android:id="@+id/rbDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_desc" 
+            android:textColor="@color/text_default"/>
+    </RadioGroup>
+
+</LinearLayout>

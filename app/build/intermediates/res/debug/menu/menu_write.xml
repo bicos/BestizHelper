@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_write"
+        android:title="@string/menu_write"
+        android:orderInCategory="102"
+        android:showAsAction="never" />
+</menu>
+<!-- From: file:/C:/BestizHelperGradle/app/src/main/res/menu/menu_write.xml -->

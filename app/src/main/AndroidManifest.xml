@@ -1,0 +1,154 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.pockru.bestizhelper"
+    android:versionCode="54"
+    android:versionName="1.5.3" >
+
+    <uses-sdk
+        android:minSdkVersion="9"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- GCM -->
+    <permission
+        android:name="com.pockru.bestizhelper.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
+    <permission
+        android:name="com.pockru.bestizhelper.database.BestizBoxProvider.READ_WRITE_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.pockru.bestizhelper.database.BestizBoxProvider.READ_WRITE_PERMISSION" />
+    
+    <application
+        android:name="com.pockru.bestizhelper.application.BestizBoxApplication"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat.Light" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".BoardSelectActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+            <intent-filter>
+                <data
+                    android:host="*"
+                    android:scheme="bestizbox" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".BestizBoxMainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".BoardSelectActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BoardSelectActivity" />
+        </activity>
+        <activity
+            android:name=".BestizBoxMainListActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".BoardSelectActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BoardSelectActivity" />
+        </activity>
+        <activity
+            android:name=".BestizBoxDetailActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".BestizBoxMainListActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BestizBoxMainListActivity" />
+        </activity>
+        <activity
+            android:name=".BestizBoxSearchActivity"
+            android:label="@string/label_search_activity"
+            android:parentActivityName=".BestizBoxMainListActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BestizBoxMainListActivity" />
+        </activity>
+        <activity
+            android:name="com.pockru.bestizhelper.ArticleHistoryActivity"
+            android:label="@string/label_history_activity"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+        <activity
+            android:name=".imgur.ImgurOAuthActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        <activity
+            android:name="com.pockru.bestizhelper.tumblr.TumblrOAuthActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/AppTheme.Translucent" >
+        </activity>
+        <activity
+            android:name=".imgur.ImgurUploadImage"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+
+        <!--
+          BroadcastReceiver that will receive the C2DM messages from GCM
+          services and handle them to the custom IntentService.
+
+          The com.google.android.c2dm.permission.SEND permission is necessary
+          so only GCM services can send data messages for the app.-->
+        <receiver
+            android:name=".gcm.GCMRedirectedBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+
+                <!-- Receives the actual messages. -->
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <!-- Receives the registration id. -->
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="com.kth.baasio.startup" />
+            </intent-filter>
+        </receiver>
+
+        <!--
+          Application-specific subclass of GCMBaseIntentService that will
+          handle received messages.
+
+          By default, it must be named .GCMIntentService, unless the
+          application uses a custom BroadcastReceiver that redefines its name.-->
+        <service android:name=".gcm.GCMIntentService" />
+        
+        <provider
+            android:name="com.pockru.bestizhelper.database.BestizBoxProvider"
+            android:authorities="com.pockru.bestizhelper"
+            android:exported="false"
+            android:permission="com.pockru.bestizhelper.database.BestizBoxProvider.READ_WRITE_PERMISSION" />
+    </application>
+
+</manifest>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\oauth.signpost\signpost-commonshttp4\1.2.1.2\731e05de30cfeb1f41d417f886277f9597fe0f36\signpost-commonshttp4-1.2.1.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="731e05de30cfeb1f41d417f886277f9597fe0f36">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\signpost-commonshttp4-1.2.1.2-8172c96b67c3a1a4b3c5de3482105b74454e902c.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appstate\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="68c140702c7242d914655bcb3164d9e8c45b84cb">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-3da0c1b7301973fddd44e784935d1ec47d6d1de1.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-base\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a78183f30e769a98ab4820794f597763088d3065">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-e600e0fa5355d04cc035bbaf60cb8d4d194bdc42.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-ads\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="29ebc7e04d877062317c8cc0e68b20f0c1fcda66">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-5cb2f15f14ea92bd062a5dfca8c4efcf226ba963.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\com.tumblr\jumblr\0.0.11\cc28f45f445b021389290bfadac0f8f8299f4371\jumblr-0.0.11.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="cc28f45f445b021389290bfadac0f8f8299f4371">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\jumblr-0.0.11-43bee13d552f58c2e22e52af32679d4b1b9db4f7.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-analytics\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="e7b35244f50663b3f8d150714bca9ecd7a290da1">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-bf404895439a77da35aa75f93442a0043238e945.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\oauth.signpost\signpost-core\1.2.1.2\bf95955dcf3d5a78c201e49b0c336787ea73f161\signpost-core-1.2.1.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="bf95955dcf3d5a78c201e49b0c336787ea73f161">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\signpost-core-1.2.1.2-80bacf50a9a86f33128a8aaf7020ea98b4ec3729.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-cast\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="8e3a972f28b8bae817e382257ba177a31bcadbbc">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-a3cf79533c3d7cf288abc0d5b58ad71c37f737db.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.android.support\mediarouter-v7\22.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a1372c17fccacca753d3951d3ad820571cbce075">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-647077d255a562e98b9c086eb237145ea098f350.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\org.scribe\scribe\1.3.3\b2629cfaa5499c805f471c5aabd711ff5d42c061\scribe-1.3.3.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="b2629cfaa5499c805f471c5aabd711ff5d42c061">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\scribe-1.3.3-3e34268df1fb58587d0beeb9370c6e9f802947f6.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\commons-codec\commons-codec\1.4\4216af16d38465bbab0f3dff8efa14204f7a399a\commons-codec-1.4.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4216af16d38465bbab0f3dff8efa14204f7a399a">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\commons-codec-1.4-5ae73af9e2fdfe8a5acec6fb7607e5e9c10caf46.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\org.apache.httpcomponents\httpcore\4.0.1\e813b8722c387b22e1adccf7914729db09bcb4a9\httpcore-4.0.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="e813b8722c387b22e1adccf7914729db09bcb4a9">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\httpcore-4.0.1-46b7bbbabe9d97d30a961d46bfbf223b02a8f11a.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.2.2\1f96456ca233dec780aa224bff076d8e8bca3908\gson-2.2.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1f96456ca233dec780aa224bff076d8e8bca3908">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\gson-2.2.2-f98893362a7ef1ecda0ba11a2c8baa05bb44ca3e.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-location\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1e98ef3f124bb7a11f8575f9ff5dfea330b61b6f">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-2f04d8218883dbbea12d7c0a41a63cf120bbddbb.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-safetynet\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1a6411087ab88ce5542f593e63a2752b6b0d6f1a">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-ee9758371cf2e296729054342eaecec5fa3a665d.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appinvite\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="63ec6e9f4fe5482a7447d0f3091b8e543a02554c">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-eb46540b223caec576871c9385024bedad543d34.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-fitness\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a172852a35ff919e85b9b7f14bbc15c5bee25520">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-786fc3a189575423608f0e60f3c07c1da24d0253.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-wallet\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="6836d188602ec5382d1967c58b00960eb8ff8773">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-80b5eb37c5d986e3cc875f4b17a382387a467e35.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\AppData\Local\Android\sdk1\extras\android\m2repository\com\android\support\support-annotations\22.2.0\support-annotations-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="66b42a1f3eb7676070b7ef7f14b603483aecbee1">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.0-75c173e268bbd723d8f14f6454b37a1b377ac190.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-identity\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d405025c600055237c171a0bbabaa49d69696573">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-01ae8ae1ce5363bcdf957ebb085e647634426428.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\com.github.bumptech.glide\glide\3.6.0\a7537446a030da8eb0da4c71424d16c2589f6c4a\glide-3.6.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="a7537446a030da8eb0da4c71424d16c2589f6c4a">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\glide-3.6.0-2ae42eaa2a8c101c11844a82a0b1695984eadef7.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.android.support\mediarouter-v7\22.0.0\jars\libs\internal_impl-22.0.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="ba3df4eb0a630d7de294f0e48d3f9267d279b784">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\internal_impl-22.0.0-41317ea1218e9e624bf4d8703b72d83938ab0736.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\org.jsoup\jsoup\1.8.2\64238922c4006c3d0a9951c4c03983ecc6a1e1a0\jsoup-1.8.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="64238922c4006c3d0a9951c4c03983ecc6a1e1a0">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\jsoup-1.8.2-6e46573c8f4f3d3521122b971199b384402edc0e.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-nearby\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="6440e5e5cfe368f9bff3c537fb8988048069cb33">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-39e4ca0e70c37d656af6c7becc1eb6ece1cb0a0f.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1ee588ff2c4daf7b97c1cbf922a6c7f027285c2f">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-993fcea12d0092d4dac49761a87a7013976f584c.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-drive\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f44d03c138cb6488fdbaa65e3a7e5878861a56d8">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-3166196c0dcf59244970ffd22eb5c49ca42a5988.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-gcm\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="8d736fefa22d896e84a268354b3ed48a42663150">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-2dab8f00a254bd646f7180986657972f950d6f00.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appindexing\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="f02127a85abd52a2cd526d4c2409f21969f80ee8">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-ea9857d5d6608779623b2af12b10bc2d28a053d2.jar" />
+    </item>
+    <item
+        jar="C:\Users\PARK\.gradle\caches\modules-2\files-2.1\org.apache.commons\commons-lang3\3.1\905075e6c80f206bbe6cf1e809d2caa69f420c76\commons-lang3-3.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="905075e6c80f206bbe6cf1e809d2caa69f420c76">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\commons-lang3-3.1-469aeb9a760da220d6a1d0eddf32dfe4a643390a.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-b8778911de048cd52bf7b206553eacbead9807d9.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-panorama\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="ba207be21987c11b37d9f8faa08ed6e722569f30">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-ac450b57a90c92e89c983b9288730a4ea7c33ebe.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.0\jars\libs\internal_impl-22.2.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="57f2ab85c164ff1676ec64dee787981c046fab79">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\internal_impl-22.2.0-716e98fc55c4e89c4f1c81154dbfb61a710a6030.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-games\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="02bac2dc792d78241077861566f2c82da955e7fa">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-890a6e5bdba4cde9e48930a13b41a826349e0daf.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-wearable\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="69dd177337ead693c408c8dddc9546bb6f1244fa">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-2ca0a37293c1a975727ac0eb7e6e4ba5552e80fc.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-plus\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="272bc5d7063f24bc3a33ea1d318cde8f31f5ec4c">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-4de50c4db680ec52f40ade47ce2350e7650efc12.jar" />
+    </item>
+    <item
+        jar="C:\BestizHelperGradle\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-maps\7.5.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="06a42becc33232ec0ee125161da68c1829c9f8fd">
+        <dex dex="C:\BestizHelperGradle\app\build\intermediates\pre-dexed\debug\classes-68a2c9c5f2c2252e520ecfbcc2aea9ad366174c8.jar" />
+    </item>
+
+</items>

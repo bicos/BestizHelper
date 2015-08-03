@@ -1,0 +1,138 @@
+<resources>
+
+    <!-- google analatics -->
+    <string name="ga_property_id">UA-57864303-2</string>
+    
+    <!-- admop -->
+	<string name="ad_unit_id">ca-app-pub-4329801228567987/3591012359</string>
+    
+    <!-- activity label -->
+    <string name="label_board_select">게시판 선택</string>
+    <string name="label_main_activity">웹</string>
+    <string name="label_main_list_activity">모바일</string>
+  	<string name="label_detail_activity">모바일 상세</string>
+    <string name="label_search_activity">검색</string>
+    <string name="label_history_activity">내가 본 게시물</string>
+  	
+    
+    <string name="app_name">BestizBox</string>
+    <string name="title_activity_main">BestizBox</string>
+    <string name="menu_geachon">게스트천국</string>
+    <string name="menu_geajab">게천잡담</string>
+    <string name="menu_yeonjab">연예잡담</string>
+    <string name="menu_yeonsun">연잡햇빛</string>
+    <string name="menu_geabon">게잡의봄</string>
+    <string name="menu_geayeo">게잡의여름</string>
+    <string name="menu_geajic">게잡직딩반</string>
+    <string name="menu_geabal">게잡발코니</string>
+    <string name="menu_geamot">게잡멋쟁이</string>
+    <string name="menu_geasu">게잡스포츠</string>
+    <string name="menu_jicchin">직딩친목방</string>
+    <string name="menu_geayeong">게잡영상방</string>
+    <string name="menu_dubang">드라마방</string>
+    <string name="menu_geaal">게잡알콩</string>
+    <string name="menu_kongbu">게잡공부방</string>
+    <string name="menu_geaidol">게잡아이돌</string>
+    <string name="menu_dolmengyee">돌멩이</string>
+    <string name="menu_gi_event">게아이벤트</string>
+    <string name="menu_gi_yochung">게아요청</string>
+    <string name="menu_gi_yangdo">게아양도</string>
+    <string name="menu_hoi">게잡호이</string>
+    <string name="menu_movie">영화감상</string>
+    <string name="menu_music">게천뮤직</string>
+    <string name="menu_gimyo">게잡기묘</string>
+    <string name="menu_user_music">회원노래</string>
+    <string name="menu_head">게잡해드</string>
+    <string name="menu_nabi">봄나비</string>
+    <string name="menu_event">게봄이벤트</string>
+    <string name="menu_yangdo">게봄양도</string>
+    <string name="menu_yochung">게봄요청</string>
+    <string name="menu_heabeon">해변가</string>
+    <string name="menu_geayeo_yangdo">게여양도</string>
+    <string name="menu_geayeo_yochung">게여요청</string>
+    <string name="menu_jstar">J Star</string>
+    <string name="menu_game">게잡오락실</string>
+    <string name="menu_shinee">샤이니</string>
+    <string name="menu_exo">EXO</string>
+    <string name="menu_inf">인피니트</string>
+    <string name="menu_mbq">엠블랙</string>
+    <string name="menu_test">테스트</string>
+    <string name="menu_wc">게잡월드컵</string>
+    <string name="menu_empty">비어있는집</string>
+    <string name="menu_login">Login</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_write">Write</string>
+    <string name="menu_comment">Comment</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_more">More</string>
+    <string name="menu_history">History</string>
+    <string name="logout_msg_01">로그아웃 하시겠습니까?</string>
+    <string name="delete_msg_01">게시물을 삭제하시겠습니까?</string>
+    <string name="toast_msg_imgur_01">%s 연동을 성공하였습니다.</string>
+    <string name="toast_msg_imgur_02">이미지 업로드를 성공하였습니다.</string>
+    <string name="login_hint_id">아이디를 입력하세요.</string>
+    <string name="login_hint_pwd">패스워드를 입력하세요.</string>
+    <string name="write_hint_subject">제목을 입력하세요.</string>
+    <string name="write_hint_contents">내용을 입력하세요.</string>
+    <string name="comment_hint_contents">댓글을 입력하세요.</string>
+    <string name="search_hint">검색어를 입력하세요.</string>
+    <string name="img_add_hint">이미지 첨부를 클릭하세요.</string>
+    <string name="dialog_progress_msg_01">image uploading…</string>
+    <string name="dialog_confirm">확인</string>
+    <string name="dialog_cancel">취소</string>
+    <string name="dialog_default_title">Alert</string>
+    <string name="btn_img_add">이미지 첨부</string>
+    
+    <!-- search -->
+    <string name="search_title_order">정렬조건 선택</string>
+    <string name="search_title_option">검색조건 선택</string>
+    <string name="search_name">name</string>
+    <string name="search_subject">subject</string>
+    <string name="search_contents">contents</string>
+    <string name="search_desc">내림차순</string>
+    <string name="search_asc">오름차순</string>
+    <string name="search_headnum">등록순</string>
+    <string name="search_hit">조회순</string>
+    <string name="search_vote">추천순</string>
+    <string name="error_msg_cant_write_comment">댓글을 달 수 없습니다.</string>
+    <string name="error_msg_cant_delete_post">게시물을 삭제할 수 없습니다.</string>
+    <string name="error_msg_cant_interlock">%s 연동을 실패하였습니다.</string>
+    <string name="error_msg_already_get_token">이미 %s 계정과 연동이 되어 있습니다.</string>
+    <string name="error_msg_success_upload_image">이미지 업로드를 성공하였습니다.</string>
+    <string name="error_msg_cant_upload_image">이미지 업로드를 실패했습니다.</string>
+    <string name="error_msg_save_picture">사진 저장이 실패했습니다.</string>
+    <string name="msg_save_picture">사진 저장이 완료되었습니다.</string>
+    <string name="msg_save_picture_url">사진 주소 저장이 완료되었습니다.</string>
+    <string name="msg_save_link_url">링크 주소 저장이 완료되었습니다.</string>
+    <string name="error_msg_failed_to_save_link">사진 링크 주소를 불러오지 못하였습니다.</string>
+    <string name="alert_msg_still_img_upload">아직 이미지 업로드중입니다. 글을 올리시겠습니까?</string>
+    <string name="msg_delete_article">게시물을 삭제하시겠습니까?</string>
+    <string name="hint_search_edit_text">검색어를 입력해주세요.</string>
+    
+    <!-- detail article activity -->
+    <string name="detail_article_text_hit">(hit : %s)</string>
+
+    <!-- 공지사항 -->
+    <string name="notice_dialog_title">공지사항</string>
+	<string name="notice_dialog_desc">ver.1.5.3\n\n1. 게잡 불판 변경</string>
+	
+	<!-- 모드선택 -->
+	<string name="mode_select_dialog_title">모드선택</string>
+	<string name="mode_select_desc">실행하실 모드를 선택해주세요.</string>
+	
+	<!-- message -->
+    <string name="msg_illegal_uri_syntax">올바르지 않은 구문입니다.</string>
+    <string name="msg_not_supported_url">해당 앱이 설치되어 있지 않습니다.</string>
+    <string name="common_backpress">뒤로가기를 한 번 더 누르면 앱이 종료됩니다.</string>
+    <string name="msg_confirm_install_isp_app">모바일 ISP가 설치되어 있지 않습니다. 마켓으로 이동하시겠습니까?</string>
+    <string name="msg_login_success">로그인을 성공했습니다.</string>
+    <string name="msg_login_failed">로그인을 실패했습니다.</string>
+    <string name="msg_logout_success">로그아웃을 성공했습니다.</string>
+    
+    <!-- exeption handle -->
+    <string name="url_go_market">http://play.google.com/store/apps/details?id=</string>
+    
+</resources>

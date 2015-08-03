@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:apps="http://schemas.android.com/apk/res-auto" >
+
+    <!--
+    <item
+        android:id="@+id/menu_more"
+        android:icon="@drawable/ic_action_overflow"
+        android:title="@string/menu_more"
+        apps:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/sub_menu_login"
+                android:title="@string/menu_login"/>
+            <item
+                android:id="@+id/sub_menu_logout"
+                android:title="@string/menu_logout"/>
+            <item
+                android:id="@+id/sub_menu_home"
+                android:title="@string/menu_home"/>
+        </menu>
+    </item>
+    -->
+    <item
+        android:id="@+id/sub_menu_login"
+        android:title="@string/menu_login"/>
+    <item
+        android:id="@+id/sub_menu_logout"
+        android:title="@string/menu_logout"/>
+    <item
+        android:id="@+id/sub_menu_home"
+        android:title="@string/menu_home"/>
+
+</menu><!-- From: file:/C:/BestizHelperGradle/app/src/main/res/menu/menu_detail.xml -->

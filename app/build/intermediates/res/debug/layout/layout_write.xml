@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/editText_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:ems="10"
+        android:textColor="@color/text_default"
+        android:hint="@string/write_hint_subject" />
+
+    <EditText
+        android:id="@+id/editText_contents"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_margin="5dp"
+        android:ems="10"
+        android:gravity="top"
+        android:textColor="@color/text_default"
+        android:hint="@string/write_hint_contents"
+        android:inputType="textMultiLine" >
+    </EditText>
+
+    <HorizontalScrollView
+        android:id="@+id/hsvImage"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:visibility="gone" >
+
+        <LinearLayout
+            android:id="@+id/containerImg"
+            android:padding="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <Button
+        android:id="@+id/button_img_add"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:textColor="@color/text_default"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_img_add" />
+
+</LinearLayout><!-- From: file:/C:/BestizHelperGradle/app/src/main/res/layout/layout_write.xml -->
