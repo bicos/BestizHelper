@@ -471,7 +471,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
 	private void setCurrentLayout(ArticleDetailData data) {
 		// 레이아웃이 바뀔때마다 디비를 업데이트한다.
-//		ArticleDatabaseHelper.insertOrUpdate(this, ArticleDB.createInstance(mArticleData, data));
+		ArticleDatabaseHelper.insertOrUpdate(this, ArticleDB.createInstance(mArticleData, data));
 		
 		tvSubject.setText(data.getAtcSubject());
 		if (data.getUserHomepage() == null || data.getUserHomepage().equals("")) {
