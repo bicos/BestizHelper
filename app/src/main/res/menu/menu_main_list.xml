@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/sub_menu_login"
@@ -11,7 +12,9 @@
         android:title="@string/menu_write" />
     <item
         android:id="@+id/sub_menu_search"
-        android:title="@string/menu_search" />
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
+        android:title="@string/menu_search"/>
     <item
         android:id="@+id/sub_menu_home"
         android:title="@string/menu_home" />

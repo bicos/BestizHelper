@@ -870,26 +870,16 @@ public class BestizBoxMainActivity extends BaseActivity {
 		 */
 		if (isLogin) {
 			menu.findItem(R.id.sub_menu_login).setVisible(false);
-			// menu.findItem(R.id.menu_login).setVisible(false);
 			menu.findItem(R.id.sub_menu_logout).setVisible(true);
-			// menu.findItem(R.id.menu_logout).setVisible(true);
 			menu.findItem(R.id.sub_menu_write).setVisible(true);
-			// menu.findItem(R.id.menu_write).setVisible(true);
 			menu.findItem(R.id.sub_menu_delete).setVisible(true);
-			// menu.findItem(R.id.menu_delete).setVisible(true);
 			menu.findItem(R.id.sub_menu_comment).setVisible(true);
-			// menu.findItem(R.id.menu_comment).setVisible(true);
 		} else {
 			menu.findItem(R.id.sub_menu_login).setVisible(true);
-			// menu.findItem(R.id.menu_login).setVisible(true);
 			menu.findItem(R.id.sub_menu_logout).setVisible(false);
-			// menu.findItem(R.id.menu_logout).setVisible(false);
 			menu.findItem(R.id.sub_menu_write).setVisible(false);
-			// menu.findItem(R.id.menu_write).setVisible(false);
 			menu.findItem(R.id.sub_menu_delete).setVisible(false);
-			// menu.findItem(R.id.menu_delete).setVisible(false);
 			menu.findItem(R.id.sub_menu_comment).setVisible(false);
-			// menu.findItem(R.id.menu_comment).setVisible(false);
 		}
 
 		// if (isLogin) {
