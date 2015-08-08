@@ -112,34 +112,30 @@
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
 
-        <!--
-          BroadcastReceiver that will receive the C2DM messages from GCM
-          services and handle them to the custom IntentService.
-
-          The com.google.android.c2dm.permission.SEND permission is necessary
-          so only GCM services can send data messages for the app.-->
-        <receiver
-            android:name=".gcm.GCMRedirectedBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+        <!--  Google Analytic  관련 -->
+        <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
+                 dispatching on non-Google Play devices -->
+        <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:enabled="true">
             <intent-filter>
-
-                <!-- Receives the actual messages. -->
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <!-- Receives the registration id. -->
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-
-                <category android:name="com.kth.baasio.startup" />
+                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
             </intent-filter>
         </receiver>
+        <service android:name="com.google.android.gms.analytics.AnalyticsService"
+            android:enabled="true"
+            android:exported="false"/>
 
-        <!--
-          Application-specific subclass of GCMBaseIntentService that will
-          handle received messages.
+        <!-- Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
+             installation campaign reporting -->
+        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
 
-          By default, it must be named .GCMIntentService, unless the
-          application uses a custom BroadcastReceiver that redefines its name.-->
-        <service android:name=".gcm.GCMIntentService" />
-        
+        <!-- db 관련 -->
         <provider
             android:name="com.pockru.bestizhelper.database.BestizBoxProvider"
             android:authorities="com.pockru.bestizhelper"

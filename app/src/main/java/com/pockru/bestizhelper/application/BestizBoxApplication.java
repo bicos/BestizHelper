@@ -60,6 +60,8 @@ public class BestizBoxApplication extends Application {
 			Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(getString(R.string.ga_property_id)) : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics
 					.newTracker(R.xml.global_tracker) : analytics.newTracker(R.xml.ecommerce_tracker);
 			t.enableAdvertisingIdCollection(true);
+			t.enableExceptionReporting(true);
+			t.enableAutoActivityTracking(true);
 			mTrackers.put(trackerId, t);
 
 		}
