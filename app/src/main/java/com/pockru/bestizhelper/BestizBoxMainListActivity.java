@@ -126,6 +126,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
     private Button btnWrite;
     private int maxTansY, transY;
 
+    //  로그인 후 로직 제어
+    private boolean isShowWriteDialog = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -238,6 +241,26 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
         // 버튼 셋팅
         btnWrite = (Button) findViewById(R.id.btn_write);
+        btnWrite.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isLogin) {
+                    showWriteDialog();
+                } else {
+                    Utils.showAlternateAlertDialog(BestizBoxMainListActivity.this,
+                            "알림",
+                            "로그인을 하셔야 글을 쓰실 수 있습니다. 로그인을 하시겠습니까?",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    isShowWriteDialog = true;
+                                    showLoginDialog();
+                                }
+                            });
+                }
+            }
+        });
+
         btnWrite.post(new Runnable() {
 
             @Override
@@ -339,7 +362,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
     }
 
     @Override
-    public void getResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
+    public void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
         mSwipeMain.setRefreshing(false);
 
         if (resCode != 200) {
@@ -394,15 +417,19 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
         Log.i(TAG, "httpEquiv : " + httpEquiv + " , content : " + content);
 
-        if ((httpEquiv != null && content != null) && (httpEquiv.equalsIgnoreCase("refresh"))) {
+        if ((httpEquiv != null && content != null) && (httpEquiv.equalsIgnoreCase("refresh"))) { // 로그인 성공
             isLogin = true;
             setAutoLogin(loginId, loginPwd, BASE_SERVER_URL);
             // BestizBoxApplication.getClientInstance().setCookieStore(cookieStore);
-//			Toast.makeText(this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
+
+            if (isShowWriteDialog) { //  로그인을 성공한 경우에만 다음 작업 진행
+                showWriteDialog();
+            }
         } else {
             isLogin = false;
             setAutoLogin(null, null, BASE_SERVER_URL);
-            Toast.makeText(this, getString(R.string.msg_login_failed), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, getString(R.string.msg_login_failed), Toast.LENGTH_SHORT).show();
         }
 
         // 메뉴 리프레시
@@ -414,6 +441,10 @@ public class BestizBoxMainListActivity extends BaseActivity {
             }
         });
         requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
+
+        if (isShowWriteDialog) {
+            isShowWriteDialog = false;
+        }
     }
 
     private void setNextArticleList(String arg) {
@@ -673,93 +704,11 @@ public class BestizBoxMainListActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.menu_login:
             case R.id.sub_menu_login:
-                final View loginView = Utils.getView(this, R.layout.layout_login);
-
-                Utils.showCompositeDialog(this, getString(R.string.menu_login), loginView, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        EditText id = (EditText) loginView.findViewById(R.id.editText_login_id);
-                        EditText pwd = (EditText) loginView.findViewById(R.id.editText_login_pwd);
-
-                        loginId = id.getText().toString();
-                        loginPwd = pwd.getText().toString();
-
-                        requestNetwork(FLAG_REQ_LOGIN, BASE_URL + "/login_check.php", login(id.getText().toString(), pwd.getText().toString()));
-                    }
-                });
+                showLoginDialog();
                 return true;
             case R.id.menu_write:
             case R.id.sub_menu_write:
-                if (imgList.size() > 0) {
-                    imgList.clear();
-                }
-
-                writeView = Utils.getView(this, R.layout.layout_write);
-
-                hsvImage = (HorizontalScrollView) writeView.findViewById(R.id.hsvImage);
-                containerImg = (LinearLayout) writeView.findViewById(R.id.containerImg);
-
-                Button btnImgAdd = (Button) writeView.findViewById(R.id.button_img_add);
-                btnImgAdd.setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        if (TextUtils.isEmpty(Preference.getTumblrToken(BestizBoxMainListActivity.this))
-                                || TextUtils.isEmpty(Preference.getTumblrSecret(BestizBoxMainListActivity.this))) {
-                            startActivityForResult(new Intent(BestizBoxMainListActivity.this, TumblrOAuthActivity.class), REQ_CODE_TUMBLR_AUTH);
-                        } else {
-                            if (Utils.isOverCurrentAndroidVersion(VERSION_CODES.KITKAT) >= 0) {
-                                Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                                startActivityForResult(intent, REQ_CODE_GET_PHOTO);
-                            } else {
-                                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                                intent.setType("image/*");
-                                startActivityForResult(intent, REQ_CODE_GET_PHOTO);
-                            }
-                        }
-                    }
-                });
-
-                Utils.showCompositeDialog(this, getString(R.string.menu_write), writeView, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        EditText contents = (EditText) writeView.findViewById(R.id.editText_contents);
-                        final EditText subject = (EditText) writeView.findViewById(R.id.editText_subject);
-
-                        String tmp = "";
-
-                        for (int i = 0; i < imgList.size(); i++) {
-                            if (imgList.get(i).is1024over) {
-                                tmp += "<img src=\"" + imgList.get(i).imgUrl + "\"" + " width=\"1024\"><br><br>";
-                            } else {
-                                tmp += "<img src=\"" + imgList.get(i).imgUrl + "\"><br><br>";
-                            }
-                        }
-
-                        final String totalContents = (!tmp.equals("")) ? tmp + contents.getText().toString() : contents.getText().toString();
-                        if (startImgUpload) {
-                            Utils.showAlternateAlertDialog(BestizBoxMainListActivity.this, getString(R.string.menu_write),
-                                    getString(R.string.alert_msg_still_img_upload), new DialogInterface.OnClickListener() {
-
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (which == DialogInterface.BUTTON_POSITIVE) {
-                                                requestNetwork(FLAG_REQ_WRITE, BASE_URL + "/write_ok.php", write(subject.getText().toString(), totalContents));
-                                            }
-                                        }
-                                    });
-
-                        } else {
-                            requestNetwork(FLAG_REQ_WRITE, BASE_URL + "/write_ok.php", write(subject.getText().toString(), totalContents));
-                        }
-
-                        if (imgList.size() > 0) {
-                            imgList.clear();
-                        }
-
-                    }
-                });
+                showWriteDialog();
                 return true;
 
             case R.id.menu_logout:
@@ -792,13 +741,113 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 startActivity(search);
                 return true;
 
-            case R.id.sub_menu_history:
-                Intent history = new Intent(this, ArticleHistoryActivity.class);
-                startActivity(history);
-                return true;
+//            case R.id.sub_menu_history:
+//                Intent history = new Intent(this, ArticleHistoryActivity.class);
+//                startActivity(history);
+//                return true;
         }
 
         return false;
+    }
+
+    private void showLoginDialog() {
+        final View loginView = Utils.getView(this, R.layout.layout_login);
+
+        Utils.showCompositeDialog(this,
+                getString(R.string.menu_login),
+                loginView,
+                new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        EditText id = (EditText) loginView.findViewById(R.id.editText_login_id);
+                        EditText pwd = (EditText) loginView.findViewById(R.id.editText_login_pwd);
+
+                        loginId = id.getText().toString();
+                        loginPwd = pwd.getText().toString();
+
+                        requestNetwork(FLAG_REQ_LOGIN, BASE_URL + "/login_check.php", login(id.getText().toString(), pwd.getText().toString()));
+                    }
+                },
+                new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        if (isShowWriteDialog) isShowWriteDialog = false;
+                    }
+                }
+        );
+    }
+
+    private void showWriteDialog(){
+        if (imgList.size() > 0) {
+            imgList.clear();
+        }
+
+        writeView = Utils.getView(this, R.layout.layout_write);
+
+        hsvImage = (HorizontalScrollView) writeView.findViewById(R.id.hsvImage);
+        containerImg = (LinearLayout) writeView.findViewById(R.id.containerImg);
+
+        Button btnImgAdd = (Button) writeView.findViewById(R.id.button_img_add);
+        btnImgAdd.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (TextUtils.isEmpty(Preference.getTumblrToken(BestizBoxMainListActivity.this))
+                        || TextUtils.isEmpty(Preference.getTumblrSecret(BestizBoxMainListActivity.this))) {
+                    startActivityForResult(new Intent(BestizBoxMainListActivity.this, TumblrOAuthActivity.class), REQ_CODE_TUMBLR_AUTH);
+                } else {
+                    if (Utils.isOverCurrentAndroidVersion(VERSION_CODES.KITKAT) >= 0) {
+                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                    } else {
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        intent.setType("image/*");
+                        startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                    }
+                }
+            }
+        });
+
+        Utils.showCompositeDialog(this, getString(R.string.menu_write), writeView, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                EditText contents = (EditText) writeView.findViewById(R.id.editText_contents);
+                final EditText subject = (EditText) writeView.findViewById(R.id.editText_subject);
+
+                String tmp = "";
+
+                for (int i = 0; i < imgList.size(); i++) {
+                    if (imgList.get(i).is1024over) {
+                        tmp += "<img src=\"" + imgList.get(i).imgUrl + "\"" + " width=\"1024\"><br><br>";
+                    } else {
+                        tmp += "<img src=\"" + imgList.get(i).imgUrl + "\"><br><br>";
+                    }
+                }
+
+                final String totalContents = (!tmp.equals("")) ? tmp + contents.getText().toString() : contents.getText().toString();
+                if (startImgUpload) {
+                    Utils.showAlternateAlertDialog(BestizBoxMainListActivity.this, getString(R.string.menu_write),
+                            getString(R.string.alert_msg_still_img_upload), new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (which == DialogInterface.BUTTON_POSITIVE) {
+                                        requestNetwork(FLAG_REQ_WRITE, BASE_URL + "/write_ok.php", write(subject.getText().toString(), totalContents));
+                                    }
+                                }
+                            });
+
+                } else {
+                    requestNetwork(FLAG_REQ_WRITE, BASE_URL + "/write_ok.php", write(subject.getText().toString(), totalContents));
+                }
+
+                if (imgList.size() > 0) {
+                    imgList.clear();
+                }
+
+            }
+        });
     }
 
     Uri mUplaodUri;

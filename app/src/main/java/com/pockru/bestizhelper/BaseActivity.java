@@ -1,7 +1,6 @@
 package com.pockru.bestizhelper;
 
 import java.io.UnsupportedEncodingException;
-import java.net.CookieHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +32,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.pockru.bestizhelper.application.BestizBoxApplication;
 import com.pockru.bestizhelper.application.BestizBoxApplication.TrackerName;
 import com.pockru.bestizhelper.data.BoardData;
-import com.pockru.bestizhelper.data.Constants;
 import com.pockru.network.BestizNetworkConn;
 import com.pockru.network.RequestInfo;
 
@@ -200,7 +198,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 					}
 				}
 				
-				getResponse(conn.getResCode(), conn.getHeaderFields(), result, flag);
+				onResponse(conn.getResCode(), conn.getHeaderFields(), result, flag);
 			}
 
 		}.execute(info);
@@ -327,6 +325,6 @@ public abstract class BaseActivity extends ActionBarActivity {
 		// ecommerceTracker.send(params);
 	}
 
-	public abstract void getResponse(int resCode, Map<String, List<String>> headers, String html, int flag);
+	public abstract void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag);
 	
 }

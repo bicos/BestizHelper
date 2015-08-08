@@ -18,7 +18,7 @@ public class Constants {
 	public static final String SERVER_05_URL = "http://bestgm.bestiz.net/zboard/zboard.php";
 
 	public static final String GEACHON_ID = "?id=ghm2";
-	public static final String GEAJAP_ID = "?id=jd1506";
+	public static final String GEAJAP_ID = "?id=jd1508";
 	public static final String GEABAL_ID = "?id=gjbal";
 	public static final String GEABOM_ID = "?id=jb1312";
 	public static final String GEAYEO_ID = "?id=jy0807";

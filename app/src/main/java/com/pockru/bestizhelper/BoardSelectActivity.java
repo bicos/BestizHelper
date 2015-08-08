@@ -283,7 +283,7 @@ public class BoardSelectActivity extends BaseActivity {
 	}
 
 	@Override
-	public void getResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
+	public void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -187,7 +187,7 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 	}
 
 	@Override
-	public void getResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
+	public void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
 		if (resCode != 200) {
 			Toast.makeText(getApplicationContext(), "네트워크가 불안정합니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
 			return;

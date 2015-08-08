@@ -153,7 +153,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 		requestNetwork(Constants.FLAG_REQ_DETAIL_ARTICLE, atcUrl);
 	}
 
-	public void getResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
+	public void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
 		if (resCode != 200) {
 			Toast.makeText(this, "통신 중 오류가 발생하였습니다.", Toast.LENGTH_SHORT).show();
 			return;
@@ -302,6 +302,11 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			element = doc.getElementsByAttributeValueContaining("cellpadding", "3").get(0).attr("width", "100%");
 			element.attr("bgcolor", "#f4f4f4");
 			element.select("font").attr("size", "2");
+
+			Elements tmpElements = element.select("a[onfocus=blur()]:not(:contains(*))");
+			if (tmpElements != null && tmpElements.size() > 0) {
+				tmpElements.remove();
+			}
 
 			Elements tr = element.select("tr");
 			for (int i = 0; i < tr.size(); i++) {

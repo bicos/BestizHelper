@@ -38,4 +38,6 @@ dependencies {
     compile 'org.jsoup:jsoup:1.8.2'
     compile 'com.tumblr:jumblr:0.0.11'
     compile 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
+    compile 'com.android.support:design:22.2.0'
+
 }

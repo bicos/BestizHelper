@@ -12,6 +12,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -34,11 +35,24 @@ import com.pockru.preference.Preference;
 public class Utils {
 
 	public static AlertDialog showCompositeDialog(Context context, String title, View view, DialogInterface.OnClickListener listener) {
+		AlertDialog dialog = showCompositeDialog(context, title, view, listener,null);
+		return dialog;
+	}
+
+	public static AlertDialog showCompositeDialog(Context context, String title, View view, DialogInterface.OnClickListener listener, final DialogInterface.OnCancelListener cancelListener) {
 		AlertDialog dlg;
 		AlertDialog.Builder builder = new AlertDialog.Builder(context).setTitle(title).setView(view)
-				.setNegativeButton(context.getString(R.string.dialog_cancel), null).setPositiveButton(context.getString(R.string.dialog_confirm), listener);
-
+				.setNegativeButton(context.getString(R.string.dialog_cancel), new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (cancelListener != null) {
+							cancelListener.onCancel(dialog);
+						}
+					}
+				})
+				.setPositiveButton(context.getString(R.string.dialog_confirm), listener);
 		dlg = builder.create();
+		if (cancelListener != null) dlg.setOnCancelListener(cancelListener);
 		dlg.show();
 		return dlg;
 	}
