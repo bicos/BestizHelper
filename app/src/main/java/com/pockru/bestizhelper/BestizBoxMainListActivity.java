@@ -329,8 +329,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
     }
 
     private void animWriteBtnPosition(boolean isScrollUp) {
-        int curTransY = (int) ViewCompat.getTranslationY(btnWrite);
-
         if (isScrollUp) {
             ViewCompat.animate(btnWrite).translationY(maxTansY).setDuration(200).start();
             transY = maxTansY;

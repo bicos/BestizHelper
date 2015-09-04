@@ -1,19 +1,5 @@
 package com.pockru.bestizhelper;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -53,14 +39,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pockru.bestizhelper.asynctask.ImgDownloadTask;
-import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.ArticleDetailData;
 import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.Constants;
-import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.preference.Preference;
 import com.pockru.utils.Utils;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class BestizBoxDetailActivity extends BaseActivity {
 
@@ -265,11 +263,11 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			}
 
 			// 이미지 리사이징
-			doc.select("img").attr("width", "100%").removeAttr("height");
+			doc.select("img").attr("width", "100%").attr("height", "auto");
 
 			// 동영상 리사이징
-			doc.select("embed").attr("width", "100%").removeAttr("height");
-			doc.select("iframe").attr("width", "100%").removeAttr("height");
+			doc.select("embed").attr("width", "100%").attr("height", "auto");
+			doc.select("iframe").attr("width", "100%").attr("height", "auto");
 
 			// 2번째 엘레멘트 = 이름 , 홈페이지 , 제목 등이 들어가있는 엘레멘트
 			Elements elements = doc.getElementsByAttributeValueContaining("bgcolor", "white");
