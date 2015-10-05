@@ -1,8 +1,5 @@
 package com.pockru.bestizhelper.database;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
@@ -17,6 +14,9 @@ import android.net.Uri;
 
 import com.pockru.bestizhelper.database.DatabaseContract.ArticleTable;
 import com.pockru.bestizhelper.database.DatabaseHelper.Tables;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class BestizBoxProvider extends ContentProvider{
 
@@ -35,6 +35,9 @@ public class BestizBoxProvider extends ContentProvider{
 	private static final int ARTICLE				= 100;
 	private static final int ARTICLE_ID				= 101;
 	private static final int ARTICLE_NUM			= 102;
+	private static final int MEM_INFO				= 103;
+	private static final int MEM_INFO_ID			= 104;
+	private static final int MEM_INFO_MEM_ID		= 105;
 	
 	/**
 	 * Item 의 type 을 return 
@@ -43,13 +46,18 @@ public class BestizBoxProvider extends ContentProvider{
 	public String getType(Uri uri) {
 		final int match = sUriMatcher.match(uri);
 		switch (match) {
-		case ARTICLE:
-			return ArticleTable.CONTENT_TYPE;
-		case ARTICLE_ID:
-		case ARTICLE_NUM:
-			return ArticleTable.CONTENT_ITEM_TYPE;
-		default:
-			throw new UnsupportedOperationException("UnKonwn Uri : " + uri);
+			case ARTICLE:
+				return ArticleTable.CONTENT_TYPE;
+			case ARTICLE_ID:
+			case ARTICLE_NUM:
+				return ArticleTable.CONTENT_ITEM_TYPE;
+			case MEM_INFO:
+				return DatabaseContract.MemberInfoTable.CONTENT_TYPE;
+			case MEM_INFO_ID:
+			case MEM_INFO_MEM_ID:
+				return DatabaseContract.MemberInfoTable.CONTENT_ITEM_TYPE;
+			default:
+				throw new UnsupportedOperationException("UnKonwn Uri : " + uri);
 		}
 	}
 
@@ -78,21 +86,36 @@ public class BestizBoxProvider extends ContentProvider{
 	private SQLBuilder setSQLBuild(Uri uri, int match) {
 		final SQLBuilder builder = new SQLBuilder();
 		switch (match) {
-		case ARTICLE: {
-			return builder.table(Tables.TABLE_ARTICLE);
-		}
-		case ARTICLE_ID: {
-			final String id = ArticleTable.getArticleId(uri);
-			return builder.table(Tables.TABLE_ARTICLE)
-					.where(ArticleTable._ID + "=?", id);
-		}
-		case ARTICLE_NUM: {
-			final String cid = ArticleTable.getArticleNum(uri);
-			return builder.table(Tables.TABLE_ARTICLE)
-					.where(ArticleTable.KEY_ARTICLE_NUM+ "=?", cid);
-		}
-		default:
-			return null;
+			case ARTICLE: {
+				return builder.table(Tables.TABLE_ARTICLE);
+			}
+			case ARTICLE_ID: {
+				final String id = ArticleTable.getArticleId(uri);
+				return builder.table(Tables.TABLE_ARTICLE)
+						.where(ArticleTable._ID + "=?", id);
+			}
+			case ARTICLE_NUM: {
+				final String cid = ArticleTable.getArticleNum(uri);
+				return builder.table(Tables.TABLE_ARTICLE)
+						.where(ArticleTable.KEY_ARTICLE_NUM + "=?", cid);
+			}
+			case MEM_INFO: {
+				return builder.table(Tables.TABLE_MEMBER_INFO);
+			}
+			case MEM_INFO_ID: {
+				final String id = DatabaseContract.MemberInfoTable.getMemberInfoId(uri);
+				return builder.table(Tables.TABLE_MEMBER_INFO)
+						.where(DatabaseContract.MemberInfoTable._ID + "=?", id);
+			}
+			case MEM_INFO_MEM_ID: {
+				final String memServer = DatabaseContract.MemberInfoTable.getMemberInfoServer(uri);
+				final String memId = DatabaseContract.MemberInfoTable.getMemberInfoMemberId(uri);
+				return builder.table(Tables.TABLE_MEMBER_INFO)
+						.where(DatabaseContract.MemberInfoTable.KEY_MEM_SERVER + "=? AND "+
+								DatabaseContract.MemberInfoTable.KEY_MEM_ID + "=?", memServer, memId);
+			}
+			default:
+				return null;
 		}
 	}
 	
@@ -111,10 +134,15 @@ public class BestizBoxProvider extends ContentProvider{
 		
 		try{
 			switch (matcher) {
-				case ARTICLE: 
-					final long slidingid = db.insertOrThrow(Tables.TABLE_ARTICLE, null, values);
-					returnUri = ArticleTable.buildArticleUri(String.valueOf(slidingid));
+				case ARTICLE: {
+					final long id = db.insertOrThrow(Tables.TABLE_ARTICLE, null, values);
+					returnUri = ArticleTable.buildArticleUri(String.valueOf(id));
 					break;
+				}
+				case MEM_INFO: {
+					final long id = db.insertOrThrow(Tables.TABLE_MEMBER_INFO, null, values);
+					returnUri = DatabaseContract.MemberInfoTable.buildMemberInfoUri(String.valueOf(id));
+				}
 				default: 
 					break;
 				
@@ -163,8 +191,18 @@ public class BestizBoxProvider extends ContentProvider{
 		final String authority = DatabaseContract.CONTENT_AUTHORITY;
 		
 		matcher.addURI(authority, Tables.TABLE_ARTICLE, ARTICLE);
+		// article/#
 		matcher.addURI(authority, Tables.TABLE_ARTICLE + "/#", ARTICLE_ID);
+		// article/article_id/#
 		matcher.addURI(authority, Tables.TABLE_ARTICLE + "/" + ArticleTable.KEY_ARTICLE_NUM+ "/#", ARTICLE_NUM);
+
+		matcher.addURI(authority, Tables.TABLE_MEMBER_INFO, MEM_INFO);
+		// member_info/#
+		matcher.addURI(authority, Tables.TABLE_MEMBER_INFO + "/#", MEM_INFO_ID);
+		// member_info/mem_server/*/mem_id/*
+		matcher.addURI(authority, Tables.TABLE_MEMBER_INFO +"/"
+				+ DatabaseContract.MemberInfoTable.KEY_MEM_SERVER+"/*/"
+				+ DatabaseContract.MemberInfoTable.KEY_MEM_ID+"/*", MEM_INFO_MEM_ID);
 		
 		return matcher;
 	}

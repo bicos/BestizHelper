@@ -3,11 +3,6 @@ package com.pockru.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
-import android.text.TextUtils;
-
-import com.pockru.bestizhelper.data.UserData;
 
 public class Preference {
 
@@ -82,21 +77,21 @@ public class Preference {
 		editor.commit();
 	}
 
-	public static void setUserInfo(Context context, UserData data) {
-		setString(context, PARAM_USER_ID, data.getId());
-		setString(context, PARAM_USER_PWD, data.getPwd());
-	}
-
-	public static UserData getUserInfo(Context context) {
-		String id = getString(context, PARAM_USER_ID);
-		String pwd = getString(context, PARAM_USER_PWD);
-
-		if (!id.equals("") && !pwd.equals("")) {
-			return new UserData(id, pwd);
-		} else {
-			return null;
-		}
-	}
+//	public static void setUserInfo(Context context, UserData data) {
+//		setString(context, PARAM_USER_ID, data.id);
+//		setString(context, PARAM_USER_PWD, data.pwd);
+//	}
+//
+//	public static UserData getUserInfo(Context context) {
+//		String id = getString(context, PARAM_USER_ID);
+//		String pwd = getString(context, PARAM_USER_PWD);
+//
+//		if (!id.equals("") && !pwd.equals("")) {
+//			return new UserData(id, pwd);
+//		} else {
+//			return null;
+//		}
+//	}
 
 	public static void setImgurToken(Context context, String value) {
 		setString(context, PARAM_IMGUR_TOKEN, value);
@@ -114,85 +109,85 @@ public class Preference {
 		return getString(context, PARAM_IMGUR_SECRET);
 	}
 
-	public static void setServer1Id(Context context, String id) {
-		setString(context, PARAM_SERVER1_ID, id);
-	}
-
-	public static String getServer1Id(Context context) {
-		return getString(context, PARAM_SERVER1_ID);
-	}
-
-	public static void setServer1Pwd(Context context, String pwd) {
-		setString(context, PARAM_SERVER1_PWD, pwd);
-	}
-
-	public static String getServer1Pwd(Context context) {
-		return getString(context, PARAM_SERVER1_PWD);
-	}
-
-	public static void setServer2Id(Context context, String id) {
-		setString(context, PARAM_SERVER2_ID, id);
-	}
-
-	public static String getServer2Id(Context context) {
-		return getString(context, PARAM_SERVER2_ID);
-	}
-
-	public static void setServer2Pwd(Context context, String pwd) {
-		setString(context, PARAM_SERVER2_PWD, pwd);
-	}
-
-	public static String getServer2Pwd(Context context) {
-		return getString(context, PARAM_SERVER2_PWD);
-	}
-
-	public static void setServer3Id(Context context, String id) {
-		setString(context, PARAM_SERVER3_ID, id);
-	}
-
-	public static String getServer3Id(Context context) {
-		return getString(context, PARAM_SERVER3_ID);
-	}
-
-	public static void setServer3Pwd(Context context, String pwd) {
-		setString(context, PARAM_SERVER3_PWD, pwd);
-	}
-
-	public static String getServer3Pwd(Context context) {
-		return getString(context, PARAM_SERVER3_PWD);
-	}
-	
-	public static void setServer4Id(Context context, String id) {
-		setString(context, PARAM_SERVER4_ID, id);
-	}
-
-	public static String getServer4Id(Context context) {
-		return getString(context, PARAM_SERVER4_ID);
-	}
-
-	public static void setServer4Pwd(Context context, String pwd) {
-		setString(context, PARAM_SERVER4_PWD, pwd);
-	}
-
-	public static String getServer4Pwd(Context context) {
-		return getString(context, PARAM_SERVER4_PWD);
-	}
-	
-	public static void setServer5Id(Context context, String id) {
-		setString(context, PARAM_SERVER5_ID, id);
-	}
-
-	public static String getServer5Id(Context context) {
-		return getString(context, PARAM_SERVER5_ID);
-	}
-
-	public static void setServer5Pwd(Context context, String pwd) {
-		setString(context, PARAM_SERVER5_PWD, pwd);
-	}
-
-	public static String getServer5Pwd(Context context) {
-		return getString(context, PARAM_SERVER5_PWD);
-	}
+//	public static void setServer1Id(Context context, String id) {
+//		setString(context, PARAM_SERVER1_ID, id);
+//	}
+//
+//	public static String getServer1Id(Context context) {
+//		return getString(context, PARAM_SERVER1_ID);
+//	}
+//
+//	public static void setServer1Pwd(Context context, String pwd) {
+//		setString(context, PARAM_SERVER1_PWD, pwd);
+//	}
+//
+//	public static String getServer1Pwd(Context context) {
+//		return getString(context, PARAM_SERVER1_PWD);
+//	}
+//
+//	public static void setServer2Id(Context context, String id) {
+//		setString(context, PARAM_SERVER2_ID, id);
+//	}
+//
+//	public static String getServer2Id(Context context) {
+//		return getString(context, PARAM_SERVER2_ID);
+//	}
+//
+//	public static void setServer2Pwd(Context context, String pwd) {
+//		setString(context, PARAM_SERVER2_PWD, pwd);
+//	}
+//
+//	public static String getServer2Pwd(Context context) {
+//		return getString(context, PARAM_SERVER2_PWD);
+//	}
+//
+//	public static void setServer3Id(Context context, String id) {
+//		setString(context, PARAM_SERVER3_ID, id);
+//	}
+//
+//	public static String getServer3Id(Context context) {
+//		return getString(context, PARAM_SERVER3_ID);
+//	}
+//
+//	public static void setServer3Pwd(Context context, String pwd) {
+//		setString(context, PARAM_SERVER3_PWD, pwd);
+//	}
+//
+//	public static String getServer3Pwd(Context context) {
+//		return getString(context, PARAM_SERVER3_PWD);
+//	}
+//
+//	public static void setServer4Id(Context context, String id) {
+//		setString(context, PARAM_SERVER4_ID, id);
+//	}
+//
+//	public static String getServer4Id(Context context) {
+//		return getString(context, PARAM_SERVER4_ID);
+//	}
+//
+//	public static void setServer4Pwd(Context context, String pwd) {
+//		setString(context, PARAM_SERVER4_PWD, pwd);
+//	}
+//
+//	public static String getServer4Pwd(Context context) {
+//		return getString(context, PARAM_SERVER4_PWD);
+//	}
+//
+//	public static void setServer5Id(Context context, String id) {
+//		setString(context, PARAM_SERVER5_ID, id);
+//	}
+//
+//	public static String getServer5Id(Context context) {
+//		return getString(context, PARAM_SERVER5_ID);
+//	}
+//
+//	public static void setServer5Pwd(Context context, String pwd) {
+//		setString(context, PARAM_SERVER5_PWD, pwd);
+//	}
+//
+//	public static String getServer5Pwd(Context context) {
+//		return getString(context, PARAM_SERVER5_PWD);
+//	}
 	
 	public static void setAutoLogin(Context context , boolean value){
 		setBoolean(context, PARAM_AUTO_LOGIN, value);

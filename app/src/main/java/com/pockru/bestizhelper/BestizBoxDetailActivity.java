@@ -996,22 +996,22 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
 	private void setAutoLogin(String id, String pwd, String baseUrl) {
 		Log.i(TAG, "setAutoLogin id : " + id + " , pwd : " + pwd + " , basUrl : " + baseUrl);
-		if (baseUrl.contains(Constants.SERVER_01_URL)) {
-			Preference.setServer1Id(getApplicationContext(), id);
-			Preference.setServer1Pwd(getApplicationContext(), pwd);
-		} else if (baseUrl.contains(Constants.SERVER_02_URL)) {
-			Preference.setServer2Id(getApplicationContext(), id);
-			Preference.setServer2Pwd(getApplicationContext(), pwd);
-		} else if (baseUrl.contains(Constants.SERVER_03_URL)) {
-			Preference.setServer3Id(getApplicationContext(), id);
-			Preference.setServer3Pwd(getApplicationContext(), pwd);
-		} else if (baseUrl.contains(Constants.SERVER_04_URL)) {
-			Preference.setServer4Id(getApplicationContext(), id);
-			Preference.setServer4Pwd(getApplicationContext(), pwd);
-		} else if (baseUrl.contains(Constants.SERVER_05_URL)) {
-			Preference.setServer5Id(getApplicationContext(), id);
-			Preference.setServer5Pwd(getApplicationContext(), pwd);
-		}
+//		if (baseUrl.contains(Constants.SERVER_01_URL)) {
+//			Preference.setServer1Id(getApplicationContext(), id);
+//			Preference.setServer1Pwd(getApplicationContext(), pwd);
+//		} else if (baseUrl.contains(Constants.SERVER_02_URL)) {
+//			Preference.setServer2Id(getApplicationContext(), id);
+//			Preference.setServer2Pwd(getApplicationContext(), pwd);
+//		} else if (baseUrl.contains(Constants.SERVER_03_URL)) {
+//			Preference.setServer3Id(getApplicationContext(), id);
+//			Preference.setServer3Pwd(getApplicationContext(), pwd);
+//		} else if (baseUrl.contains(Constants.SERVER_04_URL)) {
+//			Preference.setServer4Id(getApplicationContext(), id);
+//			Preference.setServer4Pwd(getApplicationContext(), pwd);
+//		} else if (baseUrl.contains(Constants.SERVER_05_URL)) {
+//			Preference.setServer5Id(getApplicationContext(), id);
+//			Preference.setServer5Pwd(getApplicationContext(), pwd);
+//		}
 
 		Preference.setAutoLogin(getApplicationContext(), true);
 	}

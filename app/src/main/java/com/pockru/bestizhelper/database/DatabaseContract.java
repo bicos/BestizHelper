@@ -34,12 +34,16 @@ public class DatabaseContract {
 		public static Uri buildArticleUri(String menuId) {
 			return CONTENT_URI.buildUpon().appendPath(menuId).build();
 		}
+
+		//article/article_id/#
 		public static String getArticleId(Uri uri) {
 			return uri.getPathSegments().get(1);
 		}
+		//article/article_id/#
 		public static String getArticleNum(Uri uri) {
 			return uri.getPathSegments().get(2);
 		}
+
 		public static final String[] PROJECTION = new String[] {
 			ArticleTable._ID, 
 			KEY_ARTICLE_NUM,
@@ -55,6 +59,62 @@ public class DatabaseContract {
 			KEY_ARTICLE_MODIFY_URL,
 			KEY_ARTICLE_DELETE_URL,
 			KEY_ARTICLE_FAVORITE
+		};
+	}
+
+	interface MemberInfoColumns {
+		String KEY_MEM_ID = "mem_id";
+		String KEY_MEM_PWD = "mem_pwd";
+		String KEY_MEM_LEVEL = "mem_level";
+		String KEY_MEM_NAME = "mem_name";
+		String KEY_MEM_EMAIL = "mem_email";
+		String KEY_MEM_HOMEPAGE = "mem_homepage";
+		String KEY_MEM_DISCLOSE_INFO = "mem_disclose_info";
+		String KEY_MEM_COMMENT = "mem_comment";
+		String KEY_MEM_POINT = "mem_point";
+		String KEY_MEM_IS_SHOW_COMMENT = "mem_is_show_comment";
+		String KEY_MEM_SERVER = "mem_server";
+	}
+
+	/**
+	 * uri example
+	 *
+	 *
+	 */
+	public static class MemberInfoTable implements MemberInfoColumns, BaseColumns{
+		public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(DatabaseHelper.Tables.TABLE_MEMBER_INFO).build();
+		public static final String CONTENT_TYPE = "vnd.pockru.bestizhelper.cursor.dir/vnd.pockru.bestizhelper.memberinfo";
+		public static final String CONTENT_ITEM_TYPE = "vnd.pockru.bestizhelper.item/vnd.pockru.bestizhelper.memberinfo";
+		public static Uri buildMemberInfoUri(String id) {
+			return CONTENT_URI.buildUpon().appendPath(id).build();
+		}
+
+		// member_info/#
+		public static String getMemberInfoId(Uri uri) {
+			return uri.getPathSegments().get(1);
+		}
+		// member_info/mem_server/*/mem_id/*
+		public static String getMemberInfoServer(Uri uri){
+			return uri.getPathSegments().get(2);
+		}
+		// member_info/mem_server/*/mem_id/*
+		public static String getMemberInfoMemberId(Uri uri) {
+			return uri.getPathSegments().get(4);
+		}
+
+		public static final String[] PROJECTION = new String[] {
+				MemberInfoTable._ID,
+				KEY_MEM_ID,
+				KEY_MEM_PWD,
+				KEY_MEM_LEVEL,
+				KEY_MEM_NAME,
+				KEY_MEM_EMAIL,
+				KEY_MEM_HOMEPAGE,
+				KEY_MEM_DISCLOSE_INFO,
+				KEY_MEM_COMMENT,
+				KEY_MEM_POINT,
+				KEY_MEM_IS_SHOW_COMMENT,
+				KEY_MEM_SERVER
 		};
 	}
 

@@ -56,7 +56,12 @@ public class Constants {
 	public static final String DOLMENGYEE = "?id=gdldl";
 	public static final String USER_MUSIC_ID = "?id=sing";
 	public static final String GJ_WC="?id=gjw";
-	
+
+	public static final String URL_LOGIN = "/login_check.php";
+	public static final String URL_LOGOUT = "/logout.php";
+	public static final String URL_WRITE = "/write_ok.php";
+	public static final String URL_MEMBER_INFO = "/member_modify.php";
+
 	/* 인텐트 네임값 정리 */
 	public static final String INTENT_NAME_DETAIL_ARTICLE_URL = "detail_article_url";
 	public static final String INTENT_NAME_BASE_SERVER_URL = "base_server_url";

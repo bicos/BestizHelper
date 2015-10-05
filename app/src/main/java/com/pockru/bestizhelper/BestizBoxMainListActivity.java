@@ -45,6 +45,8 @@ import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.ImageData;
+import com.pockru.bestizhelper.data.UserData;
+import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
 import com.pockru.preference.Preference;
 import com.pockru.utils.UiUtils;
@@ -278,30 +280,30 @@ public class BestizBoxMainListActivity extends BaseActivity {
         Log.e(TAG, "BASE_SERVER_URL + DETAIL_URL : " + BASE_SERVER_URL + DETAIL_URL);
 
         if (Preference.getAutoLogin(getApplicationContext())) {
-            String id = null, pwd = null;
+//            if (BASE_SERVER_URL.contains(Constants.SERVER_01_URL)) {
+//                id = Preference.getServer1Id(getApplicationContext());
+//                pwd = Preference.getServer1Pwd(getApplicationContext());
+//            } else if (BASE_SERVER_URL.contains(Constants.SERVER_02_URL)) {
+//                id = Preference.getServer2Id(getApplicationContext());
+//                pwd = Preference.getServer2Pwd(getApplicationContext());
+//            } else if (BASE_SERVER_URL.contains(Constants.SERVER_03_URL)) {
+//                id = Preference.getServer3Id(getApplicationContext());
+//                pwd = Preference.getServer3Pwd(getApplicationContext());
+//            } else if (BASE_SERVER_URL.contains(Constants.SERVER_04_URL)) {
+//                id = Preference.getServer4Id(getApplicationContext());
+//                pwd = Preference.getServer4Pwd(getApplicationContext());
+//            } else if (BASE_SERVER_URL.contains(Constants.SERVER_05_URL)) {
+//                id = Preference.getServer5Id(getApplicationContext());
+//                pwd = Preference.getServer5Pwd(getApplicationContext());
+//            }
 
-            if (BASE_SERVER_URL.contains(Constants.SERVER_01_URL)) {
-                id = Preference.getServer1Id(getApplicationContext());
-                pwd = Preference.getServer1Pwd(getApplicationContext());
-            } else if (BASE_SERVER_URL.contains(Constants.SERVER_02_URL)) {
-                id = Preference.getServer2Id(getApplicationContext());
-                pwd = Preference.getServer2Pwd(getApplicationContext());
-            } else if (BASE_SERVER_URL.contains(Constants.SERVER_03_URL)) {
-                id = Preference.getServer3Id(getApplicationContext());
-                pwd = Preference.getServer3Pwd(getApplicationContext());
-            } else if (BASE_SERVER_URL.contains(Constants.SERVER_04_URL)) {
-                id = Preference.getServer4Id(getApplicationContext());
-                pwd = Preference.getServer4Pwd(getApplicationContext());
-            } else if (BASE_SERVER_URL.contains(Constants.SERVER_05_URL)) {
-                id = Preference.getServer5Id(getApplicationContext());
-                pwd = Preference.getServer5Pwd(getApplicationContext());
-            }
+            UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 
-            if (id != null && pwd != null && !id.equals("") && !pwd.equals("")) {
-                loginId = id;
-                loginPwd = pwd;
-                Log.i(TAG, "auto login true");
-                requestNetwork(FLAG_REQ_LOGIN, BASE_URL + "/login_check.php", login(id, pwd));
+            if (data != null) {
+                loginId = data.id;
+                loginPwd = data.pwd;
+                Log.i(TAG, "auto login data = "+data);
+                requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(data.id, data.pwd));
             } else {
                 Log.i(TAG, "auto login false");
                 requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
@@ -396,7 +398,11 @@ public class BestizBoxMainListActivity extends BaseActivity {
                         supportInvalidateOptionsMenu();
                     }
                 });
-                setAutoLogin(null, null, BASE_SERVER_URL);
+//                setAutoLogin(null, null, BASE_SERVER_URL);
+
+                // db에서 해당 데이터 제거
+                MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
+
                 Toast.makeText(this, getString(R.string.msg_logout_success), Toast.LENGTH_SHORT).show();
                 requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
                 break;
@@ -417,8 +423,13 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
         if ((httpEquiv != null && content != null) && (httpEquiv.equalsIgnoreCase("refresh"))) { // 로그인 성공
             isLogin = true;
-            setAutoLogin(loginId, loginPwd, BASE_SERVER_URL);
+//            setAutoLogin(loginId, loginPwd, BASE_SERVER_URL);
             // BestizBoxApplication.getClientInstance().setCookieStore(cookieStore);
+
+            // login값 셋팅
+            UserData data = new UserData(loginId, loginPwd, BASE_SERVER_URL);
+            MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
+
 			Toast.makeText(this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
 
             if (isShowWriteDialog) { //  로그인을 성공한 경우에만 다음 작업 진행
@@ -426,7 +437,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
             }
         } else {
             isLogin = false;
-            setAutoLogin(null, null, BASE_SERVER_URL);
+//            setAutoLogin(null, null, BASE_SERVER_URL);
+            MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
+
 //            Toast.makeText(this, getString(R.string.msg_login_failed), Toast.LENGTH_SHORT).show();
         }
 
@@ -597,28 +610,28 @@ public class BestizBoxMainListActivity extends BaseActivity {
         params.add(new BasicNameValuePair("mode", ""));
     }
 
-    private void setAutoLogin(String id, String pwd, String baseUrl) {
-        Log.i(TAG, "setAutoLogin id : " + id + " , pwd : " + pwd + " , basUrl : " + baseUrl);
-
-        if (baseUrl.contains(Constants.SERVER_01_URL)) {
-            Preference.setServer1Id(getApplicationContext(), id);
-            Preference.setServer1Pwd(getApplicationContext(), pwd);
-        } else if (baseUrl.contains(Constants.SERVER_02_URL)) {
-            Preference.setServer2Id(getApplicationContext(), id);
-            Preference.setServer2Pwd(getApplicationContext(), pwd);
-        } else if (baseUrl.contains(Constants.SERVER_03_URL)) {
-            Preference.setServer3Id(getApplicationContext(), id);
-            Preference.setServer3Pwd(getApplicationContext(), pwd);
-        } else if (baseUrl.contains(Constants.SERVER_04_URL)) {
-            Preference.setServer4Id(getApplicationContext(), id);
-            Preference.setServer4Pwd(getApplicationContext(), pwd);
-        } else if (baseUrl.contains(Constants.SERVER_05_URL)) {
-            Preference.setServer5Id(getApplicationContext(), id);
-            Preference.setServer5Pwd(getApplicationContext(), pwd);
-        }
-
-        Preference.setAutoLogin(getApplicationContext(), true);
-    }
+//    private void setAutoLogin(String id, String pwd, String baseUrl) {
+//        Log.i(TAG, "setAutoLogin id : " + id + " , pwd : " + pwd + " , basUrl : " + baseUrl);
+//
+//        if (baseUrl.contains(Constants.SERVER_01_URL)) {
+//            Preference.setServer1Id(getApplicationContext(), id);
+//            Preference.setServer1Pwd(getApplicationContext(), pwd);
+//        } else if (baseUrl.contains(Constants.SERVER_02_URL)) {
+//            Preference.setServer2Id(getApplicationContext(), id);
+//            Preference.setServer2Pwd(getApplicationContext(), pwd);
+//        } else if (baseUrl.contains(Constants.SERVER_03_URL)) {
+//            Preference.setServer3Id(getApplicationContext(), id);
+//            Preference.setServer3Pwd(getApplicationContext(), pwd);
+//        } else if (baseUrl.contains(Constants.SERVER_04_URL)) {
+//            Preference.setServer4Id(getApplicationContext(), id);
+//            Preference.setServer4Pwd(getApplicationContext(), pwd);
+//        } else if (baseUrl.contains(Constants.SERVER_05_URL)) {
+//            Preference.setServer5Id(getApplicationContext(), id);
+//            Preference.setServer5Pwd(getApplicationContext(), pwd);
+//        }
+//
+//        Preference.setAutoLogin(getApplicationContext(), true);
+//    }
 
     private ArrayList<NameValuePair> login(String id, String pwd) {
 
@@ -664,6 +677,12 @@ public class BestizBoxMainListActivity extends BaseActivity {
         params.add(new BasicNameValuePair("ss", ss ? "on" : "off"));
         params.add(new BasicNameValuePair("sc", sc ? "on" : "off"));
         params.add(new BasicNameValuePair("keyword", keyword));
+        return params;
+    }
+
+    private ArrayList<NameValuePair> memberInfo(){
+        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("group_no", "1"));
         return params;
     }
 
@@ -719,7 +738,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestNetwork(FLAG_REQ_LOGOUT, BASE_URL + "/logout.php", logout());
+                        requestNetwork(FLAG_REQ_LOGOUT, BASE_URL + Constants.URL_LOGOUT, logout());
                     }
                 });
 
@@ -764,7 +783,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                         loginId = id.getText().toString();
                         loginPwd = pwd.getText().toString();
 
-                        requestNetwork(FLAG_REQ_LOGIN, BASE_URL + "/login_check.php", login(id.getText().toString(), pwd.getText().toString()));
+                        requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(id.getText().toString(), pwd.getText().toString()));
                     }
                 },
                 new DialogInterface.OnCancelListener() {
@@ -831,13 +850,13 @@ public class BestizBoxMainListActivity extends BaseActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     if (which == DialogInterface.BUTTON_POSITIVE) {
-                                        requestNetwork(FLAG_REQ_WRITE, BASE_URL + "/write_ok.php", write(subject.getText().toString(), totalContents));
+                                        requestNetwork(FLAG_REQ_WRITE, BASE_URL + Constants.URL_WRITE, write(subject.getText().toString(), totalContents));
                                     }
                                 }
                             });
 
                 } else {
-                    requestNetwork(FLAG_REQ_WRITE, BASE_URL + "/write_ok.php", write(subject.getText().toString(), totalContents));
+                    requestNetwork(FLAG_REQ_WRITE, BASE_URL + Constants.URL_WRITE, write(subject.getText().toString(), totalContents));
                 }
 
                 if (imgList.size() > 0) {

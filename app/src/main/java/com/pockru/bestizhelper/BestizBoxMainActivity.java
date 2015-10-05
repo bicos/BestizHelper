@@ -1,21 +1,5 @@
 package com.pockru.bestizhelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EncodingUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
@@ -77,12 +61,30 @@ import com.pockru.bestizhelper.asynctask.ImgDownloadTask;
 import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.ImageData;
+import com.pockru.bestizhelper.data.UserData;
+import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
 import com.pockru.preference.Preference;
 import com.pockru.utils.Utils;
 import com.tumblr.jumblr.JumblrClient;
 import com.tumblr.jumblr.types.Photo;
 import com.tumblr.jumblr.types.PhotoPost;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EncodingUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BestizBoxMainActivity extends BaseActivity {
 
@@ -204,29 +206,29 @@ public class BestizBoxMainActivity extends BaseActivity {
 		Log.e(TAG, "BASE_SERVER_URL + DETAIL_URL : " + BASE_SERVER_URL + DETAIL_URL);
 
 		if (Preference.getAutoLogin(getApplicationContext())) {
-			String id = null, pwd = null;
 			Log.i(TAG, "auto login true");
-			if (BASE_SERVER_URL.contains(Constants.SERVER_01_URL)) {
-				id = Preference.getServer1Id(getApplicationContext());
-				pwd = Preference.getServer1Pwd(getApplicationContext());
-			} else if (BASE_SERVER_URL.contains(Constants.SERVER_02_URL)) {
-				id = Preference.getServer2Id(getApplicationContext());
-				pwd = Preference.getServer2Pwd(getApplicationContext());
-			} else if (BASE_SERVER_URL.contains(Constants.SERVER_03_URL)) {
-				id = Preference.getServer3Id(getApplicationContext());
-				pwd = Preference.getServer3Pwd(getApplicationContext());
-			} else if (BASE_SERVER_URL.contains(Constants.SERVER_04_URL)) {
-				id = Preference.getServer4Id(getApplicationContext());
-				pwd = Preference.getServer4Pwd(getApplicationContext());
-			} else if (BASE_SERVER_URL.contains(Constants.SERVER_05_URL)) {
-				id = Preference.getServer5Id(getApplicationContext());
-				pwd = Preference.getServer5Pwd(getApplicationContext());
-			}
+//			if (BASE_SERVER_URL.contains(Constants.SERVER_01_URL)) {
+//				id = Preference.getServer1Id(getApplicationContext());
+//				pwd = Preference.getServer1Pwd(getApplicationContext());
+//			} else if (BASE_SERVER_URL.contains(Constants.SERVER_02_URL)) {
+//				id = Preference.getServer2Id(getApplicationContext());
+//				pwd = Preference.getServer2Pwd(getApplicationContext());
+//			} else if (BASE_SERVER_URL.contains(Constants.SERVER_03_URL)) {
+//				id = Preference.getServer3Id(getApplicationContext());
+//				pwd = Preference.getServer3Pwd(getApplicationContext());
+//			} else if (BASE_SERVER_URL.contains(Constants.SERVER_04_URL)) {
+//				id = Preference.getServer4Id(getApplicationContext());
+//				pwd = Preference.getServer4Pwd(getApplicationContext());
+//			} else if (BASE_SERVER_URL.contains(Constants.SERVER_05_URL)) {
+//				id = Preference.getServer5Id(getApplicationContext());
+//				pwd = Preference.getServer5Pwd(getApplicationContext());
+//			}
 
+			UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 			// Log.i(TAG, "id : " + id + " , pwd : " + pwd);
 
-			if (id != null && pwd != null && !id.equals("") && !pwd.equals("")) {
-				login(id, pwd);
+			if (data != null) {
+				login(data.id, data.pwd);
 			} else {
 				mWebView.loadUrl(BASE_SERVER_URL + DETAIL_URL);
 			}
@@ -506,22 +508,22 @@ public class BestizBoxMainActivity extends BaseActivity {
 	}
 
 	private void setAutoLogin(String id, String pwd, String baseUrl) {
-		if (baseUrl.contains(Constants.SERVER_01_URL)) {
-			Preference.setServer1Id(getApplicationContext(), id);
-			Preference.setServer1Pwd(getApplicationContext(), pwd);
-		} else if (baseUrl.contains(Constants.SERVER_02_URL)) {
-			Preference.setServer2Id(getApplicationContext(), id);
-			Preference.setServer2Pwd(getApplicationContext(), pwd);
-		} else if (baseUrl.contains(Constants.SERVER_03_URL)) {
-			Preference.setServer3Id(getApplicationContext(), id);
-			Preference.setServer3Pwd(getApplicationContext(), pwd);
-		} else if (baseUrl.contains(Constants.SERVER_04_URL)) {
-			Preference.setServer4Id(getApplicationContext(), id);
-			Preference.setServer4Pwd(getApplicationContext(), pwd);
-		} else if (baseUrl.contains(Constants.SERVER_05_URL)) {
-			Preference.setServer5Id(getApplicationContext(), id);
-			Preference.setServer5Pwd(getApplicationContext(), pwd);
-		}
+//		if (baseUrl.contains(Constants.SERVER_01_URL)) {
+//			Preference.setServer1Id(getApplicationContext(), id);
+//			Preference.setServer1Pwd(getApplicationContext(), pwd);
+//		} else if (baseUrl.contains(Constants.SERVER_02_URL)) {
+//			Preference.setServer2Id(getApplicationContext(), id);
+//			Preference.setServer2Pwd(getApplicationContext(), pwd);
+//		} else if (baseUrl.contains(Constants.SERVER_03_URL)) {
+//			Preference.setServer3Id(getApplicationContext(), id);
+//			Preference.setServer3Pwd(getApplicationContext(), pwd);
+//		} else if (baseUrl.contains(Constants.SERVER_04_URL)) {
+//			Preference.setServer4Id(getApplicationContext(), id);
+//			Preference.setServer4Pwd(getApplicationContext(), pwd);
+//		} else if (baseUrl.contains(Constants.SERVER_05_URL)) {
+//			Preference.setServer5Id(getApplicationContext(), id);
+//			Preference.setServer5Pwd(getApplicationContext(), pwd);
+//		}
 
 		Preference.setAutoLogin(getApplicationContext(), true);
 	}
