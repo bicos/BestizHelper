@@ -117,7 +117,7 @@
 
     <!-- 공지사항 -->
     <string name="notice_dialog_title">공지사항</string>
-	<string name="notice_dialog_desc">ver.1.5.4\n\n1. 게잡 불판 변경\n2. 글쓰기 버튼 삽입\n3. 검색 버튼 삽입</string>
+	<string name="notice_dialog_desc">ver.1.5.5\n\n1. 게잡 불판 변경</string>
 	
 	<!-- 모드선택 -->
 	<string name="mode_select_dialog_title">모드선택</string>
