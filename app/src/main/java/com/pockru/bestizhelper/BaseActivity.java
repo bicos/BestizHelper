@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -35,7 +36,7 @@ import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.network.BestizNetworkConn;
 import com.pockru.network.RequestInfo;
 
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
 	private static final String TAG = "BaseActivity";
 
@@ -161,7 +162,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 			} catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}			
+			}
 		}
 
 		final BestizNetworkConn conn = new BestizNetworkConn(this);
