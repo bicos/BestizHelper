@@ -1,5 +1,8 @@
 package com.pockru.network;
 
+import android.content.Context;
+import android.text.TextUtils;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -21,9 +24,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import android.content.Context;
-import android.text.TextUtils;
 
 /**
  * 이 클래스는 자동로그인을 위한 쿠키를 생성하고, 생성된 로그인 쿠키로 리퀘스트를 요청할 수 있다.
@@ -99,10 +99,10 @@ public class BestizNetworkConn {
      * 생성자.
      *
      */
-    public BestizNetworkConn(Context context){
+    private BestizNetworkConn(Context context){
 //    	this.siteName = name;
     	try {
-			InputStream is = context.getAssets().open("properties.xml");
+			InputStream is = context.getApplicationContext().getAssets().open("properties.xml");
 			prop = new Properties();
 			prop.loadFromXML(is);
 		} catch (IOException e) {
@@ -110,6 +110,16 @@ public class BestizNetworkConn {
 			e.printStackTrace();
 		}
     }
+
+	private static BestizNetworkConn mInstance;
+
+	public static BestizNetworkConn getInstance(Context context){
+		if (mInstance == null) {
+			mInstance = new BestizNetworkConn(context);
+		}
+
+		return mInstance;
+	}
 
 	/**
 	 * 로그인 쿠키 반환.
@@ -581,5 +591,9 @@ public class BestizNetworkConn {
 
 	public int getResCode(){
 		return resCode;
+	}
+
+	public void cancel(){
+		if (conn != null) conn.disconnect();
 	}
 }

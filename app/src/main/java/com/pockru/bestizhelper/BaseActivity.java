@@ -1,18 +1,5 @@
 package com.pockru.bestizhelper;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.Header;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -20,7 +7,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -35,6 +21,19 @@ import com.pockru.bestizhelper.application.BestizBoxApplication.TrackerName;
 import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.network.BestizNetworkConn;
 import com.pockru.network.RequestInfo;
+
+import org.apache.http.Header;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -71,6 +70,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 		appTracker.enableExceptionReporting(true);
 
 		sendGaScreen();
+	}
+
+	@Override
+	protected void onDestroy() {
+		BestizNetworkConn.getInstance(getApplicationContext()).cancel();
+		super.onDestroy();
 	}
 
 	protected void setActionBarTitle(String title) {
@@ -165,7 +170,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 			}
 		}
 
-		final BestizNetworkConn conn = new BestizNetworkConn(this);
+		final BestizNetworkConn conn = BestizNetworkConn.getInstance(getApplicationContext());
 
 		new AsyncTask<RequestInfo, Void, String>() {
 

@@ -279,38 +279,15 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
         Log.e(TAG, "BASE_SERVER_URL + DETAIL_URL : " + BASE_SERVER_URL + DETAIL_URL);
 
-        if (Preference.getAutoLogin(getApplicationContext())) {
-//            if (BASE_SERVER_URL.contains(Constants.SERVER_01_URL)) {
-//                id = Preference.getServer1Id(getApplicationContext());
-//                pwd = Preference.getServer1Pwd(getApplicationContext());
-//            } else if (BASE_SERVER_URL.contains(Constants.SERVER_02_URL)) {
-//                id = Preference.getServer2Id(getApplicationContext());
-//                pwd = Preference.getServer2Pwd(getApplicationContext());
-//            } else if (BASE_SERVER_URL.contains(Constants.SERVER_03_URL)) {
-//                id = Preference.getServer3Id(getApplicationContext());
-//                pwd = Preference.getServer3Pwd(getApplicationContext());
-//            } else if (BASE_SERVER_URL.contains(Constants.SERVER_04_URL)) {
-//                id = Preference.getServer4Id(getApplicationContext());
-//                pwd = Preference.getServer4Pwd(getApplicationContext());
-//            } else if (BASE_SERVER_URL.contains(Constants.SERVER_05_URL)) {
-//                id = Preference.getServer5Id(getApplicationContext());
-//                pwd = Preference.getServer5Pwd(getApplicationContext());
-//            }
+        UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 
-            UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
-
-            if (data != null) {
-                loginId = data.id;
-                loginPwd = data.pwd;
-                Log.i(TAG, "auto login data = "+data);
-                requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(data.id, data.pwd));
-            } else {
-                Log.i(TAG, "auto login false");
-                requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
-            }
+        if (data != null) {
+            loginId = data.id;
+            loginPwd = data.pwd;
+            Log.i(TAG, "auto login data = " + data);
+            requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(data.id, data.pwd));
         } else {
             Log.i(TAG, "auto login false");
-            // test
             requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
         }
 
@@ -730,9 +707,10 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             case R.id.menu_logout:
             case R.id.sub_menu_logout:
-                if (Preference.getAutoLogin(getApplicationContext())) {
-                    Preference.setAutoLogin(getApplicationContext(), false);
-                }
+//                if (Preference.getAutoLogin(getApplicationContext())) {
+//                    Preference.setAutoLogin(getApplicationContext(), false);
+//                }
+                MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
 
                 Utils.showAlternateAlertDialog(this, getString(R.string.menu_logout), getString(R.string.logout_msg_01), new DialogInterface.OnClickListener() {
 
