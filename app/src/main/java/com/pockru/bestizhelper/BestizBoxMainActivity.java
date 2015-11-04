@@ -2,14 +2,17 @@ package com.pockru.bestizhelper;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -156,7 +159,15 @@ public class BestizBoxMainActivity extends BaseActivity {
 	private ListView lvMain;
 	private ArticleListAdapter mAdapter;
 
-	
+	private BroadcastReceiver completeReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Toast.makeText(context, "다운로드가 완료되었습니다.",Toast.LENGTH_SHORT).show();
+		}
+
+	};
+
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -778,10 +789,10 @@ public class BestizBoxMainActivity extends BaseActivity {
 				isPause = false;
 			}
 		}
-		
-//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-//			CookieSyncManager.getInstance().startSync();
-//		}
+
+		IntentFilter completeFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+		registerReceiver(completeReceiver, completeFilter);
+
 		super.onResume();
 	}
 
@@ -794,10 +805,9 @@ public class BestizBoxMainActivity extends BaseActivity {
 			}
 		}
 		stopMediaPlayer();
-		
-//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-//			CookieSyncManager.getInstance().stopSync();
-//		}
+
+		unregisterReceiver(completeReceiver);
+
 		super.onPause();
 	}
 

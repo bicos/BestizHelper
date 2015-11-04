@@ -3,13 +3,16 @@ package com.pockru.bestizhelper;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -88,6 +91,15 @@ public class BestizBoxDetailActivity extends BaseActivity {
 	private LinearLayout layoutPopup;
 
 	private ValueCallback<Uri> mUploadMessage;
+
+	private BroadcastReceiver completeReceiver = new BroadcastReceiver(){
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Toast.makeText(context, "다운로드가 완료되었습니다.",Toast.LENGTH_SHORT).show();
+		}
+
+	};
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
@@ -421,6 +433,10 @@ public class BestizBoxDetailActivity extends BaseActivity {
 				wvContents.onResume();
 			}
 		}
+
+		IntentFilter completeFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+		registerReceiver(completeReceiver, completeFilter);
+
 		super.onResume();
 	}
 
@@ -433,6 +449,8 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			}
 		}
 		stopMediaPlayer();
+
+		unregisterReceiver(completeReceiver);
 
 		super.onPause();
 	}
