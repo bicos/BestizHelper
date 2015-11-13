@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -88,8 +87,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
     protected static final int FLAG_REQ_LOGOUT = 1005;
     protected static final int FLAG_REQ_SEARCH = 1006;
 
-    Handler handler;
-
     private String no = "";
 
     private ArrayList<ImageData> imgList = new ArrayList<ImageData>();
@@ -147,11 +144,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
         getSupportActionBar().setTitle(mBoardData == null ? "" : mBoardData.name);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        // ArrayList<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
-        // params.add(new BasicNameValuePair("id", BOARD_ID));
-
-        // cookieStore.clear();
 
         adView = new AdView(this);
         adView.setAdUnitId(getString(R.string.ad_unit_id));
@@ -375,8 +367,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
                         supportInvalidateOptionsMenu();
                     }
                 });
-//                setAutoLogin(null, null, BASE_SERVER_URL);
-
                 // db에서 해당 데이터 제거
                 MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
 
@@ -587,29 +577,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
         params.add(new BasicNameValuePair("mode", ""));
     }
 
-//    private void setAutoLogin(String id, String pwd, String baseUrl) {
-//        Log.i(TAG, "setAutoLogin id : " + id + " , pwd : " + pwd + " , basUrl : " + baseUrl);
-//
-//        if (baseUrl.contains(Constants.SERVER_01_URL)) {
-//            Preference.setServer1Id(getApplicationContext(), id);
-//            Preference.setServer1Pwd(getApplicationContext(), pwd);
-//        } else if (baseUrl.contains(Constants.SERVER_02_URL)) {
-//            Preference.setServer2Id(getApplicationContext(), id);
-//            Preference.setServer2Pwd(getApplicationContext(), pwd);
-//        } else if (baseUrl.contains(Constants.SERVER_03_URL)) {
-//            Preference.setServer3Id(getApplicationContext(), id);
-//            Preference.setServer3Pwd(getApplicationContext(), pwd);
-//        } else if (baseUrl.contains(Constants.SERVER_04_URL)) {
-//            Preference.setServer4Id(getApplicationContext(), id);
-//            Preference.setServer4Pwd(getApplicationContext(), pwd);
-//        } else if (baseUrl.contains(Constants.SERVER_05_URL)) {
-//            Preference.setServer5Id(getApplicationContext(), id);
-//            Preference.setServer5Pwd(getApplicationContext(), pwd);
-//        }
-//
-//        Preference.setAutoLogin(getApplicationContext(), true);
-//    }
-
     private ArrayList<NameValuePair> login(String id, String pwd) {
 
         // RequestParams params = new RequestParams();
@@ -707,11 +674,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             case R.id.menu_logout:
             case R.id.sub_menu_logout:
-//                if (Preference.getAutoLogin(getApplicationContext())) {
-//                    Preference.setAutoLogin(getApplicationContext(), false);
-//                }
-                MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
-
                 Utils.showAlternateAlertDialog(this, getString(R.string.menu_logout), getString(R.string.logout_msg_01), new DialogInterface.OnClickListener() {
 
                     @Override
