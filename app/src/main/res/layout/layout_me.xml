@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/chat_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/msg_bubble_me"
+        android:maxWidth="200dp"
+        android:padding="10dp"
+        android:text="테스트입니다 테스트입니다 테스트입니다 테스트입니다테스트입니다 테스트입니다 테스트입니다 테스트입니다테스트입니다 테스트입니다테스트입니다 테스트입니다테스트입니다 테스트입니다테스트입니다 테스트입니다"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/chat_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/chat_msg"
+        android:layout_toRightOf="@+id/chat_msg"
+        android:padding="5dp"
+        android:text="오후 3:56"
+        android:textSize="10sp" />
+
+
+</RelativeLayout>
