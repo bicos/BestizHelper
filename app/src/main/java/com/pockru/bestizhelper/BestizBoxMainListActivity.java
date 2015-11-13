@@ -9,8 +9,10 @@ import android.os.AsyncTask;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.internal.view.SupportMenuInflater;
 import android.text.TextUtils;
 import android.util.Log;
@@ -47,6 +49,7 @@ import com.pockru.bestizhelper.data.ImageData;
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
+import com.pockru.bestizhelper.view.ChatView;
 import com.pockru.preference.Preference;
 import com.pockru.utils.UiUtils;
 import com.pockru.utils.Utils;
@@ -129,6 +132,10 @@ public class BestizBoxMainListActivity extends BaseActivity {
     //  로그인 후 로직 제어
     private boolean isShowWriteDialog = false;
 
+    private ActionBarDrawerToggle toggle;
+    private DrawerLayout drawerLayout;
+    private ChatView chatView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,6 +200,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
 //				computeScrollPosition(view);
             }
         });
+
         mListMain.setOnTouchListener(new OnTouchListener() {
             private int prevSrollY;
             private boolean isScrollUp = true;
@@ -262,6 +270,21 @@ public class BestizBoxMainListActivity extends BaseActivity {
             }
         });
 
+        //채팅 뷰 셋팅
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer_chat, R.string.close_drawer_chat) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        chatView = (ChatView) findViewById(R.id.chat_drawer_view);
+
         postNumList = new ArrayList<String>();
 
         pb = (ProgressBar) findViewById(R.id.progressBar1);
@@ -273,6 +296,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
         if (data != null) {
             loginId = data.id;
             loginPwd = data.pwd;
+
             Log.i(TAG, "auto login data = " + data);
             requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(data.id, data.pwd));
         } else {
@@ -381,22 +405,38 @@ public class BestizBoxMainListActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(chatView)) {
+            drawerLayout.closeDrawer(chatView);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void nextLoginStep(String arg2) {
         Document doc = Jsoup.parse(arg2);
         String httpEquiv = doc.getElementsByAttribute("http-equiv").attr("http-equiv");
         String content = doc.getElementsByAttribute("content").attr("content");
 
-        Log.i(TAG, "httpEquiv : " + httpEquiv + " , content : " + content);
-
         if ((httpEquiv != null && content != null) && (httpEquiv.equalsIgnoreCase("refresh"))) { // 로그인 성공
             isLogin = true;
-//            setAutoLogin(loginId, loginPwd, BASE_SERVER_URL);
-            // BestizBoxApplication.getClientInstance().setCookieStore(cookieStore);
 
             // login값 셋팅
-            UserData data = new UserData(loginId, loginPwd, BASE_SERVER_URL);
+            UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
+            boolean isFirstLogin;
 
-            boolean isFirstLogin = MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
+            if (data == null) {
+                isFirstLogin = true;
+                data = new UserData(loginId, loginPwd, BASE_SERVER_URL);
+            } else {
+                isFirstLogin = false;
+                data.id = loginId;
+                data.pwd = loginPwd;
+                data.server = BASE_SERVER_URL;
+            }
+
+            MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
 
 			Toast.makeText(this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
 
@@ -420,6 +460,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 supportInvalidateOptionsMenu();
             }
         });
+
         requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
 
         if (isShowWriteDialog) {
@@ -447,7 +488,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
         try {
             if (level != null) {
-                data.level = Integer.valueOf(Utils.getDigit(level));
+                data.level = Utils.getDigit(level);
             }
             if (nickName != null) {
                 data.name = nickName;
@@ -471,7 +512,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 data.isShowComment = Utils.parseBoolean(isShowComment.trim());
             }
 
-            Log.i("test", "data : "+data);
             MemberDatabaseHelper.update(getApplicationContext(), data);
         } catch (Exception e) {
             e.printStackTrace();

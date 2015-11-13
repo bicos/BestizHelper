@@ -134,5 +134,7 @@
     
     <!-- exeption handle -->
     <string name="url_go_market">http://play.google.com/store/apps/details?id=</string>
-    
+    <string name="open_drawer_chat">open_chat</string>
+    <string name="close_drawer_chat">close_chat</string>
+
 </resources>

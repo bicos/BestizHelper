@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.DatabaseContract;
@@ -155,7 +154,6 @@ public class MemberDatabaseHelper {
         String selection = DatabaseContract.MemberInfoTable.KEY_MEM_SERVER + "=?";
         String selectionArg[] = {server};
         Cursor cursor = context.getContentResolver().query(DatabaseContract.MemberInfoTable.CONTENT_URI, null, selection, selectionArg, null);
-        Log.i("test", "isFirstLogin : "+cursor.getCount());
         return cursor != null && cursor.getCount() <= 0;
     }
 }

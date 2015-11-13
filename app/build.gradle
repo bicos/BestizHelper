@@ -8,10 +8,6 @@ android {
         applicationId "com.pockru.bestizhelper"
         minSdkVersion 9
         targetSdkVersion 22
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_7
-            targetCompatibility JavaVersion.VERSION_1_7
-        }
     }
 
     packagingOptions {
@@ -39,5 +35,5 @@ dependencies {
     compile 'com.tumblr:jumblr:0.0.11'
     compile 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
     compile 'com.android.support:design:22.2.0'
-
+    compile 'com.android.support:recyclerview-v7:22.2.0'
 }
