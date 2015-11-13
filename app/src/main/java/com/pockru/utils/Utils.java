@@ -1,18 +1,9 @@
 package com.pockru.utils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Calendar;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -31,6 +22,14 @@ import android.widget.ArrayAdapter;
 
 import com.pockru.bestizhelper.R;
 import com.pockru.preference.Preference;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Calendar;
 
 public class Utils {
 
@@ -236,5 +235,23 @@ public class Utils {
 		Paint p = new Paint();
 		p.setMaskFilter(new BlurMaskFilter(10, Blur.OUTER));
 		return src.extractAlpha(p, null);
+	}
+
+	private static final int VAL_TRUE = 1;
+	private static final int VAL_FALSE = 0;
+
+	public static boolean parseBoolean(String val) {
+		return (Integer.valueOf(val) == VAL_TRUE);
+	}
+
+	public static int getDigit(String str) {
+		StringBuilder b = new StringBuilder();
+		final int len = str.length();
+		for (int i = 0; i < len; i++) {
+			if (Character.isDigit(str.charAt(i))){
+				b.append(str.charAt(i));
+			}
+		}
+		return TextUtils.isDigitsOnly(b.toString()) ? Integer.parseInt(b.toString()): 0;
 	}
 }

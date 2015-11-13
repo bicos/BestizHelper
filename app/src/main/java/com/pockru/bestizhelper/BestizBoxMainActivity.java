@@ -218,25 +218,7 @@ public class BestizBoxMainActivity extends BaseActivity {
 
 		if (Preference.getAutoLogin(getApplicationContext())) {
 			Log.i(TAG, "auto login true");
-//			if (BASE_SERVER_URL.contains(Constants.SERVER_01_URL)) {
-//				id = Preference.getServer1Id(getApplicationContext());
-//				pwd = Preference.getServer1Pwd(getApplicationContext());
-//			} else if (BASE_SERVER_URL.contains(Constants.SERVER_02_URL)) {
-//				id = Preference.getServer2Id(getApplicationContext());
-//				pwd = Preference.getServer2Pwd(getApplicationContext());
-//			} else if (BASE_SERVER_URL.contains(Constants.SERVER_03_URL)) {
-//				id = Preference.getServer3Id(getApplicationContext());
-//				pwd = Preference.getServer3Pwd(getApplicationContext());
-//			} else if (BASE_SERVER_URL.contains(Constants.SERVER_04_URL)) {
-//				id = Preference.getServer4Id(getApplicationContext());
-//				pwd = Preference.getServer4Pwd(getApplicationContext());
-//			} else if (BASE_SERVER_URL.contains(Constants.SERVER_05_URL)) {
-//				id = Preference.getServer5Id(getApplicationContext());
-//				pwd = Preference.getServer5Pwd(getApplicationContext());
-//			}
-
 			UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
-			// Log.i(TAG, "id : " + id + " , pwd : " + pwd);
 
 			if (data != null) {
 				login(data.id, data.pwd);

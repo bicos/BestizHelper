@@ -86,6 +86,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
     protected static final int FLAG_REQ_WRITE = 1004;
     protected static final int FLAG_REQ_LOGOUT = 1005;
     protected static final int FLAG_REQ_SEARCH = 1006;
+    protected static final int FLAG_REQ_MEM_INFO = 1007;
 
     private String no = "";
 
@@ -220,10 +221,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
 
         // 리프레쉬 셋팅
-        // mSwipeMain.setColorSchemeColors(android.R.color.holo_blue_bright,
-        // android.R.color.holo_green_light,
-        // android.R.color.holo_orange_light,
-        // android.R.color.holo_red_light);
         mSwipeMain.setOnRefreshListener(new OnRefreshListener() {
 
             @Override
@@ -376,6 +373,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
             case FLAG_REQ_SEARCH:
                 setMainArticleList(html);
                 break;
+            case FLAG_REQ_MEM_INFO:
+                setMemberInfo(html);
+                break;
             default:
                 break;
         }
@@ -395,19 +395,21 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             // login값 셋팅
             UserData data = new UserData(loginId, loginPwd, BASE_SERVER_URL);
-            MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
+
+            boolean isFirstLogin = MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
 
 			Toast.makeText(this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
 
             if (isShowWriteDialog) { //  로그인을 성공한 경우에만 다음 작업 진행
                 showWriteDialog();
             }
+
+            if (isFirstLogin) { // 처음 로그인 시 멤버 정보 가져오는 로직 추가
+                reqMemberInfo();
+            }
         } else {
             isLogin = false;
-//            setAutoLogin(null, null, BASE_SERVER_URL);
             MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
-
-//            Toast.makeText(this, getString(R.string.msg_login_failed), Toast.LENGTH_SHORT).show();
         }
 
         // 메뉴 리프레시
@@ -422,6 +424,57 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
         if (isShowWriteDialog) {
             isShowWriteDialog = false;
+        }
+    }
+
+    private void setMemberInfo(String html) {
+        UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
+
+        if (data == null) {
+            return;
+        }
+
+        Document doc = Jsoup.parse(html);
+
+        String level = doc.select("body > div > table > tbody > tr:nth-child(7) > td:nth-child(2)").text();
+        String nickName = doc.select("body > div > table > tbody > tr:nth-child(9) > td:nth-child(2) > input").val();
+        String email = doc.select("body > div > table > tbody > tr:nth-child(11) > td:nth-child(2) > input.input").val();
+        String homepage = doc.select("body > div > table > tbody > tr:nth-child(13) > td:nth-child(2) > input.input").val();
+        String disclosedInfo = doc.select("body > div > table > tbody > tr:nth-child(15) > td:nth-child(2) > input[type=\"checkbox\"]").val();
+        String comment = doc.select("body > div > table > tbody > tr:nth-child(17) > td:nth-child(2) > textarea").text();
+        String point = doc.select("body > div > table > tbody > tr:nth-child(19) > td:nth-child(2)").text();
+        String isShowComment = doc.select("body > div > table > tbody > tr:nth-child(17) > td:nth-child(2) > input[type=\"checkbox\"]").val();
+
+        try {
+            if (level != null) {
+                data.level = Integer.valueOf(Utils.getDigit(level));
+            }
+            if (nickName != null) {
+                data.name = nickName;
+            }
+            if (email != null) {
+                data.email = email;
+            }
+            if (homepage != null) {
+                data.homepage = homepage;
+            }
+            if (disclosedInfo != null) {
+                data.discloseInfo = Utils.parseBoolean(disclosedInfo.trim());
+            }
+            if (point != null) {
+                data.point = point;
+            }
+            if (comment != null) {
+                data.comment = comment;
+            }
+            if (isShowComment != null) {
+                data.isShowComment = Utils.parseBoolean(isShowComment.trim());
+            }
+
+            Log.i("test", "data : "+data);
+            MemberDatabaseHelper.update(getApplicationContext(), data);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -624,10 +677,15 @@ public class BestizBoxMainListActivity extends BaseActivity {
         return params;
     }
 
-    private ArrayList<NameValuePair> memberInfo(){
+    /**
+     * http://bestjd.bestiz.net/zboard/member_modify.php?group_no=1
+     *
+     * @return
+     */
+    private void reqMemberInfo(){
         ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("group_no", "1"));
-        return params;
+        requestNetwork(FLAG_REQ_MEM_INFO, BASE_URL + Constants.URL_MEMBER_INFO, params);
     }
 
     @Override

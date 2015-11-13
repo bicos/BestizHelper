@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.DatabaseContract;
@@ -83,11 +84,19 @@ public class MemberDatabaseHelper {
         }
     }
 
-    public static void insertOrUpdate(Context context, UserData userData) {
-        if (getCountData(context, userData.id) > 0) {
-            update(context, userData);
-        } else {
+    /**
+     *
+     * @param context
+     * @param userData
+     * @return if current user is first login
+     */
+    public static boolean insertOrUpdate(Context context, UserData userData) {
+        if (isFirstLogin(context, userData.server)) {
             insert(context, userData);
+            return true;
+        } else {
+            update(context, userData);
+            return false;
         }
     }
 
@@ -140,5 +149,13 @@ public class MemberDatabaseHelper {
         String selectionArg[] = {server};
         Cursor cursor = context.getContentResolver().query(DatabaseContract.MemberInfoTable.CONTENT_URI, null, selection, selectionArg, null);
         return cursor != null ? cursor.getCount() : 0;
+    }
+
+    public static boolean isFirstLogin(Context context, String server){
+        String selection = DatabaseContract.MemberInfoTable.KEY_MEM_SERVER + "=?";
+        String selectionArg[] = {server};
+        Cursor cursor = context.getContentResolver().query(DatabaseContract.MemberInfoTable.CONTENT_URI, null, selection, selectionArg, null);
+        Log.i("test", "isFirstLogin : "+cursor.getCount());
+        return cursor != null && cursor.getCount() <= 0;
     }
 }
