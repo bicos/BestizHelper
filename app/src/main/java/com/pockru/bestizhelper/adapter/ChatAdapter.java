@@ -17,8 +17,11 @@ public class ChatAdapter extends FirebaseListAdapter<ChatData>{
 
     private static final int VIEW_TYPE_CNT = 2;
 
-    public ChatAdapter(Query ref, Activity activity) {
+    private final String USER_ID;
+
+    public ChatAdapter(Query ref, Activity activity, String userId) {
         super(ref, ChatData.class, activity);
+        USER_ID = userId;
     }
 
     @Override
@@ -57,7 +60,11 @@ public class ChatAdapter extends FirebaseListAdapter<ChatData>{
     @Override
     public int getItemViewType(int position) {
         ChatData data = (ChatData) getItem(position);
-        return data != null ? data.type : ChatData.TYPE_ME;
+        if (data != null && USER_ID.equals(data.userId)) {
+            return ChatData.TYPE_ME;
+        } else {
+            return ChatData.TYPE_OTHER;
+        }
     }
 
     @Override

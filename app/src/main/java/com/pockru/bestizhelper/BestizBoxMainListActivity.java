@@ -2,8 +2,10 @@ package com.pockru.bestizhelper;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.ComponentCallbacks;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build.VERSION_CODES;
@@ -114,20 +116,14 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
     List<String> postNumList;
 
-    boolean saveUrl = false;
-
     boolean isLogin = false;
-
-    int CurrentIndex = 0;
 
     private HorizontalScrollView hsvImage;
 
     private LinearLayout containerImg;
     private boolean startImgUpload;
 
-    protected boolean tryLogin;
-    protected String loginId;
-    protected String loginPwd;
+    private UserData userData;
 
     private SwipeRefreshLayout mSwipeMain;
     private ListView mListMain;
@@ -290,40 +286,57 @@ public class BestizBoxMainListActivity extends BaseActivity {
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
 
-                mConnectedListener = mRef.getRoot().child(UrlConstants.FIREBASE_CONNECTED).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        boolean connected = (Boolean) dataSnapshot.getValue();
-                        if (connected) {
-                            Toast.makeText(BestizBoxMainListActivity.this, "채팅방에 접속하였습니다.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(BestizBoxMainListActivity.this, "채팅방 접속을 해제하였습니다.", Toast.LENGTH_SHORT).show();
+                if (userData == null) {
+                    Utils.showAlternateAlertDialog(BestizBoxMainListActivity.this,
+                            "알림",
+                            "로그인을 하셔야 채팅을 이용할 수 있습니다. 로그인을 하시겠습니까?",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    showLoginDialog();
+                                }
+                            });
+                    drawerLayout.closeDrawer(chatView);
+                } else {
+                    mConnectedListener = mRef.getRoot().child(UrlConstants.FIREBASE_CONNECTED).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            boolean connected = (Boolean) dataSnapshot.getValue();
+                            if (connected) {
+                                Toast.makeText(BestizBoxMainListActivity.this, "채팅방에 접속하였습니다.", Toast.LENGTH_SHORT).show();
+                                chatView.initChatView(mRef.limitToLast(10), userData.id);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-                        Toast.makeText(BestizBoxMainListActivity.this, "채팅방에 접속을 실패하였습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            Toast.makeText(BestizBoxMainListActivity.this, "채팅방에 접속을 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
 
-                mRef.getRoot().child(UrlConstants.FIREBASE_CONNECTED).removeEventListener(mConnectedListener);
-                chatView.cleanUp();
+                if(mConnectedListener != null) {
+                    mRef.getRoot().child(UrlConstants.FIREBASE_CONNECTED).removeEventListener(mConnectedListener);
+                    chatView.cleanUp();
 
-
+                    Toast.makeText(BestizBoxMainListActivity.this, "채팅방 접속을 해제하였습니다.", Toast.LENGTH_SHORT).show();
+                }
             }
         };
+        drawerLayout.setDrawerListener(toggle);
+
+
         chatView = (ChatView) findViewById(R.id.chat_drawer_view);
         chatView.getInputChat().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_GO) {
-                    sendChatMsg(chatView.getInputChat().getText().toString());
+                    sendChatMsg();
                 }
                 return false;
             }
@@ -331,12 +344,11 @@ public class BestizBoxMainListActivity extends BaseActivity {
         chatView.getBtnSendMsg().setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendChatMsg(chatView.getInputChat().getText().toString());
+                sendChatMsg();
             }
         });
 
         mRef = new Firebase(UrlConstants.FIREBASE_URL).child(UrlConstants.FIREBASE_CHAT);
-        chatView.initChatView(mRef.limitToLast(10));
 
         postNumList = new ArrayList<String>();
 
@@ -347,22 +359,31 @@ public class BestizBoxMainListActivity extends BaseActivity {
         UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 
         if (data != null) {
-            loginId = data.id;
-            loginPwd = data.pwd;
-
-            Log.i(TAG, "auto login data = " + data);
+            userData = data;
             requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(data.id, data.pwd));
         } else {
-            Log.i(TAG, "auto login false");
             requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
         }
 
     }
 
-    private void sendChatMsg(String msg) {
-        if (chatView != null && chatView.getAdapter() != null) {
-//            chatView.getAdapter().addChats(new ChatData(msg, ChatData.TYPE_ME));
-            mRef.push().setValue(new ChatData(msg, ChatData.TYPE_ME));
+    private void sendChatMsg() {
+        if (chatView != null && chatView.getAdapter() != null && chatView.getInputChat() != null) {
+            String msg = chatView.getInputChat().getText().toString();
+            if (TextUtils.isEmpty(msg) == false) {
+                mRef.push().setValue(new ChatData(userData.id, msg, userData.name), new Firebase.CompletionListener() {
+                    @Override
+                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                        if (firebaseError == null) { // 채팅작성 성공
+                            chatView.getInputChat().setText("");
+                        } else { // 채팅작성 실패
+                            Toast.makeText(getApplicationContext(), "채팅 작성을 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(getApplicationContext(), "채팅 내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -488,11 +509,11 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             if (data == null) {
                 isFirstLogin = true;
-                data = new UserData(loginId, loginPwd, BASE_SERVER_URL);
+                data = new UserData(userData.id, userData.pwd, BASE_SERVER_URL);
             } else {
                 isFirstLogin = false;
-                data.id = loginId;
-                data.pwd = loginPwd;
+                data.id = userData.id;
+                data.pwd = userData.pwd;
                 data.server = BASE_SERVER_URL;
             }
 
@@ -572,6 +593,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 data.isShowComment = Utils.parseBoolean(isShowComment.trim());
             }
 
+            this.userData = data;
             MemberDatabaseHelper.update(getApplicationContext(), data);
         } catch (Exception e) {
             e.printStackTrace();
@@ -878,8 +900,12 @@ public class BestizBoxMainListActivity extends BaseActivity {
                         EditText id = (EditText) loginView.findViewById(R.id.editText_login_id);
                         EditText pwd = (EditText) loginView.findViewById(R.id.editText_login_pwd);
 
-                        loginId = id.getText().toString();
-                        loginPwd = pwd.getText().toString();
+                        if (userData == null) {
+                            userData = new UserData(id.getText().toString(), pwd.getText().toString(), BASE_SERVER_URL);
+                        } else {
+                            userData.id = id.getText().toString();
+                            userData.pwd = pwd.getText().toString();
+                        }
 
                         requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(id.getText().toString(), pwd.getText().toString()));
                     }

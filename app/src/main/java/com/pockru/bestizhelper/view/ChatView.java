@@ -46,9 +46,13 @@ public class ChatView extends RelativeLayout {
         btnSendMsg = (ImageButton) findViewById(R.id.btn_send_msg);
     }
 
-    public void initChatView(Query query){
-        adapter = new ChatAdapter(query, (Activity) getContext());
-        chatList.setAdapter(adapter);
+    public void initChatView(Query query, String userId){
+        if (adapter == null) {
+            adapter = new ChatAdapter(query, (Activity) getContext(), userId);
+            chatList.setAdapter(adapter);
+        } else {
+            adapter.setQuery(query);
+        }
     }
 
     public EditText getInputChat() {

@@ -12,7 +12,7 @@ public class ChatData {
     public static final int TYPE_ME = 0;
     public static final int TYPE_OTHER = 1;
 
-    public int type;
+    public String userId;
     public String msg;
     public String time;
     public String name;
@@ -23,21 +23,8 @@ public class ChatData {
 
     }
 
-    public ChatData(String msg) {
-        this.msg = msg;
-        SimpleDateFormat format = new SimpleDateFormat("a hh:mm:ss", Locale.KOREA);
-        this.time = format.format(new Date());
-    }
-
-    public ChatData(String msg, int type) {
-        this.msg = msg;
-        this.type = type;
-        SimpleDateFormat format = new SimpleDateFormat("a hh:mm:ss", Locale.KOREA);
-        this.time = format.format(new Date());
-    }
-
-    public ChatData(String msg, int type, String name) {
-        this.type = type;
+    public ChatData(String userId, String msg, String name) {
+        this.userId = userId;
         this.msg = msg;
         SimpleDateFormat format = new SimpleDateFormat("a hh:mm:ss", Locale.KOREA);
         this.time = format.format(new Date());
