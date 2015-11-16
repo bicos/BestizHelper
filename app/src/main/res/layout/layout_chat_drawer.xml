@@ -11,13 +11,26 @@
         android:layout_above="@+id/input_chat_msg"
         android:layout_alignParentTop="true"
         android:divider="@null"
-        android:dividerHeight="0dp" />
+        android:dividerHeight="0dp"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll" />
 
     <EditText
         android:id="@+id/input_chat_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/btn_send_msg"
+        android:imeOptions="actionGo"
+        android:maxLines="4" />
 
+    <ImageButton
+        android:id="@+id/btn_send_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/input_chat_msg"
+        android:src="@drawable/social_send_now" />
 
 </merge>

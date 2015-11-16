@@ -8,6 +8,7 @@ android {
         applicationId "com.pockru.bestizhelper"
         minSdkVersion 9
         targetSdkVersion 22
+        multiDexEnabled true
     }
 
     packagingOptions {
@@ -16,6 +17,7 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
     }
 
     buildTypes {
@@ -27,7 +29,7 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.google.android.gms:play-services:8.3.0+'
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.android.support:support-v4:22.2.0'
@@ -36,4 +38,6 @@ dependencies {
     compile 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
+    compile 'com.firebase:firebase-client-android:2.4.0+'
+    compile 'com.android.support:multidex:1.0.0+'
 }

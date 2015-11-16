@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.internal.view.SupportMenuInflater;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -34,9 +36,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -44,12 +51,14 @@ import com.google.android.gms.plus.model.people.Person.Gender;
 import com.pockru.bestizhelper.adapter.ArticleListAdapter;
 import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.BoardData;
+import com.pockru.bestizhelper.data.ChatData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.ImageData;
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
 import com.pockru.bestizhelper.view.ChatView;
+import com.pockru.firebase.UrlConstants;
 import com.pockru.preference.Preference;
 import com.pockru.utils.UiUtils;
 import com.pockru.utils.Utils;
@@ -135,6 +144,10 @@ public class BestizBoxMainListActivity extends BaseActivity {
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawerLayout;
     private ChatView chatView;
+
+    // 채팅 관련
+    private Firebase mRef;
+    private ValueEventListener mConnectedListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -276,14 +289,54 @@ public class BestizBoxMainListActivity extends BaseActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+
+                mConnectedListener = mRef.getRoot().child(UrlConstants.FIREBASE_CONNECTED).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        boolean connected = (Boolean) dataSnapshot.getValue();
+                        if (connected) {
+                            Toast.makeText(BestizBoxMainListActivity.this, "채팅방에 접속하였습니다.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(BestizBoxMainListActivity.this, "채팅방 접속을 해제하였습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        Toast.makeText(BestizBoxMainListActivity.this, "채팅방에 접속을 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
+
+                mRef.getRoot().child(UrlConstants.FIREBASE_CONNECTED).removeEventListener(mConnectedListener);
+                chatView.cleanUp();
+
+
             }
         };
         chatView = (ChatView) findViewById(R.id.chat_drawer_view);
+        chatView.getInputChat().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    sendChatMsg(chatView.getInputChat().getText().toString());
+                }
+                return false;
+            }
+        });
+        chatView.getBtnSendMsg().setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendChatMsg(chatView.getInputChat().getText().toString());
+            }
+        });
+
+        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(UrlConstants.FIREBASE_CHAT);
+        chatView.initChatView(mRef.limitToLast(10));
 
         postNumList = new ArrayList<String>();
 
@@ -304,6 +357,13 @@ public class BestizBoxMainListActivity extends BaseActivity {
             requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
         }
 
+    }
+
+    private void sendChatMsg(String msg) {
+        if (chatView != null && chatView.getAdapter() != null) {
+//            chatView.getAdapter().addChats(new ChatData(msg, ChatData.TYPE_ME));
+            mRef.push().setValue(new ChatData(msg, ChatData.TYPE_ME));
+        }
     }
 
     private void computeWriteBtnPosition(int moveScroll) {

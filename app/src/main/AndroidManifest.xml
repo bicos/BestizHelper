@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pockru.bestizhelper"
     android:versionCode="56"
@@ -23,9 +24,9 @@
         android:protectionLevel="signature" />
 
     <uses-permission android:name="com.pockru.bestizhelper.database.BestizBoxProvider.READ_WRITE_PERMISSION" />
-    
+
     <application
-        android:name="com.pockru.bestizhelper.application.BestizBoxApplication"
+        android:name=".application.BestizBoxApplication"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat.Light" >
@@ -42,7 +43,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
             <intent-filter>
                 <data
                     android:host="*"
@@ -89,7 +89,7 @@
                 android:value=".BestizBoxMainListActivity" />
         </activity>
         <activity
-            android:name="com.pockru.bestizhelper.ArticleHistoryActivity"
+            android:name=".ArticleHistoryActivity"
             android:label="@string/label_history_activity"
             android:windowSoftInputMode="adjustResize|stateHidden" >
         </activity>
@@ -99,7 +99,7 @@
             android:theme="@android:style/Theme.Dialog" >
         </activity>
         <activity
-            android:name="com.pockru.bestizhelper.tumblr.TumblrOAuthActivity"
+            android:name=".tumblr.TumblrOAuthActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/AppTheme.Translucent" >
         </activity>
@@ -112,32 +112,41 @@
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
 
-        <!--  Google Analytic  관련 -->
-        <!-- Optionally, register AnalyticsReceiver and AnalyticsService to support background
-                 dispatching on non-Google Play devices -->
-        <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
-            android:enabled="true">
+        <!-- Google Analytic  관련 -->
+        <!--
+             Optionally, register AnalyticsReceiver and AnalyticsService to support background
+                 dispatching on non-Google Play devices
+        -->
+        <receiver
+            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:enabled="true" >
             <intent-filter>
                 <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
             </intent-filter>
         </receiver>
-        <service android:name="com.google.android.gms.analytics.AnalyticsService"
-            android:enabled="true"
-            android:exported="false"/>
 
-        <!-- Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
-             installation campaign reporting -->
-        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
-            android:exported="true">
+        <service
+            android:name="com.google.android.gms.analytics.AnalyticsService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!--
+             Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
+             installation campaign reporting
+        -->
+        <receiver
+            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
+
         <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
 
         <!-- db 관련 -->
         <provider
-            android:name="com.pockru.bestizhelper.database.BestizBoxProvider"
+            android:name=".database.BestizBoxProvider"
             android:authorities="com.pockru.bestizhelper"
             android:exported="false"
             android:permission="com.pockru.bestizhelper.database.BestizBoxProvider.READ_WRITE_PERMISSION" />

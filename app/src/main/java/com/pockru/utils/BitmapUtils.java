@@ -1,16 +1,14 @@
 package com.pockru.utils;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 
-import com.pockru.bestizhelper.application.BestizBoxApplication;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
@@ -19,10 +17,10 @@ public class BitmapUtils {
 	
 	private static final String TAG = BitmapUtils.class.getSimpleName();
 	
-    public static Bitmap decodeSampledBitmapFromUri(Uri imageUri, int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromUri(Context ctx, Uri imageUri, int reqWidth, int reqHeight) {
     	Log.d(TAG, "imageUri=" + imageUri);
     	
-    	Context context = BestizBoxApplication.getAppContext();
+    	Context context = ctx.getApplicationContext();
     	
     	InputStream in;
 		try {

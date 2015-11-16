@@ -15,17 +15,16 @@ public class ChatData {
     public int type;
     public String msg;
     public String time;
+    public String name;
 
+    // Required default constructor for Firebase object mapping
+    @SuppressWarnings("unused")
     public ChatData() {
-        msg = "";
 
-        SimpleDateFormat format = new SimpleDateFormat("a hh:mm:ss", Locale.KOREA);
-        this.time = format.format(new Date());
     }
 
     public ChatData(String msg) {
         this.msg = msg;
-
         SimpleDateFormat format = new SimpleDateFormat("a hh:mm:ss", Locale.KOREA);
         this.time = format.format(new Date());
     }
@@ -35,5 +34,13 @@ public class ChatData {
         this.type = type;
         SimpleDateFormat format = new SimpleDateFormat("a hh:mm:ss", Locale.KOREA);
         this.time = format.format(new Date());
+    }
+
+    public ChatData(String msg, int type, String name) {
+        this.type = type;
+        this.msg = msg;
+        SimpleDateFormat format = new SimpleDateFormat("a hh:mm:ss", Locale.KOREA);
+        this.time = format.format(new Date());
+        this.name = name;
     }
 }

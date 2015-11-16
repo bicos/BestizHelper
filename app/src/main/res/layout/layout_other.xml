@@ -3,13 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/chat_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="테스트유저"
+        android:textSize="12sp"
+        android:paddingBottom="3dp"/>
 
     <TextView
         android:id="@+id/chat_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/chat_user"
         android:background="@drawable/msg_bubble_other"
         android:maxWidth="200dp"
         android:padding="10dp"
@@ -21,8 +32,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/chat_msg"
-        android:layout_toLeftOf="@+id/chat_msg"
-        android:padding="5dp"
+        android:layout_toRightOf="@+id/chat_msg"
+        android:paddingLeft="3dp"
         android:text="오후 3:56"
         android:textSize="10sp" />
 
