@@ -1,13 +1,15 @@
 package com.pockru.bestizhelper;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
-import android.content.ComponentCallbacks;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
@@ -180,15 +182,31 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-                Intent intent = new Intent(BestizBoxMainListActivity.this, BestizBoxDetailActivity.class);
-                intent.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
-                intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, BASE_URL + "/" + ((String) arg1.findViewById(R.id.txt_main_atc_title).getTag()));
-                intent.putExtra(Constants.INTENT_NAME_BASE_URL, BASE_URL);
-                intent.putExtra(Constants.INTENT_NAME_BOARD_ID, BOARD_ID);
-                intent.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
-                intent.putExtra(Constants.INTENT_NAME_BASE_SERVER_URL, BASE_SERVER_URL);
-                intent.putExtra(Constants.INTENT_NAME_ARTICLE_DATA, (ArticleData) mAdapter.getItem(arg2));
-                startActivityForResult(intent, REQ_CODE_DETAIL_ARTICLE);
+                ArticleData data = mAdapter.getItem(arg2);
+                if (data != null) {
+                    Intent intent = new Intent(BestizBoxMainListActivity.this, BestizBoxDetailActivity.class);
+                    intent.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
+                    intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, BASE_URL + "/" + data.getAtcLink());
+                    intent.putExtra(Constants.INTENT_NAME_BASE_URL, BASE_URL);
+                    intent.putExtra(Constants.INTENT_NAME_BOARD_ID, BOARD_ID);
+                    intent.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
+                    intent.putExtra(Constants.INTENT_NAME_BASE_SERVER_URL, BASE_SERVER_URL);
+                    intent.putExtra(Constants.INTENT_NAME_ARTICLE_DATA, data);
+                    startActivityForResult(intent, REQ_CODE_DETAIL_ARTICLE);
+                }
+
+            }
+        });
+        mListMain.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ArticleData data = mAdapter.getItem(position);
+
+                if (data != null) {
+                    saveUrl(BASE_URL + "/" + data.getAtcLink());
+                }
+
+                return true;
             }
         });
 
@@ -1120,6 +1138,28 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             Glide.with(BestizBoxMainListActivity.this).load(imgUrl).into(iv);
             containerImg.addView(iv);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void saveUrl(String extra) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+            ClipboardManager mgr = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            ClipData date = ClipData.newPlainText(extra, extra);
+            mgr.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
+
+                @Override
+                public void onPrimaryClipChanged() {
+                    Toast.makeText(getApplicationContext(), getString(R.string.msg_save_link_url), Toast.LENGTH_SHORT).show();
+                }
+            });
+            mgr.setPrimaryClip(date);
+        } else {
+            android.text.ClipboardManager mgr = (android.text.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            mgr.setText(extra);
+            Toast.makeText(getApplicationContext(), getString(R.string.msg_save_link_url), Toast.LENGTH_SHORT).show();
         }
     }
 }

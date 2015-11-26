@@ -167,14 +167,6 @@ public class BestizBoxMainActivity extends BaseActivity {
 		}
 
 	};
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-//			CookieSyncManager.createInstance(this);
-//		}
-	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
