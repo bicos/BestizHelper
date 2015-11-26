@@ -1,7 +1,9 @@
 package com.pockru.bestizhelper.application;
 
+import android.os.Build;
 import android.support.multidex.MultiDexApplication;
 import android.webkit.CookieSyncManager;
+import android.webkit.WebView;
 
 import com.firebase.client.Firebase;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -40,8 +42,13 @@ public class BestizBoxApplication extends MultiDexApplication {
         WebkitCookieManagerProxy coreCookieManager = new WebkitCookieManagerProxy(null, java.net.CookiePolicy.ACCEPT_ALL);
         java.net.CookieHandler.setDefault(coreCookieManager);
 
-        /* 파이어버드 셋팅*/
+        /* 파이어버드 셋팅 */
         Firebase.setAndroidContext(this);
+
+        /* 웹뷰 디버그 셋팅 */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
     }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {

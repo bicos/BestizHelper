@@ -284,11 +284,9 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			// 2번째 엘레멘트 = 이름 , 홈페이지 , 제목 등이 들어가있는 엘레멘트
 			Elements elements = doc.getElementsByAttributeValueContaining("bgcolor", "white");
 			Element element = elements.get(1);
-			// Log.i(TAG, "element : " + element.toString());
 
 			ArticleDetailData data = new ArticleDetailData();
 			data.setUserName(mArticleData.getAtcUser());
-//			data.setUserName(element.getElementsByAttributeValueContaining("style", "cursor:hand").text());
 
 			if (!element.getElementsByAttributeValue("onfocus", "blur()").isEmpty()) {
 				data.setModifyUrl(element.getElementsByAttributeValue("onfocus", "blur()").get(0).attr("href"));
@@ -297,15 +295,23 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
 			data.setUserHomepage(element.getElementsByAttributeValue("target", "_blank").attr("href"));
 
-//			data.setAtcSubject(mArticleData.getRealAtcTitle());
-//			Log.i("ravy", "element : "+element.html());
 			data.setAtcSubject(element.select("b").text());
 			data.setAtcHit("(hit : " + mArticleData.getAtcHit() + ")");
-//			data.setAtcHit(element.getElementsByTag("font").get(0).text());
 
 			// contents 셋팅
 			elements = doc.getElementsByAttributeValueContaining("cellpadding", "10");
 			element = elements.get(0);
+
+			String val = "";
+			for (Element e : elements.select("img")) { // img src attribute에 http 안붙는 예외 처리
+				if (e != null && e.hasAttr("src")) {
+					val = e.attr("src");
+					if (!TextUtils.isEmpty(val) && (!val.startsWith("http:") && !val.startsWith("https:"))) {
+						e.attr("src", "http:" + val);
+					}
+				}
+			}
+
 			String contents = element.getElementsByAttributeValue("style", "line-height:160%").toString();
 
 			// comment 셋팅
@@ -352,35 +358,8 @@ public class BestizBoxDetailActivity extends BaseActivity {
 				}
 			}
 
-			// element.select("td:contains(Zeroboard)").remove();
-
-			contents = contents += element.toString();
+			contents += element.toString();
 			data.setAtcContents(contents);
-
-			// elements =
-			// element.getElementsByAttributeValueContaining("onMouseOver",
-			// "this.style.backgroundColor='#F9F9F9'");
-			// ArrayList<E>
-			// Element comment;
-			// for (int i = 0; i < elements.size(); i++) {
-			// comment = elements.get(i);
-			// CommentUserData commData = new CommentUserData();
-			// commData.setUserName(comment.getElementsByTag("td").get(0).text());
-			// commData.setUserComment(comment.getElementsByTag("td").get(1).text());
-			// commData.setUserAddress(comment.getElementsByTag("td").get(2).text());
-			// if (comment.getElementsByTag("a").attr("href") != null &&
-			// !comment.getElementsByTag("a").attr("href").equals("")) {
-			// commData.setDeleteUrl(BASE_URL + "/" +
-			// comment.getElementsByTag("a").attr("href"));
-			// } else {
-			// commData.setDeleteUrl("");
-			// }
-			//
-			// dataList.add(commData);
-			// }
-			// data.setCommentUserList(dataList);
-
-			// Log.i(TAG, "parseData : " + data);
 
 			setCurrentLayout(data);
 
@@ -505,39 +484,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 		tvHit.setText(data.getAtcHit());
 		wvContents.getSettings().setDefaultFontSize(14);
 		wvContents.loadDataWithBaseURL(Uri.parse(atcUrl).getHost(), data.getAtcContents(), "text/html", "utf-8", atcUrl);
-
-		// ArrayList<CommentUserData> commentUserDataList =
-		// data.getCommentUserList();
-		// for (final CommentUserData userData : commentUserDataList) {
-		// View layoutComment =
-		// getLayoutInflater().inflate(R.layout.item_user_comment, null);
-		// TextView tvCommUserName = (TextView)
-		// layoutComment.findViewById(R.id.txt_user_name);
-		// tvCommUserName.setText(userData.getUserName());
-		// TextView tvCommUser = (TextView)
-		// layoutComment.findViewById(R.id.txt_user_comment);
-		// tvCommUser.setText(userData.getUserComment());
-		// TextView tvCommUserAddr = (TextView)
-		// layoutComment.findViewById(R.id.txt_user_address);
-		// tvCommUserAddr.setText(userData.getUserAddress());
-		// ImageButton btnDeleteComm = (ImageButton)
-		// layoutComment.findViewById(R.id.iv_delete);
-		// if (userData.getDeleteUrl() != null &&
-		// !userData.getDeleteUrl().equals("")) {
-		// btnDeleteComm.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View v) {
-		// requestNetwork(FLAG_REQ_DELETE_COMMENT, userData.getDeleteUrl());
-		// }
-		// });
-		// } else {
-		// btnDeleteComm.setVisibility(View.GONE);
-		// }
-		//
-		// // llComment.addView(layoutComment);
-		// }
-
 	}
 
 	private ArrayList<NameValuePair> comment(String comment, String no) {
@@ -611,29 +557,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 	}
 
 	private ArrayList<NameValuePair> login(String id, String pwd) {
-
-		// RequestParams params = new RequestParams();
-		// params.add("auto_login", "0");
-		// params.add("page", "1");
-		// params.add("id", BOARD_ID);
-		// params.add("select_arrange", "headnum");
-		// params.add("desc", "asc");
-		// params.add("sn", "off");
-		// params.add("ss", "on");
-		// params.add("sc", "off");
-		// params.add("s_url", "/zboard/zboard.php?id=" + BOARD_ID);
-		// try {
-		// params.add("user_id", URLEncoder.encode(id, "utf-8"));
-		// } catch (UnsupportedEncodingException e) {
-		// e.printStackTrace();
-		// }
-		// try {
-		// params.add("password", URLEncoder.encode(pwd, "utf-8"));
-		// } catch (UnsupportedEncodingException e) {
-		// e.printStackTrace();
-		// }
-		// return params;
-
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("auto_login", "0"));
 		params.add(new BasicNameValuePair("page", "1"));
