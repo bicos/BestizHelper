@@ -43,7 +43,6 @@ public class WebkitCookieManagerProxy extends CookieManager {
             // process each of the headers
             for (String headerValue : responseHeaders.get(headerKey))
             {
-//            	Log.i("test", "cookie 삽입 : "+url+","+headerValue);
                 this.webkitCookieManager.setCookie(url, headerValue);
             }
         }

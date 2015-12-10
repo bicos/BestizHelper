@@ -17,7 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.internal.view.SupportMenuInflater;
+import android.support.v7.view.SupportMenuInflater;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -51,7 +51,6 @@ import com.firebase.client.ValueEventListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.plus.model.people.Person.Gender;
 import com.pockru.bestizhelper.adapter.ArticleListAdapter;
 import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.BoardData;
@@ -171,7 +170,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
         LinearLayout layout = (LinearLayout) findViewById(R.id.adViewContainer);
         layout.addView(adView);
 
-        AdRequest request = new AdRequest.Builder().setGender(Gender.FEMALE).build();
+        AdRequest request = new AdRequest.Builder().setGender(AdRequest.GENDER_FEMALE).build();
         adView.loadAd(request);
 
         mSwipeMain = (SwipeRefreshLayout) findViewById(R.id.swipe_main);

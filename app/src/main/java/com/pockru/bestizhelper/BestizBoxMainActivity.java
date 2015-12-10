@@ -23,7 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
-import android.support.v7.internal.view.SupportMenuInflater;
+import android.support.v7.view.SupportMenuInflater;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -208,15 +208,11 @@ public class BestizBoxMainActivity extends BaseActivity {
 
 		Log.e(TAG, "BASE_SERVER_URL + DETAIL_URL : " + BASE_SERVER_URL + DETAIL_URL);
 
-		if (Preference.getAutoLogin(getApplicationContext())) {
-			Log.i(TAG, "auto login true");
-			UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
+		UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 
-			if (data != null) {
-				login(data.id, data.pwd);
-			} else {
-				mWebView.loadUrl(BASE_SERVER_URL + DETAIL_URL);
-			}
+		if (data != null) {
+			Log.i(TAG, "auto login true");
+			login(data.id, data.pwd);
 		} else {
 			Log.i(TAG, "auto login false");
 			mWebView.loadUrl(BASE_SERVER_URL + DETAIL_URL);
@@ -465,11 +461,11 @@ public class BestizBoxMainActivity extends BaseActivity {
 	private void comment(String comment, String no) {
 		CookieSyncManager.createInstance(this);
 		CookieManager cookieManager = CookieManager.getInstance();
-		String coockie = cookieManager.getCookie(privUrl);
+		String cookie = cookieManager.getCookie(privUrl);
 
 		Map<String, String> extraHeaders = new HashMap<String, String>();
 		extraHeaders.put("Referer", privUrl);
-		extraHeaders.put("Set-Cookie", coockie);
+		extraHeaders.put("Set-Cookie", cookie);
 
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("page", "1"));
@@ -487,30 +483,12 @@ public class BestizBoxMainActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("memo", comment));
 
 		mWebView.loadUrl(BASE_URL + "/comment_ok.php?" + URLEncodedUtils.format(params, "euc-kr"), extraHeaders);
-		// mWebView.postUrl(BASE_URL + "/comment_ok.php",
-		// EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"),
-		// "BASE64"));
 	}
 
 	private void setAutoLogin(String id, String pwd, String baseUrl) {
-//		if (baseUrl.contains(Constants.SERVER_01_URL)) {
-//			Preference.setServer1Id(getApplicationContext(), id);
-//			Preference.setServer1Pwd(getApplicationContext(), pwd);
-//		} else if (baseUrl.contains(Constants.SERVER_02_URL)) {
-//			Preference.setServer2Id(getApplicationContext(), id);
-//			Preference.setServer2Pwd(getApplicationContext(), pwd);
-//		} else if (baseUrl.contains(Constants.SERVER_03_URL)) {
-//			Preference.setServer3Id(getApplicationContext(), id);
-//			Preference.setServer3Pwd(getApplicationContext(), pwd);
-//		} else if (baseUrl.contains(Constants.SERVER_04_URL)) {
-//			Preference.setServer4Id(getApplicationContext(), id);
-//			Preference.setServer4Pwd(getApplicationContext(), pwd);
-//		} else if (baseUrl.contains(Constants.SERVER_05_URL)) {
-//			Preference.setServer5Id(getApplicationContext(), id);
-//			Preference.setServer5Pwd(getApplicationContext(), pwd);
-//		}
-
-		Preference.setAutoLogin(getApplicationContext(), true);
+//		Preference.setAutoLogin(getApplicationContext(), true);
+		UserData data = new UserData(id, pwd, baseUrl);
+		MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
 	}
 
 	private void login(String id, String pwd) {
@@ -527,8 +505,9 @@ public class BestizBoxMainActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("s_url", "/zboard/zboard.php?id=" + BOARD_ID));
 		params.add(new BasicNameValuePair("user_id", id));
 		params.add(new BasicNameValuePair("password", pwd));
-		
-		mWebView.postUrl(BASE_URL + "/login_check.php", EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"), "BASE64"));
+//		params.add(new BasicNameValuePair("referer", mWebView.getUrl()));
+
+//		mWebView.postUrl(BASE_URL + "/login_check.php", EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"), "euc-kr"));
 		requestNetwork(REQ_LOG_IN, BASE_URL + "/login_check.php", params);
 	}
 
@@ -694,10 +673,6 @@ public class BestizBoxMainActivity extends BaseActivity {
 			return true;
 		case R.id.menu_logout:
 		case R.id.sub_menu_logout:
-			if (Preference.getAutoLogin(getApplicationContext())) {
-				Preference.setAutoLogin(getApplicationContext(), false);
-			}
-
 			Utils.showAlternateAlertDialog(this, getString(R.string.menu_logout), getString(R.string.logout_msg_01), new DialogInterface.OnClickListener() {
 
 				@Override
@@ -958,6 +933,7 @@ public class BestizBoxMainActivity extends BaseActivity {
 
 			if (url.contains(BASE_URL + "/logout.php")) {
 				isLogin = false;
+				MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
 			} else if (url.contains(BASE_URL + "/view.php")) {
 				String params = url.substring(url.indexOf("?") + 1);
 				no = Utils.getURLParam(params, "no");
@@ -1114,7 +1090,8 @@ public class BestizBoxMainActivity extends BaseActivity {
 			mWebView.reload();
 			break;
 		case REQ_LOG_IN:
-			Toast.makeText(BestizBoxMainActivity.this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();;
+			Toast.makeText(BestizBoxMainActivity.this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
+			mWebView.loadUrl(BASE_SERVER_URL + DETAIL_URL);
 			break;
 
 		default:

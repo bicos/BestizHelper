@@ -120,16 +120,6 @@ public class BestizNetworkConn {
 
 		return mInstance;
 	}
-
-	/**
-	 * 로그인 쿠키 반환.
-	 *
-	 * @return 로그인 쿠키
-	 */
-	public String getLoginCookies() {
-		
-		return loginCookies;
-	}
 	
 	/**
 	 * URL설정 파일로부터 키로서 해당 URL 반환.
@@ -155,11 +145,11 @@ public class BestizNetworkConn {
 	private HttpURLConnection getConn(String url) throws Exception {
 		URL obj = new URL(url);
         URLConnection uc = obj.openConnection();
-        
+
 		uc.setDoOutput(true);
 		uc.setDoInput(true);
 		uc.setUseCaches(true);
-		
+
 //		// 타임아웃 설정
 //		int connTimeout = Integer.parseInt(getProperty("connection.timeout"));
 //		int readTimeout = Integer.parseInt(getProperty("read.timeout"));

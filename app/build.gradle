@@ -1,13 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "com.pockru.bestizhelper"
         minSdkVersion 9
-        targetSdkVersion 22
+        targetSdkVersion 23
         multiDexEnabled true
     }
 
@@ -29,15 +30,18 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services:8.3.0+'
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.google.android.gms:play-services-base:8.3.0'
+    compile 'com.google.android.gms:play-services-analytics:8.3.0'
+    compile 'com.google.android.gms:play-services-gcm:8.3.0'
+    compile 'com.google.android.gms:play-services-ads:8.3.0'
+    compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.github.bumptech.glide:glide:3.6.0'
-    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:support-v4:23.1.1'
     compile 'org.jsoup:jsoup:1.8.2'
     compile 'com.tumblr:jumblr:0.0.11'
     compile 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
-    compile 'com.android.support:design:22.2.0'
-    compile 'com.android.support:recyclerview-v7:22.2.0'
-    compile 'com.firebase:firebase-client-android:2.4.0+'
-    compile 'com.android.support:multidex:1.0.0+'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.firebase:firebase-client-android:2.4.0'
+    compile 'com.android.support:multidex:1.0.1'
 }

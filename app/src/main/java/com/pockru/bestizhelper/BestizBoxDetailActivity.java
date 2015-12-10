@@ -46,7 +46,8 @@ import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.ArticleDetailData;
 import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.Constants;
-import com.pockru.preference.Preference;
+import com.pockru.bestizhelper.data.UserData;
+import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.utils.Utils;
 
 import org.apache.http.NameValuePair;
@@ -202,7 +203,8 @@ public class BestizBoxDetailActivity extends BaseActivity {
 				}
 			});
 
-			setAutoLogin(null, null, BASE_SERVER_URL);
+			MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
+
 			Toast.makeText(this, "로그아웃을 성공하였습니다.", Toast.LENGTH_SHORT).show();
 			requestNetwork(Constants.FLAG_REQ_DETAIL_ARTICLE, atcUrl);
 			break;
@@ -380,12 +382,12 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
 		if ((httpEquiv != null && content != null) && (httpEquiv.equalsIgnoreCase("refresh"))) {
 			isLogin = true;
-			setAutoLogin(loginId, loginPwd, BASE_SERVER_URL);
+			UserData data = new UserData(loginId, loginPwd, BASE_SERVER_URL);
+			MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
 			// BestizBoxApplication.getClientInstance().setCookieStore(cookieStore);
 			Toast.makeText(this, "로그인을 성공했습니다.", Toast.LENGTH_SHORT).show();
 		} else {
 			isLogin = false;
-			setAutoLogin(null, null, BASE_SERVER_URL);
 			Toast.makeText(this, "로그인을 실패했습니다.", Toast.LENGTH_SHORT).show();
 		}
 		// 메뉴 리프레시
@@ -397,11 +399,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			}
 		});
 		requestNetwork(Constants.FLAG_REQ_DETAIL_ARTICLE, atcUrl);
-		
-		// } catch (UnsupportedEncodingException e) {
-		// e.printStackTrace();
-		// }
-
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -685,10 +682,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
 		case R.id.menu_logout:
 		case R.id.sub_menu_logout:
-			if (Preference.getAutoLogin(getApplicationContext())) {
-				Preference.setAutoLogin(getApplicationContext(), false);
-			}
-
 			Utils.showAlternateAlertDialog(this, getString(R.string.menu_logout), getString(R.string.logout_msg_01), new DialogInterface.OnClickListener() {
 
 				@Override
@@ -933,11 +926,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 			startActivity(intent);
 		}
-	}
-
-	private void setAutoLogin(String id, String pwd, String baseUrl) {
-		Log.i(TAG, "setAutoLogin id : " + id + " , pwd : " + pwd + " , basUrl : " + baseUrl);
-		Preference.setAutoLogin(getApplicationContext(), true);
 	}
 
 	private void handleURISyntaxException(URISyntaxException e) {

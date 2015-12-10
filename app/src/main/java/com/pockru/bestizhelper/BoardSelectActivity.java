@@ -1,8 +1,5 @@
 package com.pockru.bestizhelper;
 
-import java.util.List;
-import java.util.Map;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,11 +14,13 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.plus.model.people.Person.Gender;
 import com.pockru.bestizhelper.data.CommonData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.preference.Preference;
 import com.pockru.utils.Utils;
+
+import java.util.List;
+import java.util.Map;
 
 public class BoardSelectActivity extends BaseActivity {
 
@@ -50,7 +49,7 @@ public class BoardSelectActivity extends BaseActivity {
 		LinearLayout layout = (LinearLayout) findViewById(R.id.adViewContainer);
 		layout.addView(adView);
 		
-		AdRequest request = new AdRequest.Builder().setGender(Gender.FEMALE).build();
+		AdRequest request = new AdRequest.Builder().setGender(AdRequest.GENDER_FEMALE).build();
 		adView.loadAd(request);
 
 		rgMode = (RadioGroup) findViewById(R.id.rg_select_mode);
