@@ -62,6 +62,7 @@ import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
 import com.pockru.bestizhelper.view.ChatView;
 import com.pockru.firebase.UrlConstants;
+import com.pockru.network.BestizUrlUtil;
 import com.pockru.preference.Preference;
 import com.pockru.utils.UiUtils;
 import com.pockru.utils.Utils;
@@ -84,11 +85,6 @@ import java.util.Map;
 
 public class BestizBoxMainListActivity extends BaseActivity {
 
-    private BoardData mBoardData;
-    private String BASE_SERVER_URL;
-    private String BASE_URL;
-    private String DETAIL_URL;
-    private String BOARD_ID;
     private static final String TAG = "MainActivity";
 
     private static final int REQ_CODE_GET_PHOTO = 100;
@@ -155,7 +151,6 @@ public class BestizBoxMainListActivity extends BaseActivity {
         if (mBoardData != null) {
             BASE_SERVER_URL = mBoardData.baseUrl;
             DETAIL_URL = mBoardData.id;
-            BASE_URL = BASE_SERVER_URL.replace("/zboard.php", "");
             BOARD_ID = DETAIL_URL.replace("?id=", "");
         }
 
@@ -185,8 +180,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 if (data != null) {
                     Intent intent = new Intent(BestizBoxMainListActivity.this, BestizBoxDetailActivity.class);
                     intent.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
-                    intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, BASE_URL + "/" + data.getAtcLink());
-                    intent.putExtra(Constants.INTENT_NAME_BASE_URL, BASE_URL);
+                    intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()));
                     intent.putExtra(Constants.INTENT_NAME_BOARD_ID, BOARD_ID);
                     intent.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
                     intent.putExtra(Constants.INTENT_NAME_BASE_SERVER_URL, BASE_SERVER_URL);
@@ -202,7 +196,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 ArticleData data = mAdapter.getItem(position);
 
                 if (data != null) {
-                    saveUrl(BASE_URL + "/" + data.getAtcLink());
+                    saveUrl(BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()));
                 }
 
                 return true;
@@ -220,10 +214,8 @@ public class BestizBoxMainListActivity extends BaseActivity {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= (totalItemCount - 5) && isRequestNetwork == false) {
                     pageNum++;
-                    requestNetwork(FLAG_REQ_NEXT_ARTICLE, BASE_SERVER_URL, movePage(String.valueOf(pageNum), keyword, sn, ss, sc));
+                    requestNetwork(FLAG_REQ_NEXT_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID), movePage(String.valueOf(pageNum), keyword, sn, ss, sc));
                 }
-
-//				computeScrollPosition(view);
             }
         });
 
@@ -260,7 +252,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
             @Override
             public void onRefresh() {
                 pageNum = 1;
-                requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
+                requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
             }
         });
 
@@ -365,23 +357,19 @@ public class BestizBoxMainListActivity extends BaseActivity {
             }
         });
 
-        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(UrlConstants.FIREBASE_CHAT);
+        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(UrlConstants.CHAT);
 
         postNumList = new ArrayList<String>();
 
         pb = (ProgressBar) findViewById(R.id.progressBar1);
 
-        Log.e(TAG, "BASE_SERVER_URL + DETAIL_URL : " + BASE_SERVER_URL + DETAIL_URL);
 
-        UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
-
-        if (data != null) {
-            userData = data;
-            requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(data.id, data.pwd));
+        userData = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
+        if (userData != null) {
+            requestNetwork(FLAG_REQ_LOGIN, BestizUrlUtil.createLoginUrl(BASE_SERVER_URL), login(userData.id, userData.pwd));
         } else {
-            requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
+            requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
         }
-
     }
 
     private void sendChatMsg() {
@@ -453,13 +441,13 @@ public class BestizBoxMainListActivity extends BaseActivity {
     public void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
         mSwipeMain.setRefreshing(false);
 
-        if (resCode != 200) {
+        if (resCode != 200 || html == null) {
             Toast.makeText(getApplicationContext(), "네트워크가 불안정합니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (html == null) {
-            Toast.makeText(getApplicationContext(), "네트워크가 불안정합니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show();
+            switch (flag) {
+                case FLAG_REQ_NEXT_ARTICLE:
+                    pageNum--;
+                    break;
+            }
             return;
         }
 
@@ -474,7 +462,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 nextLoginStep(html);
                 break;
             case FLAG_REQ_WRITE:
-                requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
+                requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
                 break;
             case FLAG_REQ_LOGOUT:
                 isLogin = false;
@@ -490,7 +478,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
 
                 Toast.makeText(this, getString(R.string.msg_logout_success), Toast.LENGTH_SHORT).show();
-                requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
+                requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
                 break;
             case FLAG_REQ_SEARCH:
                 setMainArticleList(html);
@@ -559,7 +547,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
             }
         });
 
-        requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
+        requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
 
         if (isShowWriteDialog) {
             isShowWriteDialog = false;
@@ -685,7 +673,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             if (isAdded == false) {
                 pageNum++;
-                requestNetwork(FLAG_REQ_NEXT_ARTICLE, BASE_SERVER_URL, movePage(String.valueOf(pageNum), keyword, sn, ss, sc));
+                requestNetwork(FLAG_REQ_NEXT_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID), movePage(String.valueOf(pageNum), keyword, sn, ss, sc));
             } else {
                 mAdapter.setDataList(totalDataList);
             }
@@ -824,7 +812,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
     private void reqMemberInfo(){
         ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("group_no", "1"));
-        requestNetwork(FLAG_REQ_MEM_INFO, BASE_URL + Constants.URL_MEMBER_INFO, params);
+        requestNetwork(FLAG_REQ_MEM_INFO, BestizUrlUtil.createUserInfoUrl(BASE_SERVER_URL), params);
     }
 
     @Override
@@ -875,7 +863,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestNetwork(FLAG_REQ_LOGOUT, BASE_URL + Constants.URL_LOGOUT, logout());
+                        requestNetwork(FLAG_REQ_LOGOUT, BestizUrlUtil.createLogoutUrl(BASE_SERVER_URL), logout());
                     }
                 });
 
@@ -924,7 +912,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                             userData.pwd = pwd.getText().toString();
                         }
 
-                        requestNetwork(FLAG_REQ_LOGIN, BASE_URL + Constants.URL_LOGIN, login(id.getText().toString(), pwd.getText().toString()));
+                        requestNetwork(FLAG_REQ_LOGIN, BestizUrlUtil.createLoginUrl(BASE_SERVER_URL), login(id.getText().toString(), pwd.getText().toString()));
                     }
                 },
                 new DialogInterface.OnCancelListener() {
@@ -991,13 +979,13 @@ public class BestizBoxMainListActivity extends BaseActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     if (which == DialogInterface.BUTTON_POSITIVE) {
-                                        requestNetwork(FLAG_REQ_WRITE, BASE_URL + Constants.URL_WRITE, write(subject.getText().toString(), totalContents));
+                                        requestNetwork(FLAG_REQ_WRITE, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL), write(subject.getText().toString(), totalContents));
                                     }
                                 }
                             });
 
                 } else {
-                    requestNetwork(FLAG_REQ_WRITE, BASE_URL + Constants.URL_WRITE, write(subject.getText().toString(), totalContents));
+                    requestNetwork(FLAG_REQ_WRITE, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL), write(subject.getText().toString(), totalContents));
                 }
 
                 if (imgList.size() > 0) {
@@ -1013,7 +1001,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Constants.RESULT_REFRESH) { // 어떤 상황이든지 리로딩 시도
-            requestNetwork(FLAG_REQ_MAIN_ARTICLE, BASE_SERVER_URL + DETAIL_URL);
+            requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
         }
 
         if (data == null)

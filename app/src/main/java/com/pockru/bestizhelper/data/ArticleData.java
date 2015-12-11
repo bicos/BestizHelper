@@ -1,8 +1,8 @@
 package com.pockru.bestizhelper.data;
 
-import java.io.Serializable;
-
 import android.text.TextUtils;
+
+import java.io.Serializable;
 
 public class ArticleData implements Serializable{
 
@@ -21,7 +21,7 @@ public class ArticleData implements Serializable{
 	String atcLink;
 
 	public ArticleData() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public ArticleData(String atcNum, String atcTitle, String atcUser, String atcDate, String atcHit, String atcVote) {

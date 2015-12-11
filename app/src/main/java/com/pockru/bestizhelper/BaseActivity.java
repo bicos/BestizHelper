@@ -56,7 +56,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 	protected BoardData mBoardData;
 	protected String BASE_SERVER_URL;
-	protected String BASE_URL;
 	protected String DETAIL_URL;
 	protected String BOARD_ID;
 	
@@ -75,6 +74,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 	@Override
 	protected void onDestroy() {
 		BestizNetworkConn.getInstance(getApplicationContext()).cancel();
+		urlList.clear();
+
 		super.onDestroy();
 	}
 
@@ -117,6 +118,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 		return result;
 	}
 
+	ArrayList<String> urlList = new ArrayList<>();
+
 	public void requestNetwork(final int flag, String url, final ArrayList<NameValuePair> params) {
 		if (params != null) {
 			Log.i(TAG, "request url : " + url + "?" + createParamStr(params));
@@ -155,9 +158,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 		// }
 
 		privUrl = url;
+
+		final String finalUrl = url;
+
+		if (urlList.contains(finalUrl)) {
+			return;
+		} else {
+			urlList.add(finalUrl);
+		}
 		
 		RequestInfo info = new RequestInfo();
-		info.setUrl(url);
+		info.setUrl(finalUrl);
 		info.setParams(createParamStr(params));
 		info.setRequestProperty(requestProperty);
 		info.setEncoding("euc-kr");
@@ -195,7 +206,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 			protected void onPostExecute(String result) {
 				super.onPostExecute(result);
 				dismissProgress();
-				
+
+				urlList.remove(finalUrl);
+
 				if (result != null && result.contains("history.back()")) {
 					Document html = Jsoup.parse(result);
 					Elements elements = html.select("p[align=center]");

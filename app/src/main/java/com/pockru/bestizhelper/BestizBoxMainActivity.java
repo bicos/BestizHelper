@@ -67,6 +67,7 @@ import com.pockru.bestizhelper.data.ImageData;
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
+import com.pockru.network.BestizUrlUtil;
 import com.pockru.preference.Preference;
 import com.pockru.utils.Utils;
 import com.tumblr.jumblr.JumblrClient;
@@ -76,7 +77,6 @@ import com.tumblr.jumblr.types.PhotoPost;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EncodingUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -91,8 +91,6 @@ import java.util.Map;
 
 public class BestizBoxMainActivity extends BaseActivity {
 
-	// private static final String BESTIZ_JD = "jd1211";
-	
 	private static final String TAG = "MainActivity";
 
 	private static final int REQ_CODE_GET_PHOTO = 100;
@@ -124,8 +122,6 @@ public class BestizBoxMainActivity extends BaseActivity {
 
 	private View writeView;
 
-	private Button btnImgAdd;
-
 	List<String> postNumList;
 
 	boolean saveUrl = false;
@@ -135,11 +131,6 @@ public class BestizBoxMainActivity extends BaseActivity {
 	boolean isWriteComment = false;
 
 	boolean isDeletable = false;
-
-	int CurrentIndex = 0;
-	// private String id;
-	// private String pwd;
-	// private Menu mMenu;
 
 	private LinearLayout layoutPopup;
 
@@ -172,13 +163,12 @@ public class BestizBoxMainActivity extends BaseActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		mBoardData = (BoardData) getIntent().getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
 		if (mBoardData != null) {
 			BASE_SERVER_URL = mBoardData.baseUrl;
 			DETAIL_URL = mBoardData.id;
-			BASE_URL = BASE_SERVER_URL.replace("/zboard.php", "");
-			BOARD_ID = DETAIL_URL.replace("?id=", "");			
+			BOARD_ID = DETAIL_URL.replace("?id=", "");
 		}
 		
 		getSupportActionBar().setTitle(mBoardData == null ? "" : mBoardData.name);
@@ -196,17 +186,12 @@ public class BestizBoxMainActivity extends BaseActivity {
 
 		mWebView = (WebView) findViewById(R.id.webView1);
 		
-//		CookieSyncManager.createInstance(this);
-//		CookieManager.getInstance().setAcceptCookie(true);
-		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, true);
 			CookieManager.setAcceptFileSchemeCookies(true);
 		}
 		
 		initWebView(mWebView);
-
-		Log.e(TAG, "BASE_SERVER_URL + DETAIL_URL : " + BASE_SERVER_URL + DETAIL_URL);
 
 		UserData data = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 
@@ -215,7 +200,7 @@ public class BestizBoxMainActivity extends BaseActivity {
 			login(data.id, data.pwd);
 		} else {
 			Log.i(TAG, "auto login false");
-			mWebView.loadUrl(BASE_SERVER_URL + DETAIL_URL);
+			mWebView.loadUrl(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
 		}
 	}
 
@@ -386,7 +371,8 @@ public class BestizBoxMainActivity extends BaseActivity {
 		if (keyword != null)
 			params.add(new BasicNameValuePair("keyword", keyword));
 
-		mWebView.postUrl(BASE_SERVER_URL, EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"), "BASE64"));
+		mWebView.postUrl(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID),
+				URLEncodedUtils.format(params, "euc-kr").getBytes());
 	}
 
 	private void write(String title, String contents) {
@@ -409,8 +395,8 @@ public class BestizBoxMainActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("subject", title));
 		params.add(new BasicNameValuePair("memo", contents));
 		
-		privUrl = BASE_URL + "/write.php";
-		requestNetwork(REQ_WRITE_POST, BASE_URL + "/write_ok.php", params);
+		privUrl = BASE_SERVER_URL + "/write.php";
+		requestNetwork(REQ_WRITE_POST, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL), params);
 		
 //		mWebView.postUrl(BASE_URL + "/write_ok.php", EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"), "BASE64"));
 	}
@@ -451,11 +437,7 @@ public class BestizBoxMainActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("sc", "off"));
 		params.add(new BasicNameValuePair("mode", ""));
 
-		// showProgressDialog();
-
-		// connNetwork("http://bestjd.bestiz.net/zboard/comment_ok.php",
-		// params);
-		mWebView.postUrl(BASE_URL + "/delete_ok.php", EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"), "BASE64"));
+		mWebView.postUrl(BestizUrlUtil.createArticleDeleteUrl(BASE_SERVER_URL), URLEncodedUtils.format(params, "euc-kr").getBytes());
 	}
 
 	private void comment(String comment, String no) {
@@ -482,11 +464,10 @@ public class BestizBoxMainActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("mode", ""));
 		params.add(new BasicNameValuePair("memo", comment));
 
-		mWebView.loadUrl(BASE_URL + "/comment_ok.php?" + URLEncodedUtils.format(params, "euc-kr"), extraHeaders);
+		mWebView.loadUrl(BestizUrlUtil.createCommentWriteUrl(BASE_SERVER_URL, params), extraHeaders);
 	}
 
 	private void setAutoLogin(String id, String pwd, String baseUrl) {
-//		Preference.setAutoLogin(getApplicationContext(), true);
 		UserData data = new UserData(id, pwd, baseUrl);
 		MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
 	}
@@ -505,10 +486,8 @@ public class BestizBoxMainActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("s_url", "/zboard/zboard.php?id=" + BOARD_ID));
 		params.add(new BasicNameValuePair("user_id", id));
 		params.add(new BasicNameValuePair("password", pwd));
-//		params.add(new BasicNameValuePair("referer", mWebView.getUrl()));
 
-//		mWebView.postUrl(BASE_URL + "/login_check.php", EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"), "euc-kr"));
-		requestNetwork(REQ_LOG_IN, BASE_URL + "/login_check.php", params);
+		requestNetwork(REQ_LOG_IN, BestizUrlUtil.createLoginUrl(BASE_SERVER_URL), params);
 	}
 
 	private void logout() {
@@ -521,11 +500,10 @@ public class BestizBoxMainActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("ss", "on"));
 		params.add(new BasicNameValuePair("sc", "off"));
 		params.add(new BasicNameValuePair("s_url", "/zboard/zboard.php?id=" + BOARD_ID));
-		mWebView.postUrl(BASE_URL + "/logout.php", EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"), "BASE64"));
+		mWebView.postUrl(BestizUrlUtil.createLogoutUrl(BASE_SERVER_URL), URLEncodedUtils.format(params, "euc-kr").getBytes());
 	}
 
 	private void search(boolean sn, boolean ss, boolean sc, String keyword) {
-
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("page", "1"));
 		params.add(new BasicNameValuePair("id", BOARD_ID));
@@ -536,7 +514,7 @@ public class BestizBoxMainActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("ss", ss ? "on" : "off"));
 		params.add(new BasicNameValuePair("sc", sc ? "on" : "off"));
 		params.add(new BasicNameValuePair("keyword", keyword));
-		mWebView.postUrl(BASE_URL + "/zboard.php", EncodingUtils.getBytes(URLEncodedUtils.format(params, "euc-kr"), "BASE64"));
+		mWebView.postUrl(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID), URLEncodedUtils.format(params, "euc-kr").getBytes());
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -713,21 +691,6 @@ public class BestizBoxMainActivity extends BaseActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void showProgressDialog() {
-		d = new ProgressDialog(this);
-		d.setMessage("Loading...");
-		d.show();
-	}
-
-	private void dismissDialog() {
-		d.dismiss();
-	}
-
-	// private void logCoockie(String url) {
-	// String cookies = cookieManager.getCookie(url);
-	// Log.i(TAG, "cookies : " + cookies);
-	// }
-
 	boolean isPause = false;
 
 	@Override
@@ -829,61 +792,47 @@ public class BestizBoxMainActivity extends BaseActivity {
 		 * 1 : login 2 : logout 3 : write 4 : comment 5 : delete 6 : refresh 7 :
 		 * search
 		 */
-		if (isLogin) {
-			menu.findItem(R.id.sub_menu_login).setVisible(false);
-			menu.findItem(R.id.sub_menu_logout).setVisible(true);
-			menu.findItem(R.id.sub_menu_write).setVisible(true);
-			menu.findItem(R.id.sub_menu_delete).setVisible(true);
-			menu.findItem(R.id.sub_menu_comment).setVisible(true);
-		} else {
-			menu.findItem(R.id.sub_menu_login).setVisible(true);
-			menu.findItem(R.id.sub_menu_logout).setVisible(false);
-			menu.findItem(R.id.sub_menu_write).setVisible(false);
-			menu.findItem(R.id.sub_menu_delete).setVisible(false);
-			menu.findItem(R.id.sub_menu_comment).setVisible(false);
-		}
+//		if (isLogin) {
+//			menu.findItem(R.id.sub_menu_login).setVisible(false);
+//			menu.findItem(R.id.sub_menu_logout).setVisible(true);
+//			menu.findItem(R.id.sub_menu_write).setVisible(true);
+//			menu.findItem(R.id.sub_menu_delete).setVisible(true);
+//			menu.findItem(R.id.sub_menu_comment).setVisible(true);
+//		} else {
+//			menu.findItem(R.id.sub_menu_login).setVisible(true);
+//			menu.findItem(R.id.sub_menu_logout).setVisible(false);
+//			menu.findItem(R.id.sub_menu_write).setVisible(false);
+//			menu.findItem(R.id.sub_menu_delete).setVisible(false);
+//			menu.findItem(R.id.sub_menu_comment).setVisible(false);
+//		}
 
-		// if (isLogin) {
-		// menu.getItem(0).setVisible(false);
-		// menu.getItem(1).setVisible(true);
-		// menu.getItem(2).setVisible(true);
-		// if (isWriteComment)
-		// menu.getItem(3).setVisible(true);
-		// else
-		// menu.getItem(3).setVisible(false);
-		// if (isDeletable)
-		// menu.getItem(4).setVisible(true);
-		// else
-		// menu.getItem(4).setVisible(false);
-		// } else {
-		// menu.getItem(0).setVisible(true);
-		// menu.getItem(1).setVisible(false);
-		// menu.getItem(2).setVisible(false);
-		// menu.getItem(3).setVisible(false);
-		// menu.getItem(4).setVisible(false);
-		// }
-		// menu.getItem(7).setVisible(true);
+		 if (isLogin) {
+			 menu.findItem(R.id.sub_menu_login).setVisible(false);
+			 menu.findItem(R.id.sub_menu_logout).setVisible(true);
+			 menu.findItem(R.id.sub_menu_write).setVisible(true);
+
+			 if (isWriteComment)
+				 menu.findItem(R.id.sub_menu_comment).setVisible(true);
+			 else
+				 menu.findItem(R.id.sub_menu_comment).setVisible(false);
+
+			 if (isDeletable)
+				 menu.findItem(R.id.sub_menu_delete).setVisible(true);
+			 else
+				 menu.findItem(R.id.sub_menu_delete).setVisible(false);
+
+		 } else {
+			 menu.findItem(R.id.sub_menu_login).setVisible(true);
+			 menu.findItem(R.id.sub_menu_logout).setVisible(false);
+			 menu.findItem(R.id.sub_menu_write).setVisible(false);
+			 menu.findItem(R.id.sub_menu_delete).setVisible(false);
+			 menu.findItem(R.id.sub_menu_comment).setVisible(false);
+		 }
 
 		return true;
 	}
 
 	private class BestizBoxWebViewClient extends WebViewClient {
-
-		// @Override
-		// public boolean shouldOverrideUrlLoading(WebView view, String url) {
-		// Log.e(TAG, "url : " + url);
-		//
-		// if(url.startsWith("http://")){
-		// if (url.contains("bestiz.net")) {
-		// return false;
-		// } else {
-		// startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-		// return true;
-		// }
-		// }else{
-		// return super.shouldOverrideUrlLoading(view, url);
-		// }
-		// }
 
 		@Override
 		public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
@@ -907,15 +856,12 @@ public class BestizBoxMainActivity extends BaseActivity {
 
 		@Override
 		public void onPageStarted(WebView view, String url, Bitmap favicon) {
-			// showProgressDialog();
 			b.setProgress(0);
 			super.onPageStarted(view, url, favicon);
 		}
 
 		@Override
 		public void onPageFinished(WebView view, String url) {
-			// dismissDialog();
-
 			privUrl = url;
 
 //			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -924,17 +870,15 @@ public class BestizBoxMainActivity extends BaseActivity {
 //				CookieSyncManager.getInstance().sync();
 //			}
 
-			Log.i(TAG, "onPageFinish : " + url);
-
 			// logCookie(url);
 
 			String ht = "javascript:window.droid.print(document.getElementsByTagName('html')[0].innerHTML);";
 			view.loadUrl(ht);
 
-			if (url.contains(BASE_URL + "/logout.php")) {
+			if (url.contains("/logout.php")) {
 				isLogin = false;
 				MemberDatabaseHelper.delete(getApplicationContext(), BASE_SERVER_URL);
-			} else if (url.contains(BASE_URL + "/view.php")) {
+			} else if (url.contains("/view.php")) {
 				String params = url.substring(url.indexOf("?") + 1);
 				no = Utils.getURLParam(params, "no");
 
@@ -952,24 +896,18 @@ public class BestizBoxMainActivity extends BaseActivity {
 				}
 			}
 			// Search 관련
-			else if (url.contains(BASE_URL + "/zboard.php")) {
+			else if (url.contains("/zboard.php")) {
 				String params = url.substring(url.indexOf("?") + 1, url.length());
-
-//				if (!Utils.getURLParam(params, "page").equals("")){
-//					pageNum = Integer.parseInt(Utils.getURLParam(params, "page"));
-//				}
 				
 				keyword = Utils.getURLParam(params, "keyword");
-				Log.i(TAG, "keyword : " + keyword);
 				
 				sn = Utils.getURLParam(params, "sn");
 				ss = Utils.getURLParam(params, "ss");
 				sc = Utils.getURLParam(params, "sc");
-			} else if (url.contains(BASE_URL + "/write_ok.php")) {
+			} else if (url.contains("/write_ok.php")) {
 				saveUrl = true;
 				imgUrl = "";
-				// postNumList.add(no);
-			} else if (url.contains(BASE_URL + "/delete_ok.php")) {
+			} else if (url.contains("/delete_ok.php")) {
 				postNumList.remove(no);
 				isDeletable = false;
 			} else {
@@ -1091,7 +1029,7 @@ public class BestizBoxMainActivity extends BaseActivity {
 			break;
 		case REQ_LOG_IN:
 			Toast.makeText(BestizBoxMainActivity.this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
-			mWebView.loadUrl(BASE_SERVER_URL + DETAIL_URL);
+			mWebView.loadUrl(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
 			break;
 
 		default:

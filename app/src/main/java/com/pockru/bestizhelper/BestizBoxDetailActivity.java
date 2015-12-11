@@ -48,6 +48,7 @@ import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
+import com.pockru.network.BestizUrlUtil;
 import com.pockru.utils.Utils;
 
 import org.apache.http.NameValuePair;
@@ -68,9 +69,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
 	private static final String TAG = "BestizBoxDetailActivity";
 
-	// private String BASE_SERVER_URL = "";
-	// private String BASE_URL = "";
-	// private String BOARD_ID = "";
 	private String ARTICLE_NUMBER = "";
 
 	private TextView tvName, tvSubject, tvHomepage, tvHit;
@@ -111,13 +109,13 @@ public class BestizBoxDetailActivity extends BaseActivity {
 		Intent intent = getIntent();
 		if (intent == null) {
 			finish();
+			return;
 		}
 		
 		mBoardData = (BoardData) intent.getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
 		if (mBoardData != null) {
 			BASE_SERVER_URL = mBoardData.baseUrl;
 			DETAIL_URL = mBoardData.id;
-			BASE_URL = BASE_SERVER_URL.replace("/zboard.php", "");
 			BOARD_ID = DETAIL_URL.replace("?id=", "");			
 		}
 		mArticleData = (ArticleData) intent.getSerializableExtra(Constants.INTENT_NAME_ARTICLE_DATA);
@@ -253,7 +251,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						requestNetwork(Constants.FLAG_REQ_DELETE_COMMENT_OK, BASE_URL + "/del_comment_ok.php", deleteComment(no, c_no));
+						requestNetwork(Constants.FLAG_REQ_DELETE_COMMENT_OK, BestizUrlUtil.createCommentDeleteUrl(BASE_SERVER_URL), deleteComment(no, c_no));
 					}
 				}).setNegativeButton("취소", null).create();
 
@@ -355,7 +353,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			Elements atags = element.select("a");
 			for (int i = 0; i < atags.size(); i++) {
 				if (atags.get(i).attr("href").startsWith("del_comment.php")) {
-					String tmp = BASE_URL + "/" + atags.get(i).attr("href");
+					String tmp = BASE_SERVER_URL + "/" + atags.get(i).attr("href");
 					atags.get(i).attr("href", tmp);
 				}
 			}
@@ -602,20 +600,23 @@ public class BestizBoxDetailActivity extends BaseActivity {
 	public void btnClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_modify:
-			requestNetwork(Constants.FLAG_REQ_MODIFY, BASE_URL + "/write.php", modify(ARTICLE_NUMBER));
+			requestNetwork(Constants.FLAG_REQ_MODIFY, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL), modify(ARTICLE_NUMBER));
 			break;
 		case R.id.btn_delete:
-			new AlertDialog.Builder(BestizBoxDetailActivity.this).setTitle("Delete").setMessage(R.string.msg_delete_article)
-					.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+			new AlertDialog.Builder(BestizBoxDetailActivity.this).
+					setTitle("Delete").
+					setMessage(R.string.msg_delete_article).
+					setPositiveButton("확인", new DialogInterface.OnClickListener() {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							requestNetwork(Constants.FLAG_REQ_DELETE, BASE_URL + "/delete_ok.php", delete(ARTICLE_NUMBER));
+							requestNetwork(Constants.FLAG_REQ_DELETE, BestizUrlUtil.createArticleDeleteUrl(BASE_SERVER_URL), delete(ARTICLE_NUMBER));
 						}
-					}).setNegativeButton("취소", null).show();
+					}).
+					setNegativeButton("취소", null).show();
 			break;
 		case R.id.btn_comment:
-			requestNetwork(Constants.FLAG_REQ_COMMENT, BASE_URL + "/comment_ok.php", comment(etComment.getText().toString(), ARTICLE_NUMBER));
+			requestNetwork(Constants.FLAG_REQ_COMMENT, BestizUrlUtil.createCommentWriteUrl(BASE_SERVER_URL), comment(etComment.getText().toString(), ARTICLE_NUMBER));
 			break;
 		default:
 			break;
@@ -675,7 +676,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 					loginId = id.getText().toString();
 					loginPwd = pwd.getText().toString();
 
-					requestNetwork(Constants.FLAG_REQ_LOGIN, BASE_URL + "/login_check.php", login(id.getText().toString(), pwd.getText().toString()));
+					requestNetwork(Constants.FLAG_REQ_LOGIN, BestizUrlUtil.createLoginUrl(BASE_SERVER_URL), login(id.getText().toString(), pwd.getText().toString()));
 				}
 			});
 			return true;
@@ -686,7 +687,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					requestNetwork(Constants.FLAG_REQ_LOGOUT, BASE_URL + "/logout.php", logout());
+					requestNetwork(Constants.FLAG_REQ_LOGOUT, BestizUrlUtil.createLogoutUrl(BASE_SERVER_URL), logout());
 				}
 			});
 
@@ -766,7 +767,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 								public void onClick(DialogInterface dialog, int which) {
 									switch (which) {
 									case 0:
-										// new ImgDownloadTask().execute(result);
 										new ImgDownloadTask(BestizBoxDetailActivity.this).execute(result);
 										break;
 									case 1:

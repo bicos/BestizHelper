@@ -7,15 +7,6 @@ public class Constants {
 	public static final String MY_IMGUR_REDIRECT_URL = "";
 
 	public static final String IMG_PREFIX_NAME = "bestiz_img";
-	
-	public static final String ATTR_IMGUR_DATA = "imgur_data";
-	public static final String ATTR_IMG_PATH = "img_path";
-
-	public static final String SERVER_01_URL = "http://hgc.bestiz.net/zboard/zboard.php";
-	public static final String SERVER_02_URL = "http://bestjd.bestiz.net/zboard/zboard.php";
-	public static final String SERVER_03_URL = "http://evon.bestiz.net/zboard/zboard.php";
-	public static final String SERVER_04_URL = "http://sky.bestiz.net/zboard/zboard.php";
-	public static final String SERVER_05_URL = "http://bestgm.bestiz.net/zboard/zboard.php";
 
 	public static final String GEACHON_ID = "?id=ghm2";
 	public static final String GEAJAP_ID = "?id=jd1510";
@@ -57,23 +48,13 @@ public class Constants {
 	public static final String USER_MUSIC_ID = "?id=sing";
 	public static final String GJ_WC="?id=gjw";
 
-	public static final String URL_LOGIN = "/login_check.php";
-	public static final String URL_LOGOUT = "/logout.php";
-	public static final String URL_WRITE = "/write_ok.php";
-	public static final String URL_MEMBER_INFO = "/member_modify.php";
-
 	/* 인텐트 네임값 정리 */
 	public static final String INTENT_NAME_DETAIL_ARTICLE_URL = "detail_article_url";
 	public static final String INTENT_NAME_BASE_SERVER_URL = "base_server_url";
-	public static final String INTENT_NAME_BASE_URL = "base_url";
 	public static final String INTENT_NAME_BOARD_ID = "board_id";
 	public static final String INTENT_NAME_IS_LOGIN = "is_login";
 	public static final String INTENT_NAME_BOARD_DATA = "board_data";
-	public static final String INTENT_NAME_SERVER_URL = "main_server";
-	public static final String INTENT_NAME_DETAIL_URL = "main_detail";
 	public static final String INTENT_NAME_ARTICLE_DATA = "article_data";
-//	public static final String ATTR_MAIN_SERVER_URL = "main_server";
-//	public static final String ATTR_MAIN_DETAIL_URL = "main_detail";
 	
 
 	/* 플래그값 정리 */

@@ -1,24 +1,10 @@
 package com.pockru.bestizhelper;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -40,20 +26,28 @@ import com.pockru.bestizhelper.adapter.ArticleListAdapter;
 import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.Constants;
+import com.pockru.network.BestizUrlUtil;
 import com.pockru.utils.Utils;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class BestizBoxSearchActivity extends BaseActivity implements OnItemClickListener {
 
 	private BoardData mBoardData;
-	
-	private String BASE_SERVER_URL;
-	private String BASE_URL;
-	private String DETAIL_URL;
-	private String BOARD_ID;
 
 	private String no = "";
 	private int pageNum = 0;
-//	private boolean isSelectName = false, isSelectSubject = true, isSelectContents = false;
 	private String selectOrder = Constants.SEARCH_ORDER_HEADNUM;
 	private String selectOrderDesc = Constants.SEARCH_ORDER_ASC;
 
@@ -81,7 +75,6 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 		if (mBoardData != null) {
 			BASE_SERVER_URL = mBoardData.baseUrl;
 			DETAIL_URL = mBoardData.id;
-			BASE_URL = BASE_SERVER_URL.replace("/zboard.php", "");
 			BOARD_ID = DETAIL_URL.replace("?id=", "");			
 		}
 		
@@ -165,7 +158,7 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 	public void btnClick(View v) {
 		switch (v.getId()) {
 		case R.id.btnSearch:
-			requestNetwork(0, BASE_URL + "/zboard.php", search(etSearch.getText().toString()));
+			requestNetwork(0, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID), search(etSearch.getText().toString()));
 			break;
 		case R.id.btnSelectBoard:
 			new AlertDialog.Builder(this).setMessage("준비중입니다.").setPositiveButton("확인", null).show();
@@ -259,7 +252,7 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 				continue;
 			}
 			if (elements.get(i).hasAttr("href")) {
-				final String url = BASE_SERVER_URL.replace("/zboard/zboard.php", "") + elements.get(i).attr("href").toString();
+				final String url = BASE_SERVER_URL.replace("/zboard","") + elements.get(i).attr("href").toString();
 				String txt = elements.get(i).text();
 
 				TextView idx = new TextView(this);
@@ -351,17 +344,19 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Intent intent = new Intent(BestizBoxSearchActivity.this, BestizBoxDetailActivity.class);
-		intent.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
-		String detailUrl = BASE_URL + "/" + ((String) view.findViewById(R.id.txt_main_atc_title).getTag());
-		detailUrl = detailUrl.replace("keyword=","");
-		intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, detailUrl);
-		intent.putExtra(Constants.INTENT_NAME_BASE_URL, BASE_URL);
-		intent.putExtra(Constants.INTENT_NAME_BOARD_ID, BOARD_ID);
-		intent.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
-		intent.putExtra(Constants.INTENT_NAME_BASE_SERVER_URL, BASE_SERVER_URL);
-		intent.putExtra(Constants.INTENT_NAME_ARTICLE_DATA, (ArticleData)mAdapter.getItem(position));
-		startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_DETAIL_ARTICLE);
+
+		ArticleData data = mAdapter.getItem(position);
+
+		if (data != null) {
+			Intent intent = new Intent(BestizBoxSearchActivity.this, BestizBoxDetailActivity.class);
+			intent.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
+			intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()));
+			intent.putExtra(Constants.INTENT_NAME_ARTICLE_DATA, data);
+			intent.putExtra(Constants.INTENT_NAME_BOARD_ID, BOARD_ID);
+			intent.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
+			intent.putExtra(Constants.INTENT_NAME_BASE_SERVER_URL, BASE_SERVER_URL);
+			startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_DETAIL_ARTICLE);
+		}
 	}
 	
 	@Override
