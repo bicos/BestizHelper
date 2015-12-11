@@ -9,6 +9,7 @@ public class ArticleDetailData {
 	private String userHomepage;
 	private String atcSubject;
 	private String atcContents;
+	private String atcRealContents;
 	private String googleAd;
 	private String modifyUrl;
 	private String deleteUrl;
@@ -92,6 +93,14 @@ public class ArticleDetailData {
 
 	public void setDeleteUrl(String deleteUrl) {
 		this.deleteUrl = deleteUrl;
+	}
+
+	public String getAtcRealContents() {
+		return atcRealContents;
+	}
+
+	public void setAtcRealContents(String atcRealContents) {
+		this.atcRealContents = atcRealContents;
 	}
 
 	@Override

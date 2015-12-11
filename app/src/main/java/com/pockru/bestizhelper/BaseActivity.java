@@ -1,9 +1,11 @@
 package com.pockru.bestizhelper;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,14 +15,20 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.pockru.bestizhelper.application.BestizBoxApplication;
 import com.pockru.bestizhelper.application.BestizBoxApplication.TrackerName;
 import com.pockru.bestizhelper.data.BoardData;
+import com.pockru.bestizhelper.dialog.WriteDialog;
+import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
 import com.pockru.network.BestizNetworkConn;
 import com.pockru.network.RequestInfo;
+import com.tumblr.jumblr.JumblrClient;
+import com.tumblr.jumblr.types.Photo;
+import com.tumblr.jumblr.types.PhotoPost;
 
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
@@ -29,6 +37,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,11 +68,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected String BASE_SERVER_URL;
 	protected String DETAIL_URL;
 	protected String BOARD_ID;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		appTracker = ((BestizBoxApplication) getApplication()).getTracker(TrackerName.APP_TRACKER);
 		appTracker.enableAdvertisingIdCollection(true);
 		appTracker.enableAutoActivityTracking(true);
@@ -166,7 +176,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 		} else {
 			urlList.add(finalUrl);
 		}
-		
+
 		RequestInfo info = new RequestInfo();
 		info.setUrl(finalUrl);
 		info.setParams(createParamStr(params));
@@ -216,7 +226,24 @@ public abstract class BaseActivity extends AppCompatActivity {
 						showAlertDialog(elements.get(0).text());
 					}
 				}
-				
+
+//				if (result != null) {
+//					if (result.length() > 4000) {
+//						Log.v(TAG, "sb.length = " + result.length());
+//						int chunkCount = result.length() / 4000;     // integer division
+//						for (int i = 0; i <= chunkCount; i++) {
+//							int max = 4000 * (i + 1);
+//							if (max >= result.length()) {
+//								Log.v(TAG, result.substring(4000 * i));
+//							} else {
+//								Log.v(TAG, result.substring(4000 * i, max));
+//							}
+//						}
+//					} else {
+//						Log.v(TAG, result);
+//					}
+//				}
+
 				onResponse(conn.getResCode(), conn.getHeaderFields(), result, flag);
 			}
 
@@ -228,7 +255,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 		if (isFinishing()) {
 			return;
 		}
-		
+
 		AlertDialog dialog = new AlertDialog.Builder(this)
 										.setTitle("알림")
 										.setMessage(text)
@@ -345,5 +372,82 @@ public abstract class BaseActivity extends AppCompatActivity {
 	}
 
 	public abstract void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag);
-	
+
+	public class TumblrImgUpload extends AsyncTask<String, Void, PhotoPost> {
+		Context mContext;
+		WriteDialog mDialog;
+		TumblrImgUpload mImgUpload;
+		ProgressDialog mProgress;
+
+		boolean startImgUpload;
+
+		public TumblrImgUpload(Context context, WriteDialog dialog) {
+			super();
+			mContext = context;
+			mDialog = dialog;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			startImgUpload = true;
+			if (mProgress == null) {
+				mProgress = new ProgressDialog(mContext);
+				mProgress.setMessage("이미지 업로딩중입니다...");
+			}
+			mProgress.show();
+
+			if (mImgUpload != null) {
+				boolean canCancel = mImgUpload.cancel(false);
+				if (!canCancel) {
+					this.cancel(true);
+				}
+			}
+			mImgUpload = this;
+		}
+
+		@Override
+		protected PhotoPost doInBackground(String... params) {
+			JumblrClient client = new JumblrClient(TumblrOAuthActivity.CONSUMER_ID, TumblrOAuthActivity.CONSUMER_SECRET, params[0], params[1]);
+			if (client.user().getBlogs() != null && client.user().getBlogs().size() > 0) {
+				try {
+					PhotoPost post = client.newPost(client.user().getBlogs().get(0).getName(), PhotoPost.class);
+					post.setPhoto(new Photo(new File(params[2])));
+					post.save();
+					return (PhotoPost) client.blogPost(post.getBlogName(), post.getId());
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(PhotoPost result) {
+			super.onPostExecute(result);
+			startImgUpload = false;
+
+			if (mProgress != null) {
+				mProgress.dismiss();
+			}
+
+			if (mDialog != null && mDialog.isShowing()) {
+				if (result != null && result.getPhotos() != null && result.getPhotos().size() > 0) {
+					mDialog.addImageToContainer(result.getPhotos().get(0).getOriginalSize().getUrl());
+					Toast.makeText(mContext.getApplicationContext(), getString(R.string.error_msg_success_upload_image), Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(mContext.getApplicationContext(), getString(R.string.error_msg_failed_to_save_link), Toast.LENGTH_SHORT).show();
+				}
+			}
+
+			mImgUpload = null;
+		}
+
+	}
+
 }

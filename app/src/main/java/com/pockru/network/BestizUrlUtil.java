@@ -45,6 +45,10 @@ public class BestizUrlUtil {
         return host + BestizUrlConstants.DELETE_ARTICLE;
     }
 
+    public static String createArticleModifyUrl(String host) {
+        return host + BestizUrlConstants.MODIFY_ARTICLE;
+    }
+
     public static String createDetailArticleUrl(String baseUrl, String articleUrl) {
         return baseUrl + "/" + articleUrl;
     }

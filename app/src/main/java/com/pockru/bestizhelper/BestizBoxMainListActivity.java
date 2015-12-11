@@ -2,7 +2,6 @@ package com.pockru.bestizhelper;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
@@ -27,7 +26,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -35,15 +33,12 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -56,19 +51,15 @@ import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.ChatData;
 import com.pockru.bestizhelper.data.Constants;
-import com.pockru.bestizhelper.data.ImageData;
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
-import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
+import com.pockru.bestizhelper.dialog.WriteDialog;
 import com.pockru.bestizhelper.view.ChatView;
 import com.pockru.firebase.UrlConstants;
 import com.pockru.network.BestizUrlUtil;
 import com.pockru.preference.Preference;
 import com.pockru.utils.UiUtils;
 import com.pockru.utils.Utils;
-import com.tumblr.jumblr.JumblrClient;
-import com.tumblr.jumblr.types.Photo;
-import com.tumblr.jumblr.types.PhotoPost;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -77,8 +68,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -87,9 +76,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
 
-    private static final int REQ_CODE_GET_PHOTO = 100;
+    public static final int REQ_CODE_GET_PHOTO = 100;
     public static final int REQ_CODE_DETAIL_ARTICLE = 103;
-    private static final int REQ_CODE_TUMBLR_AUTH = 104;
+    public static final int REQ_CODE_TUMBLR_AUTH = 104;
 
     protected static final int FLAG_REQ_MAIN_ARTICLE = 1000;
     protected static final int FLAG_REQ_NEXT_ARTICLE = 1001;
@@ -101,24 +90,13 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
     private String no = "";
 
-    private ArrayList<ImageData> imgList = new ArrayList<ImageData>();
-
     int pageNum = 1;
 
     private String sn = "", ss = "", sc = "";
 
     private String keyword;
 
-    private View writeView;
-
-    List<String> postNumList;
-
-    boolean isLogin = false;
-
-    private HorizontalScrollView hsvImage;
-
-    private LinearLayout containerImg;
-    private boolean startImgUpload;
+    private boolean isLogin = false;
 
     private UserData userData;
 
@@ -359,10 +337,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
         mRef = new Firebase(UrlConstants.FIREBASE_URL).child(UrlConstants.CHAT);
 
-        postNumList = new ArrayList<String>();
-
         pb = (ProgressBar) findViewById(R.id.progressBar1);
-
 
         userData = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
         if (userData != null) {
@@ -924,79 +899,45 @@ public class BestizBoxMainListActivity extends BaseActivity {
         );
     }
 
+    private WriteDialog writeDialog;
+
     private void showWriteDialog(){
-        if (imgList.size() > 0) {
-            imgList.clear();
-        }
+        if (writeDialog == null) {
+            writeDialog = new WriteDialog(this);
+            writeDialog.setButton(WriteDialog.BUTTON_POSITIVE, "확인", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (taskUploadImg != null && taskUploadImg.startImgUpload) {
+                        Utils.showAlternateAlertDialog(BestizBoxMainListActivity.this, getString(R.string.menu_write),
+                                getString(R.string.alert_msg_still_img_upload), new DialogInterface.OnClickListener() {
 
-        writeView = Utils.getView(this, R.layout.layout_write);
-
-        hsvImage = (HorizontalScrollView) writeView.findViewById(R.id.hsvImage);
-        containerImg = (LinearLayout) writeView.findViewById(R.id.containerImg);
-
-        Button btnImgAdd = (Button) writeView.findViewById(R.id.button_img_add);
-        btnImgAdd.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(Preference.getTumblrToken(BestizBoxMainListActivity.this))
-                        || TextUtils.isEmpty(Preference.getTumblrSecret(BestizBoxMainListActivity.this))) {
-                    startActivityForResult(new Intent(BestizBoxMainListActivity.this, TumblrOAuthActivity.class), REQ_CODE_TUMBLR_AUTH);
-                } else {
-                    if (Utils.isOverCurrentAndroidVersion(VERSION_CODES.KITKAT) >= 0) {
-                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(intent, REQ_CODE_GET_PHOTO);
-                    } else {
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.setType("image/*");
-                        startActivityForResult(intent, REQ_CODE_GET_PHOTO);
-                    }
-                }
-            }
-        });
-
-        Utils.showCompositeDialog(this, getString(R.string.menu_write), writeView, new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface dialog, int which) {
-                EditText contents = (EditText) writeView.findViewById(R.id.editText_contents);
-                final EditText subject = (EditText) writeView.findViewById(R.id.editText_subject);
-
-                String tmp = "";
-
-                for (int i = 0; i < imgList.size(); i++) {
-                    if (imgList.get(i).is1024over) {
-                        tmp += "<img src=\"" + imgList.get(i).imgUrl + "\"" + " width=\"1024\"><br><br>";
-                    } else {
-                        tmp += "<img src=\"" + imgList.get(i).imgUrl + "\"><br><br>";
-                    }
-                }
-
-                final String totalContents = (!tmp.equals("")) ? tmp + contents.getText().toString() : contents.getText().toString();
-                if (startImgUpload) {
-                    Utils.showAlternateAlertDialog(BestizBoxMainListActivity.this, getString(R.string.menu_write),
-                            getString(R.string.alert_msg_still_img_upload), new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (which == DialogInterface.BUTTON_POSITIVE) {
-                                        requestNetwork(FLAG_REQ_WRITE, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL), write(subject.getText().toString(), totalContents));
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == DialogInterface.BUTTON_POSITIVE) {
+                                            requestNetwork(FLAG_REQ_WRITE,
+                                                    BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL),
+                                                    write(writeDialog.getTitle(), writeDialog.getTotalContents()));
+                                        }
                                     }
-                                }
-                            });
+                                });
 
-                } else {
-                    requestNetwork(FLAG_REQ_WRITE, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL), write(subject.getText().toString(), totalContents));
+                    } else {
+                        requestNetwork(FLAG_REQ_WRITE, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL),
+                                write(writeDialog.getTitle(), writeDialog.getTotalContents()));
+                    }
+
+                    writeDialog.clearImgList();
                 }
-
-                if (imgList.size() > 0) {
-                    imgList.clear();
+            });
+            writeDialog.setButton(WriteDialog.BUTTON_NEGATIVE, "취소", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    writeDialog.dismiss();
                 }
-
-            }
-        });
+            });
+        }
+        writeDialog.show();
     }
-
-    Uri mUplaodUri;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1012,10 +953,10 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 isLogin = data.getBooleanExtra(Constants.INTENT_NAME_IS_LOGIN, false);
                 break;
             case REQ_CODE_GET_PHOTO:
-                if (writeView != null && data != null) {
-                    startImgUpload = true;
-                    mUplaodUri = data.getData();
-                    uploadPictures(Preference.getTumblrToken(BestizBoxMainListActivity.this), Preference.getTumblrSecret(BestizBoxMainListActivity.this));
+                if (writeDialog != null && writeDialog.isShowing()) {
+                    uploadPictures(Preference.getTumblrToken(getApplicationContext()),
+                            Preference.getTumblrSecret(getApplicationContext()),
+                            data.getData());
                 }
                 break;
             case REQ_CODE_TUMBLR_AUTH:
@@ -1034,98 +975,11 @@ public class BestizBoxMainListActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void uploadPictures(String token, String secret) {
-        new TumblrImgUpload().execute(token, secret, Utils.getRealPathFromURI(mUplaodUri, BestizBoxMainListActivity.this));
-    }
+    private TumblrImgUpload taskUploadImg;
 
-    class TumblrImgUpload extends AsyncTask<String, Void, PhotoPost> {
-        TumblrImgUpload mImgUpload;
-        ProgressDialog mProgress;
-
-        public TumblrImgUpload() {
-            super();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            if (mProgress == null) {
-                mProgress = new ProgressDialog(BestizBoxMainListActivity.this);
-                mProgress.setMessage("이미지 업로딩중입니다...");
-            }
-            mProgress.show();
-
-            if (mImgUpload != null) {
-                boolean canCancel = mImgUpload.cancel(false);
-                if (!canCancel) {
-                    this.cancel(true);
-                }
-            }
-            mImgUpload = this;
-        }
-
-        @Override
-        protected PhotoPost doInBackground(String... params) {
-            JumblrClient client = new JumblrClient(TumblrOAuthActivity.CONSUMER_ID, TumblrOAuthActivity.CONSUMER_SECRET, params[0], params[1]);
-            if (client.user().getBlogs() != null && client.user().getBlogs().size() > 0) {
-                try {
-                    PhotoPost post = client.newPost(client.user().getBlogs().get(0).getName(), PhotoPost.class);
-                    post.setPhoto(new Photo(new File(params[2])));
-                    post.save();
-                    return (PhotoPost) client.blogPost(post.getBlogName(), post.getId());
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(PhotoPost result) {
-            super.onPostExecute(result);
-            if (mProgress != null) {
-                mProgress.dismiss();
-            }
-
-            if (result != null && result.getPhotos() != null && result.getPhotos().size() > 0) {
-                addImageToContainer(result.getPhotos().get(0).getOriginalSize().getUrl());
-                Toast.makeText(BestizBoxMainListActivity.this, getString(R.string.error_msg_success_upload_image), Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(BestizBoxMainListActivity.this, getString(R.string.error_msg_failed_to_save_link), Toast.LENGTH_SHORT).show();
-            }
-
-            mImgUpload = null;
-        }
-
-    }
-
-    private void addImageToContainer(final String imgUrl) {
-        if (writeView != null) {
-            hsvImage.setVisibility(View.VISIBLE);
-            startImgUpload = false;
-
-            final ImageView iv = new ImageView(BestizBoxMainListActivity.this);
-            iv.setAdjustViewBounds(true);
-
-            int size = (int) getResources().getDimension(R.dimen.img_default_size);
-
-            LayoutParams params = new LayoutParams(size, size);
-            iv.setLayoutParams(params);
-            iv.setPadding(5, 0, 5, 0);
-
-            if (!TextUtils.isEmpty(imgUrl)) {
-                ImageData data = new ImageData(imgUrl, false);
-                imgList.add(data);
-            }
-
-            Glide.with(BestizBoxMainListActivity.this).load(imgUrl).into(iv);
-            containerImg.addView(iv);
-        }
+    private void uploadPictures(String token, String secret, Uri uploadUri) {
+        taskUploadImg = new TumblrImgUpload(this, writeDialog);
+        taskUploadImg.execute(token, secret, Utils.getRealPathFromURI(uploadUri, BestizBoxMainListActivity.this));
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

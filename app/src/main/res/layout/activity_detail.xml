@@ -156,18 +156,18 @@
         android:visibility="gone" >
     </LinearLayout>
 
-    <ScrollView
-        android:id="@+id/scroll_debug"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" >
+    <!--<ScrollView-->
+        <!--android:id="@+id/scroll_debug"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:visibility="gone" >-->
 
-        <TextView
-            android:id="@+id/tv_debug"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#ffffff" />
-    </ScrollView>
+        <!--<TextView-->
+            <!--android:id="@+id/tv_debug"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="#ffffff" />-->
+    <!--</ScrollView>-->
 
     <ProgressBar
         android:id="@+id/progressBar1"

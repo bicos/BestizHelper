@@ -14,8 +14,9 @@ public class BestizUrlConstants {
 
     public static final String BOARD_LIST = "/zboard.php";
 
-    public static final String WRITE_ARTICLE = "/write.php";
+    public static final String WRITE_ARTICLE = "/write_ok.php";
     public static final String DELETE_ARTICLE = "/delete_ok.php";
+    public static final String MODIFY_ARTICLE = "/write.php";
 
     public static final String LOGIN = "/login_check.php";
     public static final String LOGOUT = "/logout.php";

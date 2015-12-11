@@ -79,6 +79,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 	private EditText etComment;
 
 	private ArticleData mArticleData;
+	private ArticleDetailData mArticleDetailData;
 	private String atcUrl = "";
 	private boolean isLogin = false;
 	protected String loginId;
@@ -163,12 +164,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 	}
 
 	public void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag) {
-		if (resCode != 200) {
-			Toast.makeText(this, "통신 중 오류가 발생하였습니다.", Toast.LENGTH_SHORT).show();
-			return;
-		}
-		
-		if (TextUtils.isEmpty(html)) {
+		if (resCode != 200 || TextUtils.isEmpty(html)) {
 			Toast.makeText(this, "통신 중 오류가 발생하였습니다.", Toast.LENGTH_SHORT).show();
 			return;
 		}
@@ -211,29 +207,16 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			setResult(Constants.RESULT_REFRESH);
 			finish();
 			break;
-		case Constants.FLAG_REQ_MODIFY:
-			// try {
-			// // createModifyDialog(new String(arg2, "EUC-KR"));
-			// createModifyDialog(arg2);
-			// } catch (UnsupportedEncodingException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			createModifyDialog(html);
-			break;
+//		case Constants.FLAG_REQ_MODIFY:
+//			createModifyDialog(html);
+//			break;
 		default:
 			break;
 		}
 	}
 
 	// todo : 만들어야함...
-	private void createModifyDialog(String html) {
-		findViewById(R.id.scroll_debug).setVisibility(View.VISIBLE);
-		((TextView) findViewById(R.id.tv_debug)).setText(html);
-		Document doc = Jsoup.parse(html);
-		String title = doc.getElementsByClass("input").attr("value");
-		String body = doc.getElementsByClass("textarea").html();
-
+	private void createModifyDialog(String title, String body) {
 		Log.i("test", "title : " + title + " , body : " + body);
 	}
 
@@ -274,6 +257,14 @@ public class BestizBoxDetailActivity extends BaseActivity {
 				findViewById(R.id.btn_delete).setVisibility(View.GONE);
 			}
 
+			if (doc.select("img[src$=i_modify.gif]").size() > 0) {
+				isModify = true;
+				findViewById(R.id.btn_modify).setVisibility(View.VISIBLE);
+			} else {
+				isModify = false;
+				findViewById(R.id.btn_modify).setVisibility(View.GONE);
+			}
+
 			// 이미지 리사이징
 			doc.select("img").attr("width", "100%").attr("height", "auto");
 
@@ -285,24 +276,24 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			Elements elements = doc.getElementsByAttributeValueContaining("bgcolor", "white");
 			Element element = elements.get(1);
 
-			ArticleDetailData data = new ArticleDetailData();
-			data.setUserName(mArticleData.getAtcUser());
+			mArticleDetailData = new ArticleDetailData();
+			mArticleDetailData.setUserName(mArticleData.getAtcUser());
 
 			if (!element.getElementsByAttributeValue("onfocus", "blur()").isEmpty()) {
-				data.setModifyUrl(element.getElementsByAttributeValue("onfocus", "blur()").get(0).attr("href"));
-				data.setDeleteUrl(element.getElementsByAttributeValue("onfocus", "blur()").get(1).attr("href"));
+				mArticleDetailData.setModifyUrl(element.getElementsByAttributeValue("onfocus", "blur()").get(0).attr("href"));
+				mArticleDetailData.setDeleteUrl(element.getElementsByAttributeValue("onfocus", "blur()").get(1).attr("href"));
 			}
 
-			data.setUserHomepage(element.getElementsByAttributeValue("target", "_blank").attr("href"));
+			mArticleDetailData.setUserHomepage(element.getElementsByAttributeValue("target", "_blank").attr("href"));
 
-			data.setAtcSubject(element.select("b").text());
-			data.setAtcHit("(hit : " + mArticleData.getAtcHit() + ")");
+			mArticleDetailData.setAtcSubject(element.select("b").text());
+			mArticleDetailData.setAtcHit("(hit : " + mArticleData.getAtcHit() + ")");
 
 			// contents 셋팅
 			elements = doc.getElementsByAttributeValueContaining("cellpadding", "10");
 			element = elements.get(0);
 
-			String val = "";
+			String val;
 			for (Element e : elements.select("img")) { // img src attribute에 http 안붙는 예외 처리
 				if (e != null && e.hasAttr("src")) {
 					val = e.attr("src");
@@ -312,7 +303,10 @@ public class BestizBoxDetailActivity extends BaseActivity {
 				}
 			}
 
-			String contents = element.getElementsByAttributeValue("style", "line-height:160%").toString();
+			String contents = element.getElementsByAttributeValue("style", "line-height:160%").html();
+
+			// 리얼 콘텐츠만 따로 저장
+			mArticleDetailData.setAtcRealContents(contents.substring(0, contents.indexOf("<!--\"<-->")));
 
 			// comment 셋팅
 			element = doc.getElementsByAttributeValueContaining("cellpadding", "3").get(0).attr("width", "100%");
@@ -359,9 +353,9 @@ public class BestizBoxDetailActivity extends BaseActivity {
 			}
 
 			contents += element.toString();
-			data.setAtcContents(contents);
+			mArticleDetailData.setAtcContents(contents);
 
-			setCurrentLayout(data);
+			setCurrentLayout(mArticleDetailData);
 
 		} catch (Exception e) {
 			Toast.makeText(getApplicationContext(), "게시물을 불러올 수 없습니다.", Toast.LENGTH_SHORT).show();
@@ -534,7 +528,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 		return params;
 	}
 
-	private ArrayList<NameValuePair> modify(String no) {
+	private ArrayList<NameValuePair> modify(String no, ArticleDetailData data) {
 		// write.php?id=jd1404&page=1&sn1=&divpage=25&sn=off&ss=on&sc=off&select_arrange=headnum&desc=asc&no=191347&mode=modify
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("id", BOARD_ID));
@@ -548,6 +542,8 @@ public class BestizBoxDetailActivity extends BaseActivity {
 		params.add(new BasicNameValuePair("desc", "asc"));
 		params.add(new BasicNameValuePair("no", no));
 		params.add(new BasicNameValuePair("mode", "modify"));
+		params.add(new BasicNameValuePair("subject", data.getAtcSubject()));
+		params.add(new BasicNameValuePair("memo", data.getAtcRealContents()));
 		return params;
 	}
 
@@ -600,7 +596,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 	public void btnClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_modify:
-			requestNetwork(Constants.FLAG_REQ_MODIFY, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL), modify(ARTICLE_NUMBER));
+			createModifyDialog(mArticleDetailData.getAtcSubject(), mArticleDetailData.getAtcRealContents());
 			break;
 		case R.id.btn_delete:
 			new AlertDialog.Builder(BestizBoxDetailActivity.this).
