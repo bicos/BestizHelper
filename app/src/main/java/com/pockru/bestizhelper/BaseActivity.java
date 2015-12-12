@@ -53,6 +53,19 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected static final int NETWORK_WIFI = 2;
 	protected static final int NETWORK_NOT_AVAILABLE = 3;
 
+	public static final int FLAG_REQ_MAIN_ARTICLE = 1000;
+	public static final int FLAG_REQ_NEXT_ARTICLE = 1001;
+	public static final int FLAG_REQ_LOGIN = 1003;
+	public static final int FLAG_REQ_WRITE = 1004;
+	public static final int FLAG_REQ_LOGOUT = 1005;
+	public static final int FLAG_REQ_SEARCH = 1006;
+	public static final int FLAG_REQ_MEM_INFO = 1007;
+	public static final int FLAG_REQ_DETAIL_ARTICLE = 1008;
+	public static final int FLAG_REQ_COMMENT = 1009;
+	public static final int FLAG_REQ_DELETE_COMMENT = 1010;
+	public static final int FLAG_REQ_DELETE_COMMENT_OK = 1011;
+	public static final int FLAG_REQ_DELETE = 1012;
+
 	protected String privUrl = "";
 
 	protected ProgressBar pb;
@@ -373,13 +386,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 	public abstract void onResponse(int resCode, Map<String, List<String>> headers, String html, int flag);
 
-	public class TumblrImgUpload extends AsyncTask<String, Void, PhotoPost> {
+	public static class TumblrImgUpload extends AsyncTask<String, Void, PhotoPost> {
 		Context mContext;
 		WriteDialog mDialog;
 		TumblrImgUpload mImgUpload;
 		ProgressDialog mProgress;
 
-		boolean startImgUpload;
+		public boolean startImgUpload;
 
 		public TumblrImgUpload(Context context, WriteDialog dialog) {
 			super();
@@ -439,15 +452,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 			if (mDialog != null && mDialog.isShowing()) {
 				if (result != null && result.getPhotos() != null && result.getPhotos().size() > 0) {
 					mDialog.addImageToContainer(result.getPhotos().get(0).getOriginalSize().getUrl());
-					Toast.makeText(mContext.getApplicationContext(), getString(R.string.error_msg_success_upload_image), Toast.LENGTH_SHORT).show();
+					Toast.makeText(mContext.getApplicationContext(), mContext.getString(R.string.error_msg_success_upload_image), Toast.LENGTH_SHORT).show();
 				} else {
-					Toast.makeText(mContext.getApplicationContext(), getString(R.string.error_msg_failed_to_save_link), Toast.LENGTH_SHORT).show();
+					Toast.makeText(mContext.getApplicationContext(), mContext.getString(R.string.error_msg_failed_to_save_link), Toast.LENGTH_SHORT).show();
 				}
 			}
 
 			mImgUpload = null;
 		}
-
 	}
 
 }

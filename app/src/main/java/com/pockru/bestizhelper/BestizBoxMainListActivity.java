@@ -6,10 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -56,8 +53,8 @@ import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.dialog.WriteDialog;
 import com.pockru.bestizhelper.view.ChatView;
 import com.pockru.firebase.UrlConstants;
+import com.pockru.network.BestizParamsUtil;
 import com.pockru.network.BestizUrlUtil;
-import com.pockru.preference.Preference;
 import com.pockru.utils.UiUtils;
 import com.pockru.utils.Utils;
 
@@ -76,23 +73,13 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
 
-    public static final int REQ_CODE_GET_PHOTO = 100;
     public static final int REQ_CODE_DETAIL_ARTICLE = 103;
-    public static final int REQ_CODE_TUMBLR_AUTH = 104;
-
-    protected static final int FLAG_REQ_MAIN_ARTICLE = 1000;
-    protected static final int FLAG_REQ_NEXT_ARTICLE = 1001;
-    protected static final int FLAG_REQ_LOGIN = 1003;
-    protected static final int FLAG_REQ_WRITE = 1004;
-    protected static final int FLAG_REQ_LOGOUT = 1005;
-    protected static final int FLAG_REQ_SEARCH = 1006;
-    protected static final int FLAG_REQ_MEM_INFO = 1007;
-
-    private String no = "";
 
     int pageNum = 1;
 
-    private String sn = "", ss = "", sc = "";
+    private String sn = "";
+    private String ss = "";
+    private String sc = "";
 
     private String keyword;
 
@@ -192,7 +179,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= (totalItemCount - 5) && isRequestNetwork == false) {
                     pageNum++;
-                    requestNetwork(FLAG_REQ_NEXT_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID), movePage(String.valueOf(pageNum), keyword, sn, ss, sc));
+                    requestNetwork(FLAG_REQ_NEXT_ARTICLE,
+                            BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID),
+                            BestizParamsUtil.createMovePageParams(BOARD_ID, String.valueOf(pageNum), keyword, sn, ss, sc));
                 }
             }
         });
@@ -307,7 +296,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
 
-                if(mConnectedListener != null) {
+                if (mConnectedListener != null) {
                     mRef.getRoot().child(UrlConstants.FIREBASE_CONNECTED).removeEventListener(mConnectedListener);
                     chatView.cleanUp();
 
@@ -341,7 +330,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
         userData = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
         if (userData != null) {
-            requestNetwork(FLAG_REQ_LOGIN, BestizUrlUtil.createLoginUrl(BASE_SERVER_URL), login(userData.id, userData.pwd));
+            requestNetwork(FLAG_REQ_LOGIN,
+                    BestizUrlUtil.createLoginUrl(BASE_SERVER_URL),
+                    BestizParamsUtil.createLoginParams(BOARD_ID, userData.id, userData.pwd));
         } else {
             requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
         }
@@ -499,7 +490,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
 
-			Toast.makeText(this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.msg_login_success), Toast.LENGTH_SHORT).show();
 
             if (isShowWriteDialog) { //  로그인을 성공한 경우에만 다음 작업 진행
                 showWriteDialog();
@@ -648,7 +639,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
             if (isAdded == false) {
                 pageNum++;
-                requestNetwork(FLAG_REQ_NEXT_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID), movePage(String.valueOf(pageNum), keyword, sn, ss, sc));
+                requestNetwork(FLAG_REQ_NEXT_ARTICLE,
+                        BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID),
+                        BestizParamsUtil.createMovePageParams(BOARD_ID, String.valueOf(pageNum), keyword, sn, ss, sc));
             } else {
                 mAdapter.setDataList(totalDataList);
             }
@@ -656,138 +649,18 @@ public class BestizBoxMainListActivity extends BaseActivity {
         }
     }
 
-    public void movePage(View v) {
-        switch (v.getId()) {
-            case R.id.btn_left:
-                if (!(pageNum == 1))
-                    pageNum--;
-
-                movePage(String.valueOf(pageNum), keyword, sn, ss, sc);
-                break;
-            case R.id.btn_right:
-                pageNum++;
-                movePage(String.valueOf(pageNum), keyword, sn, ss, sc);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    private ArrayList<NameValuePair> movePage(String page, String keyword, String sn, String ss, String sc) {
-        // RequestParams params = new RequestParams();
-        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("page", page));
-        params.add(new BasicNameValuePair("id", BOARD_ID));
-        params.add(new BasicNameValuePair("no", no));
-        params.add(new BasicNameValuePair("select_arrange", "headnum"));
-        params.add(new BasicNameValuePair("desc", "asc"));
-        params.add(new BasicNameValuePair("category", ""));
-        params.add(new BasicNameValuePair("sn", sn));
-        params.add(new BasicNameValuePair("ss", ss));
-        params.add(new BasicNameValuePair("sn", sn));
-        params.add(new BasicNameValuePair("sc", sc));
-        params.add(new BasicNameValuePair("divpage", "15"));
-        if (keyword != null)
-            params.add(new BasicNameValuePair("keyword", keyword));
-
-        return params;
-    }
-
-    private ArrayList<NameValuePair> write(String title, String contents) {
-        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("page", "1"));
-        params.add(new BasicNameValuePair("id", BOARD_ID));
-        params.add(new BasicNameValuePair("no", ""));
-        params.add(new BasicNameValuePair("select_arrange", "headnum"));
-        params.add(new BasicNameValuePair("desc", "asc"));
-        params.add(new BasicNameValuePair("page_num", ""));
-        params.add(new BasicNameValuePair("keyword", ""));
-        params.add(new BasicNameValuePair("category", ""));
-        params.add(new BasicNameValuePair("sn", "off"));
-        params.add(new BasicNameValuePair("ss", "on"));
-        params.add(new BasicNameValuePair("sc", "off"));
-        params.add(new BasicNameValuePair("mode", "write"));
-        params.add(new BasicNameValuePair("category", "1"));
-        params.add(new BasicNameValuePair("use_html", "1"));
-        params.add(new BasicNameValuePair("subject", title));
-        params.add(new BasicNameValuePair("memo", contents));
-
-        return params;
-    }
-
-    private void delete(String no) {
-        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("page", "1"));
-        params.add(new BasicNameValuePair("id", BOARD_ID));
-        params.add(new BasicNameValuePair("no", no));
-        params.add(new BasicNameValuePair("select_arrange", "headnum"));
-        params.add(new BasicNameValuePair("desc", "asc"));
-        params.add(new BasicNameValuePair("page_num", "25"));
-        params.add(new BasicNameValuePair("keyword", ""));
-        params.add(new BasicNameValuePair("category", ""));
-        params.add(new BasicNameValuePair("sn", "off"));
-        params.add(new BasicNameValuePair("ss", "on"));
-        params.add(new BasicNameValuePair("sc", "off"));
-        params.add(new BasicNameValuePair("mode", ""));
-    }
-
-    private ArrayList<NameValuePair> login(String id, String pwd) {
-
-        // RequestParams params = new RequestParams();
-        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("auto_login", "0"));
-        params.add(new BasicNameValuePair("page", "1"));
-        params.add(new BasicNameValuePair("id", BOARD_ID));
-        params.add(new BasicNameValuePair("select_arrange", "headnum"));
-        params.add(new BasicNameValuePair("desc", "asc"));
-        params.add(new BasicNameValuePair("sn", "off"));
-        params.add(new BasicNameValuePair("ss", "on"));
-        params.add(new BasicNameValuePair("sc", "off"));
-        params.add(new BasicNameValuePair("s_url", "/zboard/zboard.php?id=" + BOARD_ID));
-        params.add(new BasicNameValuePair("user_id", id));
-        params.add(new BasicNameValuePair("password", pwd));
-        return params;
-
-    }
-
-    private ArrayList<NameValuePair> logout() {
-        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("page", "1"));
-        params.add(new BasicNameValuePair("id", BOARD_ID));
-        params.add(new BasicNameValuePair("select_arrange", "headnum"));
-        params.add(new BasicNameValuePair("desc", "asc"));
-        params.add(new BasicNameValuePair("sn", "off"));
-        params.add(new BasicNameValuePair("ss", "on"));
-        params.add(new BasicNameValuePair("sc", "off"));
-        params.add(new BasicNameValuePair("s_url", "/zboard/zboard.php?id=" + BOARD_ID));
-        return params;
-    }
-
-    private ArrayList<NameValuePair> search(boolean sn, boolean ss, boolean sc, String keyword) {
-
-        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("page", "1"));
-        params.add(new BasicNameValuePair("id", BOARD_ID));
-        params.add(new BasicNameValuePair("no", no));
-        params.add(new BasicNameValuePair("select_arrange", "headnum"));
-        params.add(new BasicNameValuePair("desc", "asc"));
-        params.add(new BasicNameValuePair("sn", sn ? "on" : "off"));
-        params.add(new BasicNameValuePair("ss", ss ? "on" : "off"));
-        params.add(new BasicNameValuePair("sc", sc ? "on" : "off"));
-        params.add(new BasicNameValuePair("keyword", keyword));
-        return params;
-    }
-
     /**
      * http://bestjd.bestiz.net/zboard/member_modify.php?group_no=1
      *
      * @return
      */
-    private void reqMemberInfo(){
-        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    private void reqMemberInfo() {
+        ArrayList<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("group_no", "1"));
-        requestNetwork(FLAG_REQ_MEM_INFO, BestizUrlUtil.createUserInfoUrl(BASE_SERVER_URL), params);
+
+        requestNetwork(FLAG_REQ_MEM_INFO,
+                BestizUrlUtil.createUserInfoUrl(BASE_SERVER_URL),
+                params);
     }
 
     @Override
@@ -838,7 +711,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestNetwork(FLAG_REQ_LOGOUT, BestizUrlUtil.createLogoutUrl(BASE_SERVER_URL), logout());
+                        requestNetwork(FLAG_REQ_LOGOUT,
+                                BestizUrlUtil.createLogoutUrl(BASE_SERVER_URL),
+                                BestizParamsUtil.createLogoutParams(BOARD_ID));
                     }
                 });
 
@@ -887,7 +762,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
                             userData.pwd = pwd.getText().toString();
                         }
 
-                        requestNetwork(FLAG_REQ_LOGIN, BestizUrlUtil.createLoginUrl(BASE_SERVER_URL), login(id.getText().toString(), pwd.getText().toString()));
+                        requestNetwork(FLAG_REQ_LOGIN,
+                                BestizUrlUtil.createLoginUrl(BASE_SERVER_URL),
+                                BestizParamsUtil.createLoginParams(BOARD_ID, id.getText().toString(), pwd.getText().toString()));
                     }
                 },
                 new DialogInterface.OnCancelListener() {
@@ -901,40 +778,9 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
     private WriteDialog writeDialog;
 
-    private void showWriteDialog(){
+    private void showWriteDialog() {
         if (writeDialog == null) {
-            writeDialog = new WriteDialog(this);
-            writeDialog.setButton(WriteDialog.BUTTON_POSITIVE, "확인", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (taskUploadImg != null && taskUploadImg.startImgUpload) {
-                        Utils.showAlternateAlertDialog(BestizBoxMainListActivity.this, getString(R.string.menu_write),
-                                getString(R.string.alert_msg_still_img_upload), new DialogInterface.OnClickListener() {
-
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        if (which == DialogInterface.BUTTON_POSITIVE) {
-                                            requestNetwork(FLAG_REQ_WRITE,
-                                                    BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL),
-                                                    write(writeDialog.getTitle(), writeDialog.getTotalContents()));
-                                        }
-                                    }
-                                });
-
-                    } else {
-                        requestNetwork(FLAG_REQ_WRITE, BestizUrlUtil.createArticleWriteUrl(BASE_SERVER_URL),
-                                write(writeDialog.getTitle(), writeDialog.getTotalContents()));
-                    }
-
-                    writeDialog.clearImgList();
-                }
-            });
-            writeDialog.setButton(WriteDialog.BUTTON_NEGATIVE, "취소", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    writeDialog.dismiss();
-                }
-            });
+            writeDialog = new WriteDialog(this, BASE_SERVER_URL, BOARD_ID);
         }
         writeDialog.show();
     }
@@ -952,35 +798,17 @@ public class BestizBoxMainListActivity extends BaseActivity {
             case REQ_CODE_DETAIL_ARTICLE:
                 isLogin = data.getBooleanExtra(Constants.INTENT_NAME_IS_LOGIN, false);
                 break;
-            case REQ_CODE_GET_PHOTO:
-                if (writeDialog != null && writeDialog.isShowing()) {
-                    uploadPictures(Preference.getTumblrToken(getApplicationContext()),
-                            Preference.getTumblrSecret(getApplicationContext()),
-                            data.getData());
-                }
-                break;
-            case REQ_CODE_TUMBLR_AUTH:
-                if (Utils.isOverCurrentAndroidVersion(VERSION_CODES.KITKAT) >= 0) {
-                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(intent, REQ_CODE_GET_PHOTO);
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    intent.setType("image/*");
-                    startActivityForResult(intent, REQ_CODE_GET_PHOTO);
-                }
-                break;
             default:
                 break;
         }
+
+        if (writeDialog != null) {
+            writeDialog.onActivityResult(requestCode, resultCode, data);
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private TumblrImgUpload taskUploadImg;
-
-    private void uploadPictures(String token, String secret, Uri uploadUri) {
-        taskUploadImg = new TumblrImgUpload(this, writeDialog);
-        taskUploadImg.execute(token, secret, Utils.getRealPathFromURI(uploadUri, BestizBoxMainListActivity.this));
-    }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void saveUrl(String extra) {

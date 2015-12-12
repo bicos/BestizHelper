@@ -59,15 +59,6 @@ public class Constants {
 
 	/* 플래그값 정리 */
 	public static final int REQ_FILECHOOSER = 100;
-
-	public static final int FLAG_REQ_DETAIL_ARTICLE = 1000;
-	public static final int FLAG_REQ_COMMENT = 1001;
-	public static final int FLAG_REQ_DELETE_COMMENT = 1002;
-	public static final int FLAG_REQ_DELETE_COMMENT_OK = 1003;
-	public static final int FLAG_REQ_LOGIN = 1004;
-	public static final int FLAG_REQ_LOGOUT = 1005;
-	public static final int FLAG_REQ_DELETE = 1006;
-	public static final int FLAG_REQ_MODIFY = 1007;
 	
 	// result 값 정의
 	public static final int RESULT_REFRESH = 1000;

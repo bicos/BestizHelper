@@ -76,7 +76,7 @@ public class CommentListAdapter extends BaseAdapter {
 				
 				@Override
 				public void onClick(View v) {
-					((BaseActivity) activity).requestNetwork(Constants.FLAG_REQ_DELETE_COMMENT, data.getDeleteUrl());
+					((BaseActivity) activity).requestNetwork(BaseActivity.FLAG_REQ_COMMENT, data.getDeleteUrl());
 				}
 			});
 		}

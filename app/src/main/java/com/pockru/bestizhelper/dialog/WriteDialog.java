@@ -3,7 +3,9 @@ package com.pockru.bestizhelper.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,10 +17,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
-import com.pockru.bestizhelper.BestizBoxMainListActivity;
+import com.pockru.bestizhelper.BaseActivity;
 import com.pockru.bestizhelper.R;
 import com.pockru.bestizhelper.data.ImageData;
 import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
+import com.pockru.network.BestizParamsUtil;
+import com.pockru.network.BestizUrlUtil;
 import com.pockru.preference.Preference;
 import com.pockru.utils.Utils;
 
@@ -29,6 +33,9 @@ import java.util.ArrayList;
  */
 public class WriteDialog extends AlertDialog {
 
+    public static final int REQ_CODE_GET_PHOTO = 100;
+    public static final int REQ_CODE_TUMBLR_AUTH = 104;
+
     private ArrayList<ImageData> imgList;
 
     private EditText subject;
@@ -36,17 +43,20 @@ public class WriteDialog extends AlertDialog {
     private HorizontalScrollView hsvImage;
     private LinearLayout containerImg;
 
-    private Activity activity;
+    private String host;
+    private String boardId;
+    private String articleNo = "";
 
-    public WriteDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
-        super(context, cancelable, cancelListener);
-        activity = (Activity) context;
-        init();
+    public WriteDialog(Context context, String host, String boardId) {
+        this(context, host, boardId, "");
     }
 
-    public WriteDialog(Context context) {
+    public WriteDialog(Context context, String host, String boardId, String articleNo) {
         super(context);
-        activity =  (Activity) context;
+        setOwnerActivity((Activity) context);
+        this.host = host;
+        this.boardId = boardId;
+        this.articleNo = articleNo;
         init();
     }
 
@@ -56,6 +66,44 @@ public class WriteDialog extends AlertDialog {
 
         // 이미지 리스트 셋팅
         imgList = new ArrayList<>();
+
+        // 버튼 셋팅
+        setButton(WriteDialog.BUTTON_POSITIVE, "확인", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(boardId)) {
+                    if (taskUploadImg != null && taskUploadImg.startImgUpload) {
+                        Utils.showAlternateAlertDialog(getOwnerActivity(), getOwnerActivity().getString(R.string.menu_write),
+                                getOwnerActivity().getString(R.string.alert_msg_still_img_upload), new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (which == DialogInterface.BUTTON_POSITIVE) {
+                                            ((BaseActivity)getOwnerActivity()).
+                                                    requestNetwork(BaseActivity.FLAG_REQ_WRITE,
+                                                            BestizUrlUtil.createArticleWriteUrl(host),
+                                                            BestizParamsUtil.createWriteParams(boardId,getTitle(), getTotalContents(), articleNo));
+                                        }
+                                    }
+                                });
+
+                    } else {
+                        ((BaseActivity)getOwnerActivity()).
+                                requestNetwork(BaseActivity.FLAG_REQ_WRITE,
+                                        BestizUrlUtil.createArticleWriteUrl(host),
+                                        BestizParamsUtil.createWriteParams(boardId, getTitle(), getTotalContents(), articleNo));
+                    }
+
+                    clearImgList();
+                }
+            }
+        });
+        setButton(WriteDialog.BUTTON_NEGATIVE, "취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dismiss();
+            }
+        });
 
         // 기본 레이아웃 셋팅
         View view = View.inflate(getContext(), R.layout.layout_write, null);
@@ -70,17 +118,17 @@ public class WriteDialog extends AlertDialog {
 
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(Preference.getTumblrToken(activity.getApplicationContext()))
-                        || TextUtils.isEmpty(Preference.getTumblrSecret(activity.getApplicationContext()))) {
-                    activity.startActivityForResult(new Intent(activity, TumblrOAuthActivity.class), BestizBoxMainListActivity.REQ_CODE_TUMBLR_AUTH);
+                if (TextUtils.isEmpty(Preference.getTumblrToken(getOwnerActivity().getApplicationContext()))
+                        || TextUtils.isEmpty(Preference.getTumblrSecret(getOwnerActivity().getApplicationContext()))) {
+                    getOwnerActivity().startActivityForResult(new Intent(getOwnerActivity(), TumblrOAuthActivity.class), REQ_CODE_TUMBLR_AUTH);
                 } else {
                     if (Utils.isOverCurrentAndroidVersion(Build.VERSION_CODES.KITKAT) >= 0) {
                         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        activity.startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_GET_PHOTO);
+                        getOwnerActivity().startActivityForResult(intent, REQ_CODE_GET_PHOTO);
                     } else {
                         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                         intent.setType("image/*");
-                        activity.startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_GET_PHOTO);
+                        getOwnerActivity().startActivityForResult(intent, REQ_CODE_GET_PHOTO);
                     }
                 }
             }
@@ -89,7 +137,7 @@ public class WriteDialog extends AlertDialog {
         setView(view);
     }
 
-    public String getTitle(){
+    public String getTitle() {
         return subject != null ? subject.getText().toString() : "";
     }
 
@@ -125,11 +173,11 @@ public class WriteDialog extends AlertDialog {
             imgList.add(data);
         }
 
-        Glide.with(activity).load(imgUrl).into(iv);
+        Glide.with(getOwnerActivity()).load(imgUrl).into(iv);
         containerImg.addView(iv);
     }
 
-    public void clearImgList(){
+    public void clearImgList() {
         imgList.clear();
     }
 
@@ -139,5 +187,61 @@ public class WriteDialog extends AlertDialog {
         contents.setText("");
         imgList.clear();
         super.dismiss();
+    }
+
+    /**
+     * 액티비티 리절트 처리
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQ_CODE_GET_PHOTO:
+                if (isShowing()) {
+                    uploadPictures(Preference.getTumblrToken(getOwnerActivity().getApplicationContext()),
+                            Preference.getTumblrSecret(getOwnerActivity().getApplicationContext()),
+                            data.getData());
+                }
+                break;
+            case REQ_CODE_TUMBLR_AUTH:
+                if (Utils.isOverCurrentAndroidVersion(Build.VERSION_CODES.KITKAT) >= 0) {
+                    Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    getOwnerActivity().startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                } else {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("image/*");
+                    getOwnerActivity().startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                }
+                break;
+        }
+    }
+
+    private BaseActivity.TumblrImgUpload taskUploadImg;
+
+    private void uploadPictures(String token, String secret, Uri uploadUri) {
+        taskUploadImg = new BaseActivity.TumblrImgUpload(getOwnerActivity().getApplicationContext(), this);
+        taskUploadImg.execute(token, secret, Utils.getRealPathFromURI(uploadUri, getOwnerActivity().getApplicationContext()));
+    }
+
+    public void setWriteTitle(String title) {
+        if (subject != null) {
+            subject.setText(title);
+        }
+    }
+
+    public void setWriteBody(String body) {
+        if (body != null) {
+            if (body.contains("<br>")) {
+                body = body.replace("<br>", "\n");
+            }
+
+            if (body.contains("<br/>")) {
+                body = body.replace("<br/>", "\n");
+            }
+
+            contents.setText(body);
+        }
     }
 }
