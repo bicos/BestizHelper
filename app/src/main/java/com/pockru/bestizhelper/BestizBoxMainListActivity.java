@@ -115,8 +115,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
         mBoardData = (BoardData) getIntent().getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
         if (mBoardData != null) {
             BASE_SERVER_URL = mBoardData.baseUrl;
-            DETAIL_URL = mBoardData.id;
-            BOARD_ID = DETAIL_URL.replace("?id=", "");
+            BOARD_ID = mBoardData.id;
         }
 
         getSupportActionBar().setTitle(mBoardData == null ? "" : mBoardData.name);
@@ -144,12 +143,12 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 ArticleData data = mAdapter.getItem(arg2);
                 if (data != null) {
                     Intent intent = new Intent(BestizBoxMainListActivity.this, BestizBoxDetailActivity.class);
-                    intent.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
+//                    intent.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
                     intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()));
-                    intent.putExtra(Constants.INTENT_NAME_BOARD_ID, BOARD_ID);
-                    intent.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
-                    intent.putExtra(Constants.INTENT_NAME_BASE_SERVER_URL, BASE_SERVER_URL);
-                    intent.putExtra(Constants.INTENT_NAME_ARTICLE_DATA, data);
+//                    intent.putExtra(Constants.INTENT_NAME_BOARD_ID, BOARD_ID);
+//                    intent.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
+//                    intent.putExtra(Constants.INTENT_NAME_BASE_SERVER_URL, BASE_SERVER_URL);
+//                    intent.putExtra(Constants.INTENT_NAME_ARTICLE_DATA, data);
                     startActivityForResult(intent, REQ_CODE_DETAIL_ARTICLE);
                 }
 

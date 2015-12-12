@@ -33,7 +33,6 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 	public void bindView(View view, Context context, final Cursor cursor) {
 		ViewHolder holder = new ViewHolder(view);
 		holder.tvTitle.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_TITLE))));
-//		holder.tvTitle.setTag(data.articleUrl);
 		holder.tvUser.setText(cursor.getString(cursor.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_USER)));
 		holder.tvDate.setText(cursor.getString(cursor.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_DATE)));
 		holder.tvHit.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_HIT))));

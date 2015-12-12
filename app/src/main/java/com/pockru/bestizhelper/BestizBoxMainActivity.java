@@ -167,8 +167,8 @@ public class BestizBoxMainActivity extends BaseActivity {
 		mBoardData = (BoardData) getIntent().getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
 		if (mBoardData != null) {
 			BASE_SERVER_URL = mBoardData.baseUrl;
-			DETAIL_URL = mBoardData.id;
-			BOARD_ID = DETAIL_URL.replace("?id=", "");
+//			DETAIL_URL = mBoardData.id;
+			BOARD_ID = mBoardData.id;
 		}
 		
 		getSupportActionBar().setTitle(mBoardData == null ? "" : mBoardData.name);

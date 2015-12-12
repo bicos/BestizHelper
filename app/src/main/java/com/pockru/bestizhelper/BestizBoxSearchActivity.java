@@ -74,8 +74,7 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 		mBoardData = (BoardData) getIntent().getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
 		if (mBoardData != null) {
 			BASE_SERVER_URL = mBoardData.baseUrl;
-			DETAIL_URL = mBoardData.id;
-			BOARD_ID = DETAIL_URL.replace("?id=", "");			
+			BOARD_ID = mBoardData.id;
 		}
 		
 		getSupportActionBar().setTitle(R.string.label_search_activity);

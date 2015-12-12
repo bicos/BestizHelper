@@ -79,7 +79,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 	protected BoardData mBoardData;
 	protected String BASE_SERVER_URL;
-	protected String DETAIL_URL;
 	protected String BOARD_ID;
 
 	@Override

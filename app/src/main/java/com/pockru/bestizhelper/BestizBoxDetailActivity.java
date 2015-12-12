@@ -75,7 +75,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
     private LinearLayout llCommentInput;
     private EditText etComment;
 
-    private ArticleData mArticleData;
+//    private ArticleData mArticleData;
     private ArticleDetailData mArticleDetailData;
     private String atcUrl = "";
     private boolean isLogin = false;
@@ -109,25 +109,23 @@ public class BestizBoxDetailActivity extends BaseActivity {
             finish();
             return;
         }
-
-        mBoardData = (BoardData) intent.getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
-        if (mBoardData != null) {
-            BASE_SERVER_URL = mBoardData.baseUrl;
-            DETAIL_URL = mBoardData.id;
-            BOARD_ID = DETAIL_URL.replace("?id=", "");
-        }
-        mArticleData = (ArticleData) intent.getSerializableExtra(Constants.INTENT_NAME_ARTICLE_DATA);
-
-        getSupportActionBar().setTitle(mBoardData == null ? "" : mBoardData.name);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         atcUrl = intent.getStringExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL);
+
+        Uri uri = Uri.parse(atcUrl);
+        if (uri != null) {
+            BASE_SERVER_URL = uri.getScheme() + "://"+uri.getHost() + "/zboard";
+            BOARD_ID = uri.getQueryParameter("id");
+        }
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(mBoardData == null ? "" : mBoardData.name);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         String params = atcUrl.substring(atcUrl.indexOf("?") + 1);
         ARTICLE_NUMBER = Utils.getURLParam(params, "no");
-
-        isLogin = intent.getBooleanExtra(Constants.INTENT_NAME_IS_LOGIN, false);
+//        isLogin = intent.getBooleanExtra(Constants.INTENT_NAME_IS_LOGIN, false);
 
         tvName = (TextView) findViewById(R.id.txt_user_name);
         tvSubject = (TextView) findViewById(R.id.txt_atc_subject);
@@ -143,15 +141,15 @@ public class BestizBoxDetailActivity extends BaseActivity {
         removeZoomController(wvContents);
 
         llCommentInput = (LinearLayout) findViewById(R.id.ll_comment_input);
-        View containerArticleModify = findViewById(R.id.containerModify);
 
-        if (isLogin) {
-            llCommentInput.setVisibility(View.VISIBLE);
-            containerArticleModify.setVisibility(View.VISIBLE);
-        } else {
-            llCommentInput.setVisibility(View.GONE);
-            containerArticleModify.setVisibility(View.GONE);
-        }
+//        View containerArticleModify = findViewById(R.id.containerModify);
+//        if (isLogin) {
+//            llCommentInput.setVisibility(View.VISIBLE);
+//            containerArticleModify.setVisibility(View.VISIBLE);
+//        } else {
+//            llCommentInput.setVisibility(View.GONE);
+//            containerArticleModify.setVisibility(View.GONE);
+//        }
 
         etComment = (EditText) findViewById(R.id.et_comment);
 
@@ -277,17 +275,16 @@ public class BestizBoxDetailActivity extends BaseActivity {
             Element element = elements.get(1);
 
             mArticleDetailData = new ArticleDetailData();
-            mArticleDetailData.setUserName(mArticleData.getAtcUser());
 
             if (!element.getElementsByAttributeValue("onfocus", "blur()").isEmpty()) {
                 mArticleDetailData.setModifyUrl(element.getElementsByAttributeValue("onfocus", "blur()").get(0).attr("href"));
                 mArticleDetailData.setDeleteUrl(element.getElementsByAttributeValue("onfocus", "blur()").get(1).attr("href"));
             }
 
+            mArticleDetailData.setUserName(element.select("tbody > tr > td:nth-child(1) > span").text());
             mArticleDetailData.setUserHomepage(element.getElementsByAttributeValue("target", "_blank").attr("href"));
-
             mArticleDetailData.setAtcSubject(element.select("b").text());
-            mArticleDetailData.setAtcHit("(hit : " + mArticleData.getAtcHit() + ")");
+            mArticleDetailData.setAtcHit(element.select("tbody > tr > td:nth-child(2) > font").get(0).text());
 
             // contents 셋팅
             elements = doc.getElementsByAttributeValueContaining("cellpadding", "10");
@@ -376,7 +373,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
             isLogin = true;
             UserData data = new UserData(loginId, loginPwd, BASE_SERVER_URL);
             MemberDatabaseHelper.insertOrUpdate(getApplicationContext(), data);
-            // BestizBoxApplication.getClientInstance().setCookieStore(cookieStore);
             Toast.makeText(this, "로그인을 성공했습니다.", Toast.LENGTH_SHORT).show();
         } else {
             isLogin = false;
