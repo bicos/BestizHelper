@@ -36,13 +36,17 @@ public class WriteDialog extends AlertDialog {
     private HorizontalScrollView hsvImage;
     private LinearLayout containerImg;
 
+    private Activity activity;
+
     public WriteDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
+        activity = (Activity) context;
         init();
     }
 
     public WriteDialog(Context context) {
         super(context);
+        activity =  (Activity) context;
         init();
     }
 
@@ -66,17 +70,17 @@ public class WriteDialog extends AlertDialog {
 
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(Preference.getTumblrToken(getContext().getApplicationContext()))
-                        || TextUtils.isEmpty(Preference.getTumblrSecret(getContext().getApplicationContext()))) {
-                    ((Activity)getContext()).startActivityForResult(new Intent(getContext(), TumblrOAuthActivity.class), BestizBoxMainListActivity.REQ_CODE_TUMBLR_AUTH);
+                if (TextUtils.isEmpty(Preference.getTumblrToken(activity.getApplicationContext()))
+                        || TextUtils.isEmpty(Preference.getTumblrSecret(activity.getApplicationContext()))) {
+                    activity.startActivityForResult(new Intent(activity, TumblrOAuthActivity.class), BestizBoxMainListActivity.REQ_CODE_TUMBLR_AUTH);
                 } else {
                     if (Utils.isOverCurrentAndroidVersion(Build.VERSION_CODES.KITKAT) >= 0) {
                         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        ((Activity)getContext()).startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_GET_PHOTO);
+                        activity.startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_GET_PHOTO);
                     } else {
                         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                         intent.setType("image/*");
-                        ((Activity)getContext()).startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_GET_PHOTO);
+                        activity.startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_GET_PHOTO);
                     }
                 }
             }
@@ -121,7 +125,7 @@ public class WriteDialog extends AlertDialog {
             imgList.add(data);
         }
 
-        Glide.with(getContext()).load(imgUrl).into(iv);
+        Glide.with(activity).load(imgUrl).into(iv);
         containerImg.addView(iv);
     }
 
