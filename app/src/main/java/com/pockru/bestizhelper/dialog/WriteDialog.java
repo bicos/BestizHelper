@@ -221,8 +221,10 @@ public class WriteDialog extends AlertDialog {
     private BaseActivity.TumblrImgUpload taskUploadImg;
 
     private void uploadPictures(String token, String secret, Uri uploadUri) {
-        taskUploadImg = new BaseActivity.TumblrImgUpload(getOwnerActivity().getApplicationContext(), this);
-        taskUploadImg.execute(token, secret, Utils.getRealPathFromURI(uploadUri, getOwnerActivity().getApplicationContext()));
+        taskUploadImg = new BaseActivity.TumblrImgUpload(getOwnerActivity(), this);
+        taskUploadImg.execute(token,
+                secret,
+                Utils.getRealPathFromURI(uploadUri, getOwnerActivity()));
     }
 
     public void setWriteTitle(String title) {
