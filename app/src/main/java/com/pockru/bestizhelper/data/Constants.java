@@ -50,11 +50,8 @@ public class Constants {
 
 	/* 인텐트 네임값 정리 */
 	public static final String INTENT_NAME_DETAIL_ARTICLE_URL = "detail_article_url";
-	public static final String INTENT_NAME_BASE_SERVER_URL = "base_server_url";
-	public static final String INTENT_NAME_BOARD_ID = "board_id";
 	public static final String INTENT_NAME_IS_LOGIN = "is_login";
 	public static final String INTENT_NAME_BOARD_DATA = "board_data";
-	public static final String INTENT_NAME_ARTICLE_DATA = "article_data";
 	
 
 	/* 플래그값 정리 */

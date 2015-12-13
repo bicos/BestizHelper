@@ -2,6 +2,7 @@ package com.pockru.bestizhelper;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
@@ -42,11 +43,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pockru.bestizhelper.asynctask.ImgDownloadTask;
-import com.pockru.bestizhelper.data.ArticleData;
+import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.data.ArticleDetailData;
-import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.UserData;
+import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.dialog.WriteDialog;
 import com.pockru.network.BestizParamsUtil;
@@ -316,6 +317,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
             }
 
             Elements tr = element.select("tr");
+            mArticleDetailData.setCommentCnt(tr.size());
             for (int i = 0; i < tr.size(); i++) {
                 Elements td = tr.get(i).select("td");
                 for (int j = 0; j < td.size(); j++) {
@@ -339,7 +341,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
                     }
                 }
             }
-
             // 삭제 링크 변경
             Elements atags = element.select("a");
             for (int i = 0; i < atags.size(); i++) {
@@ -455,8 +456,8 @@ public class BestizBoxDetailActivity extends BaseActivity {
     }
 
     private void setCurrentLayout(ArticleDetailData data) {
-        // 레이아웃이 바뀔때마다 디비를 업데이트한다.
-//		ArticleDatabaseHelper.insertOrUpdate(this, ArticleDB.createInstance(mArticleData, data));
+//        // 레이아웃이 바뀔때마다 디비를 업데이트한다.
+//		ArticleDatabaseHelper.insertOrUpdate(this, ArticleDB.createInstance(data, atcUrl));
 
         tvSubject.setText(data.getAtcSubject());
         if (data.getUserHomepage() == null || data.getUserHomepage().equals("")) {
@@ -828,4 +829,15 @@ public class BestizBoxDetailActivity extends BaseActivity {
         }
     }
 
+    public static void startDetailActivity(Context activity, String atcUrl){
+        Intent intent = new Intent(activity, BestizBoxDetailActivity.class);
+        intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, atcUrl);
+        activity.startActivity(intent);
+    }
+
+    public static void startDetailActivity(Activity activity, String atcUrl, int reqCode){
+        Intent intent = new Intent(activity, BestizBoxDetailActivity.class);
+        intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, atcUrl);
+        activity.startActivityForResult(intent, reqCode);
+    }
 }

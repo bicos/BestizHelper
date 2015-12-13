@@ -23,9 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pockru.bestizhelper.adapter.ArticleListAdapter;
+import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.BoardData;
 import com.pockru.bestizhelper.data.Constants;
+import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.network.BestizUrlUtil;
 import com.pockru.utils.Utils;
 
@@ -347,14 +349,13 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 		ArticleData data = mAdapter.getItem(position);
 
 		if (data != null) {
-			Intent intent = new Intent(BestizBoxSearchActivity.this, BestizBoxDetailActivity.class);
-			intent.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
-			intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()));
-			intent.putExtra(Constants.INTENT_NAME_ARTICLE_DATA, data);
-			intent.putExtra(Constants.INTENT_NAME_BOARD_ID, BOARD_ID);
-			intent.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
-			intent.putExtra(Constants.INTENT_NAME_BASE_SERVER_URL, BASE_SERVER_URL);
-			startActivityForResult(intent, BestizBoxMainListActivity.REQ_CODE_DETAIL_ARTICLE);
+			ArticleDatabaseHelper.insertOrUpdate(BestizBoxSearchActivity.this,
+					ArticleDB.createInstance(data,
+							BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink())));
+
+			BestizBoxDetailActivity.startDetailActivity(BestizBoxSearchActivity.this,
+					BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()),
+					REQ_CODE_DETAIL_ARTICLE);
 		}
 	}
 	

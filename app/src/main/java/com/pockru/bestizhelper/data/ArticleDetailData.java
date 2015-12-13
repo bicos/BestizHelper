@@ -13,6 +13,7 @@ public class ArticleDetailData {
 	private String googleAd;
 	private String modifyUrl;
 	private String deleteUrl;
+	private int commentCnt;
 
 	private ArrayList<CommentUserData> commentUserList = new ArrayList<CommentUserData>();
 
@@ -103,11 +104,11 @@ public class ArticleDetailData {
 		this.atcRealContents = atcRealContents;
 	}
 
-	@Override
-	public String toString() {
-		return "ArticleDetailData [userName=" + userName + ", atcHit=" + atcHit + ", userHomepage=" + userHomepage + ", atcSubject=" + atcSubject
-				+ ", atcContents=" + atcContents + ", googleAd=" + googleAd + ", modifyUrl=" + modifyUrl + ", deleteUrl=" + deleteUrl + ", commentUserList="
-				+ commentUserList + "]";
+	public int getCommentCnt() {
+		return commentCnt;
 	}
 
+	public void setCommentCnt(int commentCnt) {
+		this.commentCnt = commentCnt;
+	}
 }
