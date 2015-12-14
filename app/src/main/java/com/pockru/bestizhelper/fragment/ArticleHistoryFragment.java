@@ -3,6 +3,7 @@ package com.pockru.bestizhelper.fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,8 @@ import com.pockru.bestizhelper.BaseActivity;
 import com.pockru.bestizhelper.BestizBoxDetailActivity;
 import com.pockru.bestizhelper.R;
 import com.pockru.bestizhelper.adapter.ArticleHistoryAdapter;
+import com.pockru.bestizhelper.data.BoardData;
+import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.database.DatabaseContract;
 import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 
@@ -24,9 +27,23 @@ import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
  */
 public class ArticleHistoryFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
+    private BoardData boardData;
+
+    public static Fragment newInstance(BoardData boardData){
+        ArticleHistoryFragment fragment = new ArticleHistoryFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constants.INTENT_NAME_BOARD_DATA, boardData);
+
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        boardData = (BoardData) getArguments().getSerializable(Constants.INTENT_NAME_BOARD_DATA);
     }
 
     private ListView mListView;
@@ -44,7 +61,7 @@ public class ArticleHistoryFragment extends Fragment implements AdapterView.OnIt
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAdapter = new ArticleHistoryAdapter(getActivity());
+        mAdapter = new ArticleHistoryAdapter(getActivity(), boardData.id);
         mListView.setAdapter(mAdapter);
 
         mListView.setOnItemClickListener(this);

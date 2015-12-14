@@ -54,6 +54,7 @@ import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.dialog.WriteDialog;
+import com.pockru.bestizhelper.fragment.ArticleHistoryFragment;
 import com.pockru.bestizhelper.view.ChatView;
 import com.pockru.firebase.UrlConstants;
 import com.pockru.network.BestizParamsUtil;
@@ -323,6 +324,12 @@ public class BestizBoxMainListActivity extends BaseActivity {
 //        });
 
         mRef = new Firebase(UrlConstants.FIREBASE_URL).child(UrlConstants.CHAT);
+
+        // 히스토리 셋팅
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_history, ArticleHistoryFragment.newInstance(mBoardData))
+                .commit();
 
         pb = (ProgressBar) findViewById(R.id.progressBar1);
 

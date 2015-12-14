@@ -24,8 +24,14 @@ import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 public class ArticleHistoryAdapter extends CursorAdapter {
 	private Activity mContext;
 
-	public ArticleHistoryAdapter(Activity context) {
-		super(context, context.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI, null, null, null, null), false);
+	public ArticleHistoryAdapter(Activity context, String boardNo) {
+		super(context,
+				context.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
+						null,
+						DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ?",
+						new String[]{"%id=" + boardNo + "%"},
+						null),
+				false);
 		mContext = context;
 	}
 
