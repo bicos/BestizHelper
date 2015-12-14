@@ -248,6 +248,12 @@ public class BestizBoxDetailActivity extends BaseActivity {
         try {
             Document doc = Jsoup.parse(html);
 
+            if (doc.getElementsByTag("a").text().contains("ㅁLogin")) {
+                isLogin = false;
+            } else {
+                isLogin = true;
+            }
+
             if (doc.select("img[src$=i_delete.gif]").size() > 0) {
                 isDelete = true;
                 findViewById(R.id.btn_delete).setVisibility(View.VISIBLE);

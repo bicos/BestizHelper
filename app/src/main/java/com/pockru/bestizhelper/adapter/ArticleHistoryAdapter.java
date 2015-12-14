@@ -23,7 +23,7 @@ import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 
 public class ArticleHistoryAdapter extends CursorAdapter {
 	private Activity mContext;
-
+	private String mBoardNo;
 	public ArticleHistoryAdapter(Activity context, String boardNo) {
 		super(context,
 				context.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
@@ -33,6 +33,7 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 						null),
 				false);
 		mContext = context;
+		mBoardNo = boardNo;
 	}
 
 	@Override
@@ -53,7 +54,11 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void refreshAdapter(){
-		Cursor c = mContext.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI, null, null, null, null);
+		Cursor c = mContext.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
+				null,
+				DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ?",
+				new String[]{"%id=" + mBoardNo + "%"},
+				null);
 		if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD){
 			swapCursor(c);
 		} else {
