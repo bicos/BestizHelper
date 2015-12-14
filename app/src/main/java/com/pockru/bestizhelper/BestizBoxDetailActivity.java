@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
@@ -15,7 +14,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,14 +40,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.pockru.bestizhelper.asynctask.ImgDownloadTask;
-import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.data.ArticleDetailData;
+import com.pockru.bestizhelper.data.CommentData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.UserData;
-import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.dialog.WriteDialog;
+import com.pockru.firebase.UrlConstants;
 import com.pockru.network.BestizParamsUtil;
 import com.pockru.network.BestizUrlUtil;
 import com.pockru.utils.Utils;
@@ -89,6 +88,10 @@ public class BestizBoxDetailActivity extends BaseActivity {
     private LinearLayout layoutPopup;
 
     private ValueCallback<Uri> mUploadMessage;
+
+    // 파이어버드 관련
+    private Firebase mRef;
+    private UserData mUserData;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
@@ -146,6 +149,9 @@ public class BestizBoxDetailActivity extends BaseActivity {
         etComment = (EditText) findViewById(R.id.et_comment);
 
         pb = (ProgressBar) findViewById(R.id.progressBar1);
+
+        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(BOARD_ID).child(ARTICLE_NUMBER);
+        mUserData = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 
         requestNetwork(FLAG_REQ_DETAIL_ARTICLE, atcUrl);
     }
@@ -489,9 +495,14 @@ public class BestizBoxDetailActivity extends BaseActivity {
                         setNegativeButton("취소", null).show();
                 break;
             case R.id.btn_comment:
+                String comment = etComment.getText().toString();
+                if (mUserData != null) {
+                    mRef.push().setValue(new CommentData(mUserData.name, comment));
+                }
+
                 requestNetwork(FLAG_REQ_COMMENT,
                         BestizUrlUtil.createCommentWriteUrl(BASE_SERVER_URL),
-                        BestizParamsUtil.createWriteCommentParams(BOARD_ID, ARTICLE_NUMBER, etComment.getText().toString()));
+                        BestizParamsUtil.createWriteCommentParams(BOARD_ID, ARTICLE_NUMBER, comment));
                 break;
             default:
                 break;
@@ -701,7 +712,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            Log.i("ravy", "onPageStarted url : " + url);
             if (url.contains("about:blank")) {
                 return;
             }
@@ -716,7 +726,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            Log.i("ravy", "onPageFinished url : " + url);
             super.onPageFinished(view, url);
         }
 

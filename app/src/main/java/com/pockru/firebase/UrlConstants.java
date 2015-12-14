@@ -10,4 +10,6 @@ public class UrlConstants {
     public static final String FIREBASE_CONNECTED = ".info/connected";
     public static final String CHAT = "chat";
     public static final String WRITE = "write";
+    public static final String COMMENT = "comment";
+    public static final String ARTICLE = "article";
 }

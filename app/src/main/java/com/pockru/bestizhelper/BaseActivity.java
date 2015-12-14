@@ -250,22 +250,22 @@ public abstract class BaseActivity extends AppCompatActivity {
 					}
 				}
 
-//				if (result != null) {
-//					if (result.length() > 4000) {
-//						Log.v(TAG, "sb.length = " + result.length());
-//						int chunkCount = result.length() / 4000;     // integer division
-//						for (int i = 0; i <= chunkCount; i++) {
-//							int max = 4000 * (i + 1);
-//							if (max >= result.length()) {
-//								Log.v(TAG, result.substring(4000 * i));
-//							} else {
-//								Log.v(TAG, result.substring(4000 * i, max));
-//							}
-//						}
-//					} else {
-//						Log.v(TAG, result);
-//					}
-//				}
+				if (result != null) {
+					if (result.length() > 4000) {
+						Log.v(TAG, "sb.length = " + result.length());
+						int chunkCount = result.length() / 4000;     // integer division
+						for (int i = 0; i <= chunkCount; i++) {
+							int max = 4000 * (i + 1);
+							if (max >= result.length()) {
+								Log.v(TAG, result.substring(4000 * i));
+							} else {
+								Log.v(TAG, result.substring(4000 * i, max));
+							}
+						}
+					} else {
+						Log.v(TAG, result);
+					}
+				}
 
 				onResponse(conn.getResCode(), conn.getHeaderFields(), result, flag);
 			}
@@ -481,4 +481,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 	};
 
+	public interface CommentAlarmAddProvider {
+		public void addCommentAlarmFragment(String title, String link, String boardNo, String articleNo);
+	}
 }

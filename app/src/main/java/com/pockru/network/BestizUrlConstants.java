@@ -17,6 +17,7 @@ public class BestizUrlConstants {
     public static final String WRITE_ARTICLE = "/write_ok.php";
     public static final String DELETE_ARTICLE = "/delete_ok.php";
     public static final String MODIFY_ARTICLE = "/write.php";
+    public static final String VIEW_ARTICLE = "/view.php";
 
     public static final String LOGIN = "/login_check.php";
     public static final String LOGOUT = "/logout.php";
@@ -27,4 +28,5 @@ public class BestizUrlConstants {
     public static final String DELETE_COMMENT = "/del_comment_ok.php";
 
     public static final String QUERY_BOARD_ID = "id=%s";
+    public static final String QUERY_ARTICLE_NO = "no=%s";
 }

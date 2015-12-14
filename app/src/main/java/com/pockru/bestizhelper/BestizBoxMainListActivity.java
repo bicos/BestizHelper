@@ -6,8 +6,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -55,6 +57,7 @@ import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.dialog.WriteDialog;
 import com.pockru.bestizhelper.fragment.ArticleHistoryFragment;
+import com.pockru.bestizhelper.fragment.CommentAlarmFragment;
 import com.pockru.bestizhelper.view.ChatView;
 import com.pockru.firebase.UrlConstants;
 import com.pockru.network.BestizParamsUtil;
@@ -73,7 +76,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BestizBoxMainListActivity extends BaseActivity {
+public class BestizBoxMainListActivity extends BaseActivity implements BaseActivity.CommentAlarmAddProvider {
 
     private static final String TAG = "MainActivity";
 
@@ -106,8 +109,8 @@ public class BestizBoxMainListActivity extends BaseActivity {
     private ChatView chatView;
 
     // 채팅 관련
-    private Firebase mRef;
-    private ValueEventListener mConnectedListener;
+//    private Firebase mRef;
+//    private ValueEventListener mConnectedListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -323,13 +326,13 @@ public class BestizBoxMainListActivity extends BaseActivity {
 //            }
 //        });
 
-        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(UrlConstants.CHAT);
+//        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(UrlConstants.CHAT);
 
         // 히스토리 셋팅
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.fragment_history, ArticleHistoryFragment.newInstance(mBoardData))
-                .commit();
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .add(R.id.fragment_history, ArticleHistoryFragment.newInstance(mBoardData))
+//                .commit();
 
         pb = (ProgressBar) findViewById(R.id.progressBar1);
 
@@ -343,25 +346,25 @@ public class BestizBoxMainListActivity extends BaseActivity {
         }
     }
 
-    private void sendChatMsg() {
-        if (chatView != null && chatView.getAdapter() != null && chatView.getInputChat() != null) {
-            String msg = chatView.getInputChat().getText().toString();
-            if (TextUtils.isEmpty(msg) == false) {
-                mRef.push().setValue(new ChatData(userData.id, msg, userData.name), new Firebase.CompletionListener() {
-                    @Override
-                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
-                        if (firebaseError == null) { // 채팅작성 성공
-                            chatView.getInputChat().setText("");
-                        } else { // 채팅작성 실패
-                            Toast.makeText(getApplicationContext(), "채팅 작성을 실패하였습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            } else {
-                Toast.makeText(getApplicationContext(), "채팅 내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    private void sendChatMsg() {
+//        if (chatView != null && chatView.getAdapter() != null && chatView.getInputChat() != null) {
+//            String msg = chatView.getInputChat().getText().toString();
+//            if (TextUtils.isEmpty(msg) == false) {
+//                mRef.push().setValue(new ChatData(userData.id, msg, userData.name), new Firebase.CompletionListener() {
+//                    @Override
+//                    public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+//                        if (firebaseError == null) { // 채팅작성 성공
+//                            chatView.getInputChat().setText("");
+//                        } else { // 채팅작성 실패
+//                            Toast.makeText(getApplicationContext(), "채팅 작성을 실패하였습니다.", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//            } else {
+//                Toast.makeText(getApplicationContext(), "채팅 내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     private void computeWriteBtnPosition(int moveScroll) {
         transY += moveScroll;
@@ -433,6 +436,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 nextLoginStep(html);
                 break;
             case FLAG_REQ_WRITE:
+                setWriteList(html);
                 requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
                 break;
             case FLAG_REQ_LOGOUT:
@@ -460,6 +464,21 @@ public class BestizBoxMainListActivity extends BaseActivity {
             default:
                 break;
         }
+    }
+
+    private void setWriteList(String html) {
+        Document doc = Jsoup.parse(html);
+        String url = doc.getElementsByAttribute("content").attr("content");
+        url = url.substring(url.indexOf("url=") + 4);
+        Log.i("test","url : "+url);
+        Uri uri = Uri.parse(BASE_SERVER_URL + "/" + url);
+        String no = uri.getQueryParameter("no");
+
+        if (TextUtils.isEmpty(no) == false) {
+            addCommentAlarmFragment(writeDialog.getTitle(), uri.toString(), BOARD_ID, no);
+        }
+
+        writeDialog.clearData();
     }
 
     @Override
@@ -834,6 +853,22 @@ public class BestizBoxMainListActivity extends BaseActivity {
             android.text.ClipboardManager mgr = (android.text.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
             mgr.setText(extra);
             Toast.makeText(getApplicationContext(), getString(R.string.msg_save_link_url), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void addCommentAlarmFragment(String title, String link, String boardNo, String articleNo) {
+        Log.i("test","addCommentAlarmFragment call...");
+
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(CommentAlarmFragment.TAG);
+        if (fragment != null && fragment instanceof CommentAlarmFragment) {
+            ((CommentAlarmFragment) fragment).addArticle(title, link, boardNo, articleNo);
+        } else {
+            CommentAlarmFragment commentAlarmFragment = CommentAlarmFragment.getInstance(title, link, boardNo, articleNo);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.fragment_history, commentAlarmFragment, CommentAlarmFragment.TAG)
+                    .commit();
         }
     }
 }

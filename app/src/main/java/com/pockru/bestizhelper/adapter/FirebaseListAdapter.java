@@ -27,11 +27,11 @@ import java.util.List;
 public abstract class FirebaseListAdapter<T> extends BaseAdapter {
 
     private Query mRef;
+    private ChildEventListener mListener;
     private Class<T> mModelClass;
     protected LayoutInflater mInflater;
     private List<T> mModels;
     private List<String> mKeys;
-    private ChildEventListener mListener;
 
 
     /**

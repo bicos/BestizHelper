@@ -53,6 +53,12 @@ public class BestizUrlUtil {
         return baseUrl + "/" + articleUrl;
     }
 
+    public static String createDetailArticleUrl(String baseUrl, String boardNo, String articleNo) {
+        return baseUrl + BestizUrlConstants.VIEW_ARTICLE + "?" +
+                String.format(BestizUrlConstants.QUERY_BOARD_ID, boardNo) + "&" +
+                String.format(BestizUrlConstants.QUERY_ARTICLE_NO, articleNo);
+    }
+
     public static String createUserInfoUrl(String baseUrl) {
         return baseUrl + BestizUrlConstants.MEMBER_INFO;
     }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -47,13 +48,22 @@ public class WriteDialog extends AlertDialog {
     private String boardId;
     private String articleNo = "";
 
+    private Context context;
+    private BaseActivity.CommentAlarmAddProvider provider;
+    
     public WriteDialog(Context context, String host, String boardId) {
         this(context, host, boardId, "");
     }
 
     public WriteDialog(Context context, String host, String boardId, String articleNo) {
         super(context);
-        setOwnerActivity((Activity) context);
+        if (context instanceof BaseActivity.CommentAlarmAddProvider) {
+            Log.i("test", "context is CommentAlarmAddProvider");
+            this.provider = (BaseActivity.CommentAlarmAddProvider) context;
+        } else {
+            Log.i("test", "context is not CommentAlarmAddProvider");
+        }
+        this.context = context;
         this.host = host;
         this.boardId = boardId;
         this.articleNo = articleNo;
@@ -73,13 +83,13 @@ public class WriteDialog extends AlertDialog {
             public void onClick(DialogInterface dialog, int which) {
                 if (!TextUtils.isEmpty(host) && !TextUtils.isEmpty(boardId)) {
                     if (taskUploadImg != null && taskUploadImg.startImgUpload) {
-                        Utils.showAlternateAlertDialog(getOwnerActivity(), getOwnerActivity().getString(R.string.menu_write),
-                                getOwnerActivity().getString(R.string.alert_msg_still_img_upload), new DialogInterface.OnClickListener() {
+                        Utils.showAlternateAlertDialog(context, context.getString(R.string.menu_write),
+                                context.getString(R.string.alert_msg_still_img_upload), new DialogInterface.OnClickListener() {
 
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         if (which == DialogInterface.BUTTON_POSITIVE) {
-                                            ((BaseActivity)getOwnerActivity()).
+                                            ((BaseActivity)context).
                                                     requestNetwork(BaseActivity.FLAG_REQ_WRITE,
                                                             BestizUrlUtil.createArticleWriteUrl(host),
                                                             BestizParamsUtil.createWriteParams(boardId,getTitle(), getTotalContents(), articleNo));
@@ -88,7 +98,8 @@ public class WriteDialog extends AlertDialog {
                                 });
 
                     } else {
-                        ((BaseActivity)getOwnerActivity()).
+
+                        ((BaseActivity)context).
                                 requestNetwork(BaseActivity.FLAG_REQ_WRITE,
                                         BestizUrlUtil.createArticleWriteUrl(host),
                                         BestizParamsUtil.createWriteParams(boardId, getTitle(), getTotalContents(), articleNo));
@@ -118,17 +129,17 @@ public class WriteDialog extends AlertDialog {
 
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(Preference.getTumblrToken(getOwnerActivity().getApplicationContext()))
-                        || TextUtils.isEmpty(Preference.getTumblrSecret(getOwnerActivity().getApplicationContext()))) {
-                    getOwnerActivity().startActivityForResult(new Intent(getOwnerActivity(), TumblrOAuthActivity.class), REQ_CODE_TUMBLR_AUTH);
+                if (TextUtils.isEmpty(Preference.getTumblrToken(context.getApplicationContext()))
+                        || TextUtils.isEmpty(Preference.getTumblrSecret(context.getApplicationContext()))) {
+                    ((Activity)context).startActivityForResult(new Intent(context, TumblrOAuthActivity.class), REQ_CODE_TUMBLR_AUTH);
                 } else {
                     if (Utils.isOverCurrentAndroidVersion(Build.VERSION_CODES.KITKAT) >= 0) {
                         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        getOwnerActivity().startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                        ((Activity)context).startActivityForResult(intent, REQ_CODE_GET_PHOTO);
                     } else {
                         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                         intent.setType("image/*");
-                        getOwnerActivity().startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                        ((Activity)context).startActivityForResult(intent, REQ_CODE_GET_PHOTO);
                     }
                 }
             }
@@ -173,7 +184,7 @@ public class WriteDialog extends AlertDialog {
             imgList.add(data);
         }
 
-        Glide.with(getOwnerActivity()).load(imgUrl).into(iv);
+        Glide.with(context).load(imgUrl).into(iv);
         containerImg.addView(iv);
     }
 
@@ -183,10 +194,13 @@ public class WriteDialog extends AlertDialog {
 
     @Override
     public void dismiss() {
+        super.dismiss();
+    }
+
+    public void clearData(){
         subject.setText("");
         contents.setText("");
         imgList.clear();
-        super.dismiss();
     }
 
     /**
@@ -200,19 +214,19 @@ public class WriteDialog extends AlertDialog {
         switch (requestCode) {
             case REQ_CODE_GET_PHOTO:
                 if (isShowing()) {
-                    uploadPictures(Preference.getTumblrToken(getOwnerActivity().getApplicationContext()),
-                            Preference.getTumblrSecret(getOwnerActivity().getApplicationContext()),
+                    uploadPictures(Preference.getTumblrToken(context.getApplicationContext()),
+                            Preference.getTumblrSecret(context.getApplicationContext()),
                             data.getData());
                 }
                 break;
             case REQ_CODE_TUMBLR_AUTH:
                 if (Utils.isOverCurrentAndroidVersion(Build.VERSION_CODES.KITKAT) >= 0) {
                     Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    getOwnerActivity().startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                    ((Activity)context).startActivityForResult(intent, REQ_CODE_GET_PHOTO);
                 } else {
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                     intent.setType("image/*");
-                    getOwnerActivity().startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                    ((Activity)context).startActivityForResult(intent, REQ_CODE_GET_PHOTO);
                 }
                 break;
         }
@@ -221,10 +235,10 @@ public class WriteDialog extends AlertDialog {
     private BaseActivity.TumblrImgUpload taskUploadImg;
 
     private void uploadPictures(String token, String secret, Uri uploadUri) {
-        taskUploadImg = new BaseActivity.TumblrImgUpload(getOwnerActivity(), this);
+        taskUploadImg = new BaseActivity.TumblrImgUpload(context, this);
         taskUploadImg.execute(token,
                 secret,
-                Utils.getRealPathFromURI(uploadUri, getOwnerActivity()));
+                Utils.getRealPathFromURI(uploadUri, context));
     }
 
     public void setWriteTitle(String title) {
