@@ -25,15 +25,17 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 	private Activity mContext;
 	private String mBoardNo;
 	public ArticleHistoryAdapter(Activity context, String boardNo) {
-		super(context,
-				context.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
-						null,
-						DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ?",
-						new String[]{"%id=" + boardNo + "%"},
-						null),
-				false);
+		super(context,getDefaultCursor(context, boardNo), false);
 		mContext = context;
 		mBoardNo = boardNo;
+	}
+
+	private static Cursor getDefaultCursor(Context context, String boardNo){
+		return context.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
+				null,
+				DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ?",
+				new String[]{"%id=" + boardNo + "%"},
+				DatabaseContract.ArticleTable._ID + " DESC");
 	}
 
 	@Override
@@ -54,11 +56,7 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void refreshAdapter(){
-		Cursor c = mContext.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
-				null,
-				DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ?",
-				new String[]{"%id=" + mBoardNo + "%"},
-				null);
+		Cursor c = getDefaultCursor(mContext, mBoardNo);
 		if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD){
 			swapCursor(c);
 		} else {

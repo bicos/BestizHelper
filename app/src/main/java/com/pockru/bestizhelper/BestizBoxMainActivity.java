@@ -516,19 +516,10 @@ public class BestizBoxMainActivity extends BaseActivity {
                 isPause = true;
             }
         }
-        stopMediaPlayer();
 
         unregisterReceiver(completeReceiver);
 
         super.onPause();
-    }
-
-    private void stopMediaPlayer() {
-        MediaPlayer player = new MediaPlayer();
-
-        if (player.isPlaying()) {
-            player.stop();
-        }
     }
 
     @Override

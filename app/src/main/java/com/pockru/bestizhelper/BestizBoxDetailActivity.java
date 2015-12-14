@@ -410,7 +410,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
                 wvContents.onPause();
             }
         }
-        stopMediaPlayer();
 
         unregisterReceiver(completeReceiver);
 
@@ -425,14 +424,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
             wvContents.destroy();
         }
         super.onDestroy();
-    }
-
-    private void stopMediaPlayer() {
-        MediaPlayer player = new MediaPlayer();
-
-        if (player.isPlaying()) {
-            player.stop();
-        }
     }
 
     @Override
