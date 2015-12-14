@@ -1,14 +1,20 @@
 package com.pockru.bestizhelper;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -465,5 +471,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 			mImgUpload = null;
 		}
 	}
+
+	public static BroadcastReceiver completeReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Toast.makeText(context, "다운로드를 완료하였습니다.", Toast.LENGTH_SHORT).show();
+		}
+
+	};
 
 }

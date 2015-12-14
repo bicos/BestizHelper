@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
@@ -42,12 +43,15 @@ public class ImgDownloadTask extends AsyncTask<HitTestResult, Void, Void> {
 	private void saveImageFile(HitTestResult result) {
 		try {
 			DownloadManager manager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
-
 			String url = result.getExtra();
+			String fileName = createFileName(url);
 			DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
 			request.setTitle("사진 다운로드");
 			request.setDescription(url);
-			request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, createFileName(url));
+			request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, fileName);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+			}
 			manager.enqueue(request);
 
 		} catch (Exception e) {

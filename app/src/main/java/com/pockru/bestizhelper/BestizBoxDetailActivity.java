@@ -90,15 +90,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
     private ValueCallback<Uri> mUploadMessage;
 
-    private BroadcastReceiver completeReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "다운로드가 완료되었습니다.", Toast.LENGTH_SHORT).show();
-        }
-
-    };
-
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {

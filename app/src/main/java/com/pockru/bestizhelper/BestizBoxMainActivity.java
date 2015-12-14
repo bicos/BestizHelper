@@ -103,15 +103,6 @@ public class BestizBoxMainActivity extends BaseActivity {
     protected String loginId;
     protected String loginPwd;
 
-    private BroadcastReceiver completeReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "다운로드가 완료되었습니다.", Toast.LENGTH_SHORT).show();
-        }
-
-    };
-
     private WriteDialog mWriteDialog;
 
     @Override
