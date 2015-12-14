@@ -53,8 +53,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected static final int NETWORK_WIFI = 2;
 	protected static final int NETWORK_NOT_AVAILABLE = 3;
 
+	//
+	public static final int REQ_FILECHOOSER = 102;
 	public static final int REQ_CODE_DETAIL_ARTICLE = 103;
 
+	// 네트워크 플래그 관련
 	public static final int FLAG_REQ_MAIN_ARTICLE = 1000;
 	public static final int FLAG_REQ_NEXT_ARTICLE = 1001;
 	public static final int FLAG_REQ_LOGIN = 1003;
