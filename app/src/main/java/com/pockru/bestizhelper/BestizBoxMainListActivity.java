@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,14 +18,12 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.view.SupportMenuInflater;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -36,13 +33,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
@@ -50,16 +42,11 @@ import com.pockru.bestizhelper.adapter.ArticleListAdapter;
 import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.data.ArticleData;
 import com.pockru.bestizhelper.data.BoardData;
-import com.pockru.bestizhelper.data.ChatData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.dialog.WriteDialog;
-import com.pockru.bestizhelper.fragment.ArticleHistoryFragment;
-import com.pockru.bestizhelper.fragment.CommentAlarmFragment;
-import com.pockru.bestizhelper.view.ChatView;
-import com.pockru.firebase.UrlConstants;
 import com.pockru.network.BestizParamsUtil;
 import com.pockru.network.BestizUrlUtil;
 import com.pockru.utils.UiUtils;
@@ -76,7 +63,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BestizBoxMainListActivity extends BaseActivity implements BaseActivity.CommentAlarmAddProvider {
+public class BestizBoxMainListActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -106,7 +93,7 @@ public class BestizBoxMainListActivity extends BaseActivity implements BaseActiv
 
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawerLayout;
-    private ChatView chatView;
+//    private ChatView chatView;
 
     // 채팅 관련
 //    private Firebase mRef;
@@ -153,7 +140,8 @@ public class BestizBoxMainListActivity extends BaseActivity implements BaseActiv
 
                     BestizBoxDetailActivity.startDetailActivity(BestizBoxMainListActivity.this,
                             BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()),
-                            REQ_CODE_DETAIL_ARTICLE);
+                            REQ_CODE_DETAIL_ARTICLE,
+                            false);
                 }
             }
         });
@@ -436,7 +424,7 @@ public class BestizBoxMainListActivity extends BaseActivity implements BaseActiv
                 nextLoginStep(html);
                 break;
             case FLAG_REQ_WRITE:
-                setWriteList(html);
+                checkInvalidateWrite(html);
                 requestNetwork(FLAG_REQ_MAIN_ARTICLE, BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
                 break;
             case FLAG_REQ_LOGOUT:
@@ -466,16 +454,29 @@ public class BestizBoxMainListActivity extends BaseActivity implements BaseActiv
         }
     }
 
-    private void setWriteList(String html) {
-        Document doc = Jsoup.parse(html);
-        String url = doc.getElementsByAttribute("content").attr("content");
-        url = url.substring(url.indexOf("url=") + 4);
-        Log.i("test","url : "+url);
-        Uri uri = Uri.parse(BASE_SERVER_URL + "/" + url);
-        String no = uri.getQueryParameter("no");
+    /**
+     * 정상적으로 글이 작성됐는지 판별하는 메소드
+     *
+     * @param html
+     */
+    private void checkInvalidateWrite(String html) {
+        try {
+            Document doc = Jsoup.parse(html);
+            String url = doc.getElementsByAttribute("content").attr("content");
+            url = url.substring(url.indexOf("url=") + 4);
+            Uri uri = Uri.parse(BASE_SERVER_URL + "/" + url);
+            String no = uri.getQueryParameter("no");
 
-        if (TextUtils.isEmpty(no) == false) {
-            addCommentAlarmFragment(writeDialog.getTitle(), uri.toString(), BOARD_ID, no);
+            if (TextUtils.isEmpty(no) == false) { // 정상적으로 글이 작성된 경우
+//                addCommentAlarmFragment(writeDialog.getTitle(), uri.toString(), BOARD_ID, no);
+                // 해당 글 상세 띄움
+                BestizBoxDetailActivity.startDetailActivity(this,
+                        BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, BOARD_ID, no),
+                        REQ_CODE_DETAIL_ARTICLE,
+                        true);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
         writeDialog.clearData();
@@ -691,7 +692,7 @@ public class BestizBoxMainListActivity extends BaseActivity implements BaseActiv
     public boolean onCreateOptionsMenu(Menu menu) {
         SupportMenuInflater inflater = new SupportMenuInflater(this);
         inflater.inflate(R.menu.menu_main_list, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override
@@ -755,6 +756,10 @@ public class BestizBoxMainListActivity extends BaseActivity implements BaseActiv
                 search.putExtra(Constants.INTENT_NAME_BOARD_DATA, mBoardData);
                 search.putExtra(Constants.INTENT_NAME_IS_LOGIN, isLogin);
                 startActivity(search);
+                return true;
+
+            case R.id.sub_menu_history:
+                ArticleHistoryActivity.startActivity(this, mBoardData);
                 return true;
 
 //            case R.id.sub_menu_history:
@@ -856,19 +861,19 @@ public class BestizBoxMainListActivity extends BaseActivity implements BaseActiv
         }
     }
 
-    @Override
-    public void addCommentAlarmFragment(String title, String link, String boardNo, String articleNo) {
-        Log.i("test","addCommentAlarmFragment call...");
-
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(CommentAlarmFragment.TAG);
-        if (fragment != null && fragment instanceof CommentAlarmFragment) {
-            ((CommentAlarmFragment) fragment).addArticle(title, link, boardNo, articleNo);
-        } else {
-            CommentAlarmFragment commentAlarmFragment = CommentAlarmFragment.getInstance(title, link, boardNo, articleNo);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_history, commentAlarmFragment, CommentAlarmFragment.TAG)
-                    .commit();
-        }
-    }
+//    @Override
+//    public void addCommentAlarmFragment(String title, String link, String boardNo, String articleNo) {
+//        Log.i("test","addCommentAlarmFragment call...");
+//
+//        Fragment fragment = getSupportFragmentManager().findFragmentByTag(CommentAlarmFragment.TAG);
+//        if (fragment != null && fragment instanceof CommentAlarmFragment) {
+//            ((CommentAlarmFragment) fragment).addArticle(title, link, boardNo, articleNo);
+//        } else {
+//            CommentAlarmFragment commentAlarmFragment = CommentAlarmFragment.getInstance(title, link, boardNo, articleNo);
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .add(R.id.fragment_history, commentAlarmFragment, CommentAlarmFragment.TAG)
+//                    .commit();
+//        }
+//    }
 }

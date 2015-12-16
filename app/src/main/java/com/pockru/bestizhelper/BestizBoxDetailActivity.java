@@ -42,10 +42,12 @@ import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.pockru.bestizhelper.asynctask.ImgDownloadTask;
+import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.data.ArticleDetailData;
 import com.pockru.bestizhelper.data.CommentData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.UserData;
+import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.dialog.WriteDialog;
 import com.pockru.firebase.UrlConstants;
@@ -72,10 +74,8 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
     private WebView wvContents;
     private RelativeLayout wvContainer;
-    private LinearLayout llCommentInput;
     private EditText etComment;
 
-//    private ArticleData mArticleData;
     private ArticleDetailData mArticleDetailData;
     private String atcUrl = "";
     private boolean isLogin = false;
@@ -84,6 +84,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
     private boolean isPause = false;
     private boolean isModify = false;
     private boolean isDelete = false;
+    private boolean isWriteArticle = false;
 
     private LinearLayout layoutPopup;
 
@@ -105,6 +106,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
             return;
         }
         atcUrl = intent.getStringExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL);
+        isWriteArticle = intent.getBooleanExtra(Constants.INTENT_NAME_WRITE_ARTICLE, false);
 
         Uri uri = Uri.parse(atcUrl);
         if (uri != null) {
@@ -113,14 +115,13 @@ public class BestizBoxDetailActivity extends BaseActivity {
         }
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(mBoardData == null ? "" : mBoardData.name);
+            getSupportActionBar().setTitle("");
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
         String params = atcUrl.substring(atcUrl.indexOf("?") + 1);
         ARTICLE_NUMBER = Utils.getURLParam(params, "no");
-//        isLogin = intent.getBooleanExtra(Constants.INTENT_NAME_IS_LOGIN, false);
 
         tvName = (TextView) findViewById(R.id.txt_user_name);
         tvSubject = (TextView) findViewById(R.id.txt_atc_subject);
@@ -134,17 +135,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
         initWebView(wvContents);
 
         removeZoomController(wvContents);
-
-        llCommentInput = (LinearLayout) findViewById(R.id.ll_comment_input);
-
-//        View containerArticleModify = findViewById(R.id.containerModify);
-//        if (isLogin) {
-//            llCommentInput.setVisibility(View.VISIBLE);
-//            containerArticleModify.setVisibility(View.VISIBLE);
-//        } else {
-//            llCommentInput.setVisibility(View.GONE);
-//            containerArticleModify.setVisibility(View.GONE);
-//        }
 
         etComment = (EditText) findViewById(R.id.et_comment);
 
@@ -450,8 +440,15 @@ public class BestizBoxDetailActivity extends BaseActivity {
     }
 
     private void setCurrentLayout(ArticleDetailData data) {
-//        // 레이아웃이 바뀔때마다 디비를 업데이트한다.
-//		ArticleDatabaseHelper.insertOrUpdate(this, ArticleDB.createInstance(data, atcUrl));
+//        // 해당 글이 자신이 쓴 글이라면 디비를 업데이트한다.
+        if (isWriteArticle) {
+            ArticleDatabaseHelper.insertOrUpdate(this,
+                    ArticleDB.createInstance(data, atcUrl ,isWriteArticle));
+        }
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(data.getAtcSubject());
+        }
 
         tvSubject.setText(data.getAtcSubject());
         if (data.getUserHomepage() == null || data.getUserHomepage().equals("")) {
@@ -826,15 +823,10 @@ public class BestizBoxDetailActivity extends BaseActivity {
         }
     }
 
-    public static void startDetailActivity(Context activity, String atcUrl){
+    public static void startDetailActivity(Activity activity, String atcUrl, int reqCode, boolean isWriteArticle){
         Intent intent = new Intent(activity, BestizBoxDetailActivity.class);
         intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, atcUrl);
-        activity.startActivity(intent);
-    }
-
-    public static void startDetailActivity(Activity activity, String atcUrl, int reqCode){
-        Intent intent = new Intent(activity, BestizBoxDetailActivity.class);
-        intent.putExtra(Constants.INTENT_NAME_DETAIL_ARTICLE_URL, atcUrl);
+        intent.putExtra(Constants.INTENT_NAME_WRITE_ARTICLE, isWriteArticle);
         activity.startActivityForResult(intent, reqCode);
     }
 }

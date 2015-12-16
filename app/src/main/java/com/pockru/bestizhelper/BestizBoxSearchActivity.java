@@ -2,7 +2,6 @@ package com.pockru.bestizhelper;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -355,7 +354,8 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 
 			BestizBoxDetailActivity.startDetailActivity(BestizBoxSearchActivity.this,
 					BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()),
-					REQ_CODE_DETAIL_ARTICLE);
+					REQ_CODE_DETAIL_ARTICLE,
+					false);
 		}
 	}
 	

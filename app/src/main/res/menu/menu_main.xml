@@ -21,9 +21,15 @@
         android:title="@string/menu_refresh" />
     <item
         android:id="@+id/sub_menu_search"
-        android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
+        android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/menu_search"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/sub_menu_history"
+        android:icon="@drawable/ic_history_black_24dp"
+        android:title="History"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/sub_menu_home"
         android:title="@string/menu_home" />

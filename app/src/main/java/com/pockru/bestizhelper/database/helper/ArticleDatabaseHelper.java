@@ -37,9 +37,7 @@ public class ArticleDatabaseHelper {
 
         try {
             context.getContentResolver().applyBatch(DatabaseContract.CONTENT_AUTHORITY, operations);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (OperationApplicationException e) {
+        } catch (RemoteException | OperationApplicationException e) {
             e.printStackTrace();
         }
     }
@@ -73,9 +71,7 @@ public class ArticleDatabaseHelper {
 
         try {
             context.getContentResolver().applyBatch(DatabaseContract.CONTENT_AUTHORITY, operations);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (OperationApplicationException e) {
+        } catch (RemoteException | OperationApplicationException e) {
             e.printStackTrace();
         }
     }
@@ -88,9 +84,9 @@ public class ArticleDatabaseHelper {
         }
     }
 
-    public static ArticleDB getData(Context context, int articleNum) {
-        String selection = ArticleTable.KEY_ARTICLE_NUM + "=?";
-        String selectionArg[] = {String.valueOf(articleNum)};
+    public static ArticleDB getData(Context context, int articleNum, int articleType) {
+        String selection = ArticleTable.KEY_ARTICLE_NUM + "=? AND " + ArticleTable.KEY_ARTICLE_TYPE +"=?";
+        String selectionArg[] = {String.valueOf(articleNum), String.valueOf(articleType)};
         Cursor cursor = context.getContentResolver().query(ArticleTable.CONTENT_URI, null, selection, selectionArg, null);
         ArticleDB articleDB = new ArticleDB();
         if (cursor != null && cursor.moveToFirst()) {
@@ -107,7 +103,10 @@ public class ArticleDatabaseHelper {
             articleDB.articleModifyUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_MODIFY_URL));
             articleDB.articleDeleteUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_DELETE_URL));
             articleDB.articleFavorite = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_FAVORITE));
+            articleDB.articleType = cursor.getType(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_TYPE));
+            cursor.close();
         }
+
 
         return articleDB;
     }
@@ -115,22 +114,26 @@ public class ArticleDatabaseHelper {
     public static ArrayList<ArticleDB> getAllData(Context context) {
         Cursor cursor = context.getContentResolver().query(ArticleTable.CONTENT_URI, null, null, null, null);
         ArrayList<ArticleDB> articleDBList = new ArrayList<ArticleDB>();
-        while (cursor != null && cursor.moveToNext()) {
-            ArticleDB articleDB = new ArticleDB();
-            articleDB.articleNum = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_NUM));
-            articleDB.articleTitle = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_TITLE));
-            articleDB.articleUser = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_USER));
-            articleDB.articleDate = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_DATE));
-            articleDB.articleHit = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_HIT));
-            articleDB.articleVote = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_VOTE));
-            articleDB.articleComment = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_COMMENT));
-            articleDB.articleUserHomepage = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_USER_HOMEPAGE));
-            articleDB.articleContents = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_CONTENTS));
-            articleDB.articleUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_URL));
-            articleDB.articleModifyUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_MODIFY_URL));
-            articleDB.articleDeleteUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_DELETE_URL));
-            articleDB.articleFavorite = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_FAVORITE));
-            articleDBList.add(articleDB);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                ArticleDB articleDB = new ArticleDB();
+                articleDB.articleNum = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_NUM));
+                articleDB.articleTitle = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_TITLE));
+                articleDB.articleUser = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_USER));
+                articleDB.articleDate = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_DATE));
+                articleDB.articleHit = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_HIT));
+                articleDB.articleVote = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_VOTE));
+                articleDB.articleComment = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_COMMENT));
+                articleDB.articleUserHomepage = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_USER_HOMEPAGE));
+                articleDB.articleContents = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_CONTENTS));
+                articleDB.articleUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_URL));
+                articleDB.articleModifyUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_MODIFY_URL));
+                articleDB.articleDeleteUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_DELETE_URL));
+                articleDB.articleFavorite = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_FAVORITE));
+                articleDB.articleType = cursor.getType(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_TYPE));
+                articleDBList.add(articleDB);
+            }
+            cursor.close();
         }
         return articleDBList;
     }
@@ -139,6 +142,11 @@ public class ArticleDatabaseHelper {
         String selection = ArticleTable.KEY_ARTICLE_NUM + "=?";
         String selectionArg[] = {String.valueOf(articleNum)};
         Cursor cursor = context.getContentResolver().query(ArticleTable.CONTENT_URI, null, selection, selectionArg, null);
-        return cursor != null ? cursor.getCount() : 0;
+        int cnt = 0;
+        if (cursor != null) {
+            cnt = cursor.getCount();
+            cursor.close();
+        }
+        return cnt;
     }
 }

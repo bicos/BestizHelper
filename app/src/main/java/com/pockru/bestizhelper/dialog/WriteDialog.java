@@ -198,6 +198,7 @@ public class WriteDialog extends AlertDialog {
     }
 
     public void clearData(){
+        hsvImage.removeAllViews();
         subject.setText("");
         contents.setText("");
         imgList.clear();

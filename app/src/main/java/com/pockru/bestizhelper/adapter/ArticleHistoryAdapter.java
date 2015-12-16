@@ -2,9 +2,7 @@ package com.pockru.bestizhelper.adapter;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Build;
 import android.text.Html;
@@ -14,23 +12,27 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.pockru.bestizhelper.BaseActivity;
-import com.pockru.bestizhelper.BestizBoxDetailActivity;
 import com.pockru.bestizhelper.R;
-import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.database.DatabaseContract;
-import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 
 public class ArticleHistoryAdapter extends CursorAdapter {
 	private Activity mContext;
 	private String mBoardNo;
-	public ArticleHistoryAdapter(Activity context, String boardNo) {
-		super(context,getDefaultCursor(context, boardNo), false);
+	private int mType;
+
+	public ArticleHistoryAdapter(Activity context, String boardNo, int type) {
+		super(context,getDefaultCursor(context, boardNo, type), false);
 		mContext = context;
 		mBoardNo = boardNo;
+		mType = type;
 	}
 
-	private static Cursor getDefaultCursor(Context context, String boardNo){
+	private static Cursor getDefaultCursor(Context context, String boardNo, int type) {
+//		return context.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
+//				null,
+//				DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ? AND " + DatabaseContract.ArticleTable.KEY_ARTICLE_TYPE + "=?",
+//				new String[]{"%id=" + boardNo + "%", String.valueOf(type)},
+//				DatabaseContract.ArticleTable._ID + " DESC");
 		return context.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
 				null,
 				DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ?",
@@ -56,7 +58,7 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void refreshAdapter(){
-		Cursor c = getDefaultCursor(mContext, mBoardNo);
+		Cursor c = getDefaultCursor(mContext, mBoardNo, mType);
 		if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD){
 			swapCursor(c);
 		} else {

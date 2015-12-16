@@ -14,7 +14,7 @@ import com.pockru.bestizhelper.database.DatabaseContract.MemberInfoTable;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
 	public static final String DATABASE_NAME = "database.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	private static DatabaseHelper instance = null;
 
@@ -62,6 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ ArticleColumns.KEY_ARTICLE_MODIFY_URL + " TEXT,"
 				+ ArticleColumns.KEY_ARTICLE_DELETE_URL + " TEXT,"
 				+ ArticleColumns.KEY_ARTICLE_FAVORITE + " INTEGER,"
+				+ ArticleColumns.KEY_ARTICLE_TYPE + " INTEGER,"
 				+ "UNIQUE (" + ArticleColumns.KEY_ARTICLE_NUM + ") ON CONFLICT REPLACE)";
 
 		String CREATE_TABLE_MEMBER_INFO = "CREATE TABLE " + Tables.TABLE_MEMBER_INFO +
@@ -87,6 +88,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			case 1:
 				db.execSQL(Tables.CREATE_TABLE_MEMBER_INFO);
 				oldVersion++;
+			case 2:
+				db.execSQL("ALTER TABLE " + Tables.TABLE_ARTICLE + " ADD COLUMN " + ArticleColumns.KEY_ARTICLE_TYPE + " INTEGER");
 		}
 	}
 

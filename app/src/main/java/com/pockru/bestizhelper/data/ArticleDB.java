@@ -4,7 +4,10 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 public class ArticleDB {
-	
+
+	public static final int TYPE_VIEW 	= 0;
+	public static final int TYPE_WRITE 	= 1;
+
 	public int articleNum;
 	public String articleTitle;
 	public String articleUser;
@@ -18,6 +21,7 @@ public class ArticleDB {
 	public String articleModifyUrl;
 	public String articleDeleteUrl;
 	public int articleFavorite;
+	public int articleType;
 
 	public static ArticleDB createInstance(ArticleData data , String articleUrl){
 		if (data == null || TextUtils.isEmpty(articleUrl)) {
@@ -35,11 +39,12 @@ public class ArticleDB {
 		articleDB.articleHit = parseInt(data.atcHit);
 		articleDB.articleVote = parseInt(data.atcVote);
 		articleDB.articleComment = parseInt(data.atcComment);
+		articleDB.articleType = ArticleDB.TYPE_WRITE;
 
 		return articleDB;
 	}
 
-	public static ArticleDB createInstance(ArticleDetailData articleDetailData, String articleUrl){
+	public static ArticleDB createInstance(ArticleDetailData articleDetailData, String articleUrl, boolean isWriteArticle){
 		if (articleDetailData == null || TextUtils.isEmpty(articleUrl)) {
 			return null;
 		}
@@ -60,7 +65,8 @@ public class ArticleDB {
 		articleDB.articleContents = articleDetailData.getAtcContents();
 		articleDB.articleModifyUrl = articleDetailData.getModifyUrl();
 		articleDB.articleDeleteUrl = articleDetailData.getDeleteUrl();
-		
+		articleDB.articleType = isWriteArticle ? ArticleDB.TYPE_WRITE : ArticleDB.TYPE_VIEW;
+
 		return articleDB;
 	}
 

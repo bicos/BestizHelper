@@ -52,7 +52,8 @@ public class Constants {
 	public static final String INTENT_NAME_DETAIL_ARTICLE_URL = "detail_article_url";
 	public static final String INTENT_NAME_IS_LOGIN = "is_login";
 	public static final String INTENT_NAME_BOARD_DATA = "board_data";
-	
+	public static final String INTENT_NAME_HISTORY_TYPE = "history_type";
+    public static final String INTENT_NAME_WRITE_ARTICLE = "write_article";
 
 	/* 플래그값 정리 */
 	public static final int REQ_FILECHOOSER = 100;
