@@ -39,7 +39,7 @@ public class ArticleDB {
 		articleDB.articleHit = parseInt(data.atcHit);
 		articleDB.articleVote = parseInt(data.atcVote);
 		articleDB.articleComment = parseInt(data.atcComment);
-		articleDB.articleType = ArticleDB.TYPE_WRITE;
+		articleDB.articleType = ArticleDB.TYPE_VIEW;
 
 		return articleDB;
 	}

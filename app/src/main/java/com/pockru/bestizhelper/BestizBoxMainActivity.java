@@ -55,7 +55,7 @@ import com.pockru.network.BestizParamsUtil;
 import com.pockru.network.BestizUrlUtil;
 import com.pockru.utils.Utils;
 
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.client.utils.URLEncodedUtilsHC4;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -303,12 +303,12 @@ public class BestizBoxMainActivity extends BaseActivity {
     private void movePage(String page, String keyword, String sn, String ss, String sc) {
 
         mWebView.postUrl(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID),
-                URLEncodedUtils.format(BestizParamsUtil.createMovePageParams(BOARD_ID,
-                        page,
-                        keyword,
-                        sn,
-                        ss,
-                        sc),
+                URLEncodedUtilsHC4.format(BestizParamsUtil.createMovePageParams(BOARD_ID,
+                                page,
+                                keyword,
+                                sn,
+                                ss,
+                                sc),
                         "euc-kr").getBytes());
     }
 
@@ -335,7 +335,7 @@ public class BestizBoxMainActivity extends BaseActivity {
 
     private void delete(String no) {
         mWebView.postUrl(BestizUrlUtil.createArticleDeleteUrl(BASE_SERVER_URL),
-                URLEncodedUtils.format(BestizParamsUtil.createDeleteParams(BOARD_ID,no), "euc-kr")
+                URLEncodedUtilsHC4.format(BestizParamsUtil.createDeleteParams(BOARD_ID,no), "euc-kr")
                         .getBytes());
     }
 
@@ -367,13 +367,13 @@ public class BestizBoxMainActivity extends BaseActivity {
 
     private void logout() {
         mWebView.postUrl(BestizUrlUtil.createLogoutUrl(BASE_SERVER_URL),
-                URLEncodedUtils.format(BestizParamsUtil.createLogoutParams(BOARD_ID),
+                URLEncodedUtilsHC4.format(BestizParamsUtil.createLogoutParams(BOARD_ID),
                         "euc-kr").getBytes());
     }
 
     private void search(boolean sn, boolean ss, boolean sc, String keyword) {
         mWebView.postUrl(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID),
-                URLEncodedUtils.format(BestizParamsUtil.createMovePageParams(
+                URLEncodedUtilsHC4.format(BestizParamsUtil.createMovePageParams(
                         BOARD_ID,
                         "1",
                         keyword,

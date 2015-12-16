@@ -2,7 +2,7 @@ package com.pockru.network;
 
 import java.util.Map;
 
-import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.entity.UrlEncodedFormEntityHC4;
 
 public class RequestInfo {
 	private String url = "";
@@ -10,7 +10,7 @@ public class RequestInfo {
 	private String encoding = "";
 
 	private Map<String, String> requestProperty;
-	private UrlEncodedFormEntity entity;
+	private UrlEncodedFormEntityHC4 entity;
 
 	public String getUrl() {
 		return url;
@@ -49,11 +49,11 @@ public class RequestInfo {
 
 	}
 
-	public UrlEncodedFormEntity getEntity() {
+	public UrlEncodedFormEntityHC4 getEntity() {
 		return entity;
 	}
 
-	public void setEntity(UrlEncodedFormEntity entity) {
+	public void setEntity(UrlEncodedFormEntityHC4 entity) {
 		this.entity = entity;
 	}
 

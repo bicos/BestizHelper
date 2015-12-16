@@ -32,6 +32,7 @@ public class ArticleDatabaseHelper {
         cv.put(ArticleTable.KEY_ARTICLE_MODIFY_URL, articleDB.articleModifyUrl);
         cv.put(ArticleTable.KEY_ARTICLE_DELETE_URL, articleDB.articleDeleteUrl);
         cv.put(ArticleTable.KEY_ARTICLE_FAVORITE, articleDB.articleFavorite);
+        cv.put(ArticleTable.KEY_ARTICLE_TYPE, articleDB.articleType);
 
         operations.add(ContentProviderOperation.newInsert(ArticleTable.CONTENT_URI).withValues(cv).build());
 
@@ -65,6 +66,7 @@ public class ArticleDatabaseHelper {
         cv.put(ArticleTable.KEY_ARTICLE_MODIFY_URL, articleDB.articleModifyUrl);
         cv.put(ArticleTable.KEY_ARTICLE_DELETE_URL, articleDB.articleDeleteUrl);
         cv.put(ArticleTable.KEY_ARTICLE_FAVORITE, articleDB.articleFavorite);
+        cv.put(ArticleTable.KEY_ARTICLE_TYPE, articleDB.articleType);
 
         operations.add(ContentProviderOperation.newUpdate(ArticleTable.CONTENT_URI)
                 .withSelection(ArticleTable.KEY_ARTICLE_NUM + "=?", new String[]{String.valueOf(articleDB.articleNum)}).withValues(cv).build());
@@ -103,7 +105,7 @@ public class ArticleDatabaseHelper {
             articleDB.articleModifyUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_MODIFY_URL));
             articleDB.articleDeleteUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_DELETE_URL));
             articleDB.articleFavorite = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_FAVORITE));
-            articleDB.articleType = cursor.getType(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_TYPE));
+            articleDB.articleType = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_TYPE));
             cursor.close();
         }
 
@@ -130,7 +132,7 @@ public class ArticleDatabaseHelper {
                 articleDB.articleModifyUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_MODIFY_URL));
                 articleDB.articleDeleteUrl = cursor.getString(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_DELETE_URL));
                 articleDB.articleFavorite = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_FAVORITE));
-                articleDB.articleType = cursor.getType(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_TYPE));
+                articleDB.articleType = cursor.getInt(cursor.getColumnIndex(ArticleTable.KEY_ARTICLE_TYPE));
                 articleDBList.add(articleDB);
             }
             cursor.close();

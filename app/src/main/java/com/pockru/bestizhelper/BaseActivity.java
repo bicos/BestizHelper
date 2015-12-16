@@ -1,20 +1,15 @@
 package com.pockru.bestizhelper;
 
 import android.app.AlertDialog;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -38,7 +33,7 @@ import com.tumblr.jumblr.types.PhotoPost;
 
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.entity.UrlEncodedFormEntityHC4;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -207,7 +202,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 		info.setEncoding("euc-kr");
 		if (params != null) {
 			try {
-				info.setEntity(new UrlEncodedFormEntity(params, "euc-kr"));
+				info.setEntity(new UrlEncodedFormEntityHC4(params, "euc-kr"));
 			} catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

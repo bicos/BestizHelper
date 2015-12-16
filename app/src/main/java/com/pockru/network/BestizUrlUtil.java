@@ -1,7 +1,7 @@
 package com.pockru.network;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.client.utils.URLEncodedUtilsHC4;
 
 import java.util.ArrayList;
 
@@ -29,7 +29,7 @@ public class BestizUrlUtil {
     }
 
     public static String createCommentWriteUrl(String host, ArrayList<NameValuePair> params) {
-        return host + BestizUrlConstants.WRITE_COMMENT + "?" + URLEncodedUtils.format(params, "euc-kr");
+        return host + BestizUrlConstants.WRITE_COMMENT + "?" + URLEncodedUtilsHC4.format(params, "euc-kr");
     }
 
     public static String createCommentDeleteUrl(String host){
