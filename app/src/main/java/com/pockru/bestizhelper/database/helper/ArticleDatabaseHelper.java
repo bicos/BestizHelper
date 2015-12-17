@@ -78,14 +78,18 @@ public class ArticleDatabaseHelper {
         }
     }
 
-    public static void insertOrUpdate(Context context, ArticleDB articleDB) {
+    public static void insertOrUpdate(Context context, ArticleDB articleDB, boolean isAdded) {
         ArticleDB updateDb = getData(context, articleDB.articleNum);
-        insertOrUpdate(context, articleDB, updateDb);
+        insertOrUpdate(context, articleDB, updateDb, isAdded);
     }
 
-    public static void insertOrUpdate(Context context, ArticleDB articleDB, ArticleDB updateDb) {
+    public static void insertOrUpdate(Context context, ArticleDB articleDB, ArticleDB updateDb, boolean isAdded) {
         if (updateDb != null) {
-            articleDB.articleType = articleDB.articleType | updateDb.articleType;
+            if (isAdded) {
+                articleDB.articleType = articleDB.articleType | updateDb.articleType;
+            } else {
+                articleDB.articleType = articleDB.articleType & updateDb.articleType;
+            }
             update(context, articleDB);
         } else {
             insert(context, articleDB);

@@ -37,7 +37,7 @@ public class ArticleHistoryActivity extends BaseActivity {
 
 		mTabHost.addTab(
 				mTabHost.newTabSpec("favoriteArticle").setIndicator("즐겨찾기", null),
-				ArticleHistoryFragment.class, createBundle(data, ArticleDB.TYPE_WRITE));
+				ArticleHistoryFragment.class, createBundle(data, ArticleDB.TYPE_FAVORITE));
 	}
 
 	private Bundle createBundle(BoardData data, int type){

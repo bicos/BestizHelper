@@ -102,7 +102,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("test", "onCreate call");
 
         setContentView(R.layout.activity_detail);
 
@@ -452,7 +451,8 @@ public class BestizBoxDetailActivity extends BaseActivity {
         if (isWriteArticle) {
             data.setArticleType(ArticleDB.TYPE_WRITE);
             ArticleDatabaseHelper.insertOrUpdate(this,
-                    ArticleDB.createInstance(data, atcUrl));
+                    ArticleDB.createInstance(data, atcUrl),
+                    true);
         }
 
         if (getSupportActionBar() != null) {
@@ -524,7 +524,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.i("test", "onPrepareOptionsMenu call");
         if (menu == null) {
             return false;
         }
@@ -545,17 +544,20 @@ public class BestizBoxDetailActivity extends BaseActivity {
                 if (mArticleDetailData != null) {
                     if (item.isChecked()) {
                         item.setChecked(false);
+                        item.setIcon(R.drawable.ic_favorite_border_black_24dp);
                         mArticleDetailData.setArticleType(~ArticleDB.TYPE_FAVORITE);
                         Toast.makeText(getApplicationContext(), "해당 게시물이 즐겨찾기 해제되었습니다.", Toast.LENGTH_LONG).show();
                     } else {
                         item.setChecked(true);
+                        item.setIcon(R.drawable.ic_favorite_black_24dp);
                         mArticleDetailData.setArticleType(ArticleDB.TYPE_FAVORITE);
                         Toast.makeText(getApplicationContext(), "해당 게시물이 즐겨찾기 되었습니다.", Toast.LENGTH_LONG).show();
                     }
 
                     ArticleDatabaseHelper.insertOrUpdate(getApplicationContext(),
                             ArticleDB.createInstance(mArticleDetailData, atcUrl),
-                            articleDB);
+                            articleDB,
+                            item.isChecked());
                 } else {
                     Toast.makeText(getApplicationContext(), "게시물이 로딩되지 않았습니다. 잠시만 기다려주세요.", Toast.LENGTH_LONG).show();
                 }
@@ -565,6 +567,9 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
         if (articleDB != null) {
             favoriteMenu.setChecked((articleDB.articleType & ArticleDB.TYPE_FAVORITE) == ArticleDB.TYPE_FAVORITE);
+            favoriteMenu.setIcon((articleDB.articleType & ArticleDB.TYPE_FAVORITE) == ArticleDB.TYPE_FAVORITE ?
+                    R.drawable.ic_favorite_black_24dp :
+                    R.drawable.ic_favorite_border_black_24dp);
         } else {
             favoriteMenu.setChecked(false);
         }
