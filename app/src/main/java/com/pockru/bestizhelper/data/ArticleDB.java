@@ -45,7 +45,7 @@ public class ArticleDB {
 		return articleDB;
 	}
 
-	public static ArticleDB createInstance(ArticleDetailData articleDetailData, String articleUrl, boolean isWriteArticle){
+	public static ArticleDB createInstance(ArticleDetailData articleDetailData, String articleUrl){
 		if (articleDetailData == null || TextUtils.isEmpty(articleUrl)) {
 			return null;
 		}
@@ -66,7 +66,7 @@ public class ArticleDB {
 		articleDB.articleContents = articleDetailData.getAtcContents();
 		articleDB.articleModifyUrl = articleDetailData.getModifyUrl();
 		articleDB.articleDeleteUrl = articleDetailData.getDeleteUrl();
-		articleDB.articleType = isWriteArticle ? ArticleDB.TYPE_WRITE : ArticleDB.TYPE_VIEW;
+		articleDB.articleType = articleDetailData.getArticleType();
 
 		return articleDB;
 	}

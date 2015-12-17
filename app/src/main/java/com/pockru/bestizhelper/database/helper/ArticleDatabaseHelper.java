@@ -80,6 +80,10 @@ public class ArticleDatabaseHelper {
 
     public static void insertOrUpdate(Context context, ArticleDB articleDB) {
         ArticleDB updateDb = getData(context, articleDB.articleNum);
+        insertOrUpdate(context, articleDB, updateDb);
+    }
+
+    public static void insertOrUpdate(Context context, ArticleDB articleDB, ArticleDB updateDb) {
         if (updateDb != null) {
             articleDB.articleType = articleDB.articleType | updateDb.articleType;
             update(context, articleDB);

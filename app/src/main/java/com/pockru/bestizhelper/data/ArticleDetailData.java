@@ -14,6 +14,7 @@ public class ArticleDetailData {
 	private String modifyUrl;
 	private String deleteUrl;
 	private int commentCnt;
+	private int articleType;
 
 	private ArrayList<CommentUserData> commentUserList = new ArrayList<CommentUserData>();
 
@@ -110,5 +111,13 @@ public class ArticleDetailData {
 
 	public void setCommentCnt(int commentCnt) {
 		this.commentCnt = commentCnt;
+	}
+
+	public int getArticleType() {
+		return articleType;
+	}
+
+	public void setArticleType(int articleType) {
+		this.articleType = articleType;
 	}
 }

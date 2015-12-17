@@ -77,6 +77,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
     private EditText etComment;
 
     private ArticleDetailData mArticleDetailData;
+
     private String atcUrl = "";
     private boolean isLogin = false;
     protected String loginId;
@@ -94,10 +95,15 @@ public class BestizBoxDetailActivity extends BaseActivity {
     private Firebase mRef;
     private UserData mUserData;
 
+    // 아티클 db 관련
+    ArticleDB articleDB;
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("test", "onCreate call");
+
         setContentView(R.layout.activity_detail);
 
         Intent intent = getIntent();
@@ -112,6 +118,11 @@ public class BestizBoxDetailActivity extends BaseActivity {
         if (uri != null) {
             BASE_SERVER_URL = uri.getScheme() + "://"+uri.getHost() + "/zboard";
             BOARD_ID = uri.getQueryParameter("id");
+            ARTICLE_NUMBER = uri.getQueryParameter("no");
+        }
+
+        if (ARTICLE_NUMBER != null && TextUtils.isDigitsOnly(ARTICLE_NUMBER)) {
+            articleDB = ArticleDatabaseHelper.getData(getApplicationContext(), Integer.valueOf(ARTICLE_NUMBER));
         }
 
         if (getSupportActionBar() != null) {
@@ -119,9 +130,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-
-        String params = atcUrl.substring(atcUrl.indexOf("?") + 1);
-        ARTICLE_NUMBER = Utils.getURLParam(params, "no");
 
         tvName = (TextView) findViewById(R.id.txt_user_name);
         tvSubject = (TextView) findViewById(R.id.txt_atc_subject);
@@ -442,8 +450,9 @@ public class BestizBoxDetailActivity extends BaseActivity {
     private void setCurrentLayout(ArticleDetailData data) {
 //        // 해당 글이 자신이 쓴 글이라면 디비를 업데이트한다.
         if (isWriteArticle) {
+            data.setArticleType(ArticleDB.TYPE_WRITE);
             ArticleDatabaseHelper.insertOrUpdate(this,
-                    ArticleDB.createInstance(data, atcUrl ,isWriteArticle));
+                    ArticleDB.createInstance(data, atcUrl));
         }
 
         if (getSupportActionBar() != null) {
@@ -515,19 +524,49 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.i("test", "onPrepareOptionsMenu call");
         if (menu == null) {
             return false;
         }
 
-        /**
-         * 0 : login, 1 : logout, 2 : home
-         */
         if (isLogin) {// 로그인 상태일 경우
             menu.findItem(R.id.sub_menu_login).setVisible(false);
             menu.findItem(R.id.sub_menu_logout).setVisible(true);
         } else {// 비로그인 상태일 경우
             menu.findItem(R.id.sub_menu_login).setVisible(true);
             menu.findItem(R.id.sub_menu_logout).setVisible(false);
+        }
+
+        MenuItem favoriteMenu = menu.findItem(R.id.sub_menu_favorite);
+        favoriteMenu.setCheckable(true);
+        favoriteMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (mArticleDetailData != null) {
+                    if (item.isChecked()) {
+                        item.setChecked(false);
+                        mArticleDetailData.setArticleType(~ArticleDB.TYPE_FAVORITE);
+                        Toast.makeText(getApplicationContext(), "해당 게시물이 즐겨찾기 해제되었습니다.", Toast.LENGTH_LONG).show();
+                    } else {
+                        item.setChecked(true);
+                        mArticleDetailData.setArticleType(ArticleDB.TYPE_FAVORITE);
+                        Toast.makeText(getApplicationContext(), "해당 게시물이 즐겨찾기 되었습니다.", Toast.LENGTH_LONG).show();
+                    }
+
+                    ArticleDatabaseHelper.insertOrUpdate(getApplicationContext(),
+                            ArticleDB.createInstance(mArticleDetailData, atcUrl),
+                            articleDB);
+                } else {
+                    Toast.makeText(getApplicationContext(), "게시물이 로딩되지 않았습니다. 잠시만 기다려주세요.", Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+        });
+
+        if (articleDB != null) {
+            favoriteMenu.setChecked((articleDB.articleType & ArticleDB.TYPE_FAVORITE) == ArticleDB.TYPE_FAVORITE);
+        } else {
+            favoriteMenu.setChecked(false);
         }
 
         return true;
