@@ -5,8 +5,9 @@ import android.text.TextUtils;
 
 public class ArticleDB {
 
-	public static final int TYPE_VIEW 	= 0;
-	public static final int TYPE_WRITE 	= 1;
+	public static final int TYPE_VIEW 		= 0x001;
+	public static final int TYPE_WRITE 		= 0x010;
+	public static final int TYPE_FAVORITE 	= 0x100;
 
 	public int articleNum;
 	public String articleTitle;
@@ -76,5 +77,25 @@ public class ArticleDB {
 		} else {
 			return Integer.parseInt(str.replaceAll("[^0-9]", ""));
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "ArticleDB{" +
+				"articleNum=" + articleNum +
+				", articleTitle='" + articleTitle + '\'' +
+				", articleUser='" + articleUser + '\'' +
+				", articleDate='" + articleDate + '\'' +
+				", articleHit=" + articleHit +
+				", articleVote=" + articleVote +
+				", articleComment=" + articleComment +
+				", articleUserHomepage='" + articleUserHomepage + '\'' +
+				", articleContents='" + articleContents + '\'' +
+				", articleUrl='" + articleUrl + '\'' +
+				", articleModifyUrl='" + articleModifyUrl + '\'' +
+				", articleDeleteUrl='" + articleDeleteUrl + '\'' +
+				", articleFavorite=" + articleFavorite +
+				", articleType=" + articleType +
+				'}';
 	}
 }

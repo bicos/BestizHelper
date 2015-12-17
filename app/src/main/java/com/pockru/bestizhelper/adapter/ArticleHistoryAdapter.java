@@ -30,8 +30,8 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 	private static Cursor getDefaultCursor(Context context, String boardNo, int type) {
 		return context.getContentResolver().query(DatabaseContract.ArticleTable.CONTENT_URI,
 				null,
-				DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ? AND " + DatabaseContract.ArticleTable.KEY_ARTICLE_TYPE + "=?",
-				new String[]{"%id=" + boardNo + "%", String.valueOf(type)},
+				DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ? AND (" + DatabaseContract.ArticleTable.KEY_ARTICLE_TYPE + "&" + type + ") == " + type,
+				new String[]{"%id=" + boardNo + "%"},
 				DatabaseContract.ArticleTable._ID + " DESC");
 	}
 
