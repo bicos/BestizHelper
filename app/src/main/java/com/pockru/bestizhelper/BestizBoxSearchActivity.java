@@ -349,8 +349,7 @@ public class BestizBoxSearchActivity extends BaseActivity implements OnItemClick
 
 		if (data != null) {
 			ArticleDatabaseHelper.insertOrUpdate(BestizBoxSearchActivity.this,
-					ArticleDB.createInstance(data,BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink())),
-					true);
+					ArticleDB.createInstance(data,BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink())));
 
 			BestizBoxDetailActivity.startDetailActivity(BestizBoxSearchActivity.this,
 					BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()),

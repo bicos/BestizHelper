@@ -450,9 +450,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 //        // 해당 글이 자신이 쓴 글이라면 디비를 업데이트한다.
         if (isWriteArticle) {
             data.setArticleType(ArticleDB.TYPE_WRITE);
-            ArticleDatabaseHelper.insertOrUpdate(this,
-                    ArticleDB.createInstance(data, atcUrl),
-                    true);
+            ArticleDatabaseHelper.insertOrUpdate(this, ArticleDB.createInstance(data, atcUrl));
         }
 
         if (getSupportActionBar() != null) {
@@ -541,26 +539,21 @@ public class BestizBoxDetailActivity extends BaseActivity {
         favoriteMenu.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (mArticleDetailData != null) {
+                int updateType;
                     if (item.isChecked()) {
                         item.setChecked(false);
                         item.setIcon(R.drawable.ic_favorite_border_black_24dp);
-                        mArticleDetailData.setArticleType(~ArticleDB.TYPE_FAVORITE);
+                        articleDB.articleType = articleDB.articleType & ~ArticleDB.TYPE_FAVORITE;
                         Toast.makeText(getApplicationContext(), "해당 게시물이 즐겨찾기 해제되었습니다.", Toast.LENGTH_LONG).show();
                     } else {
                         item.setChecked(true);
                         item.setIcon(R.drawable.ic_favorite_black_24dp);
-                        mArticleDetailData.setArticleType(ArticleDB.TYPE_FAVORITE);
+                        articleDB.articleType = articleDB.articleType | ArticleDB.TYPE_FAVORITE;
                         Toast.makeText(getApplicationContext(), "해당 게시물이 즐겨찾기 되었습니다.", Toast.LENGTH_LONG).show();
                     }
 
-                    ArticleDatabaseHelper.insertOrUpdate(getApplicationContext(),
-                            ArticleDB.createInstance(mArticleDetailData, atcUrl),
-                            articleDB,
-                            item.isChecked());
-                } else {
-                    Toast.makeText(getApplicationContext(), "게시물이 로딩되지 않았습니다. 잠시만 기다려주세요.", Toast.LENGTH_LONG).show();
-                }
+                    ArticleDatabaseHelper.insertOrUpdate(getApplicationContext(),articleDB);
+
                 return false;
             }
         });

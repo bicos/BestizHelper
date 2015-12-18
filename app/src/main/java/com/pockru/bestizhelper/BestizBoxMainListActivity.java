@@ -135,8 +135,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
                 ArticleData data = mAdapter.getItem(arg2);
                 if (data != null) {
                     ArticleDatabaseHelper.insertOrUpdate(BestizBoxMainListActivity.this,
-                            ArticleDB.createInstance(data,BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink())),
-                            true);
+                            ArticleDB.createInstance(data,BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink())));
 
                     BestizBoxDetailActivity.startDetailActivity(BestizBoxMainListActivity.this,
                             BestizUrlUtil.createDetailArticleUrl(BASE_SERVER_URL, data.getAtcLink()),
