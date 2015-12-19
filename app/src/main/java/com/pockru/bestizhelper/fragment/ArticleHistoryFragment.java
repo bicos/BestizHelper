@@ -22,6 +22,8 @@ import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.database.DatabaseContract;
 import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 
+import java.util.List;
+
 /**
  * Created by 래형 on 2015-12-13.
  */
@@ -73,11 +75,15 @@ public class ArticleHistoryFragment extends Fragment implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Cursor c= (Cursor) mAdapter.getItem(position);
-        BestizBoxDetailActivity.startDetailActivity(getActivity(),
-                c.getString(c.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_URL)),
-                BaseActivity.REQ_CODE_DETAIL_ARTICLE,
-                type == ArticleDB.TYPE_WRITE);
+        if (isDeleteMode == false) {
+            Cursor c= (Cursor) mAdapter.getItem(position);
+            BestizBoxDetailActivity.startDetailActivity(getActivity(),
+                    c.getString(c.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_URL)),
+                    BaseActivity.REQ_CODE_DETAIL_ARTICLE,
+                    type == ArticleDB.TYPE_WRITE);
+        } else {
+            mAdapter.addDeleteList(position);
+        }
     }
 
     @Override
@@ -90,11 +96,29 @@ public class ArticleHistoryFragment extends Fragment implements AdapterView.OnIt
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ArticleDatabaseHelper.delete(getActivity(), c.getInt(c.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_NUM)));
-                        mAdapter.refreshAdapter();
+//                        mAdapter.refreshAdapter();
                     }
                 })
                 .setNegativeButton("취소", null)
                 .show();
         return true;
+    }
+
+    private boolean isDeleteMode = false;
+
+    public void setMode(boolean isDeleteMode){
+        this.isDeleteMode = isDeleteMode;
+
+        if(isDeleteMode == false) {
+            mAdapter.clearDeleteList();
+        }
+    }
+
+    public boolean isDeleteItemExist() {
+        return mAdapter.getDeleteItemCount() > 0;
+    }
+
+    public List<String> getDeleteItemList() {
+        return mAdapter.getDeleteItemList();
     }
 }

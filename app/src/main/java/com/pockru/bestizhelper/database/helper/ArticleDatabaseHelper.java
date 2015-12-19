@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
+import android.text.TextUtils;
 
 import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.database.DatabaseContract;
 import com.pockru.bestizhelper.database.DatabaseContract.ArticleTable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ArticleDatabaseHelper {
 
@@ -47,6 +49,13 @@ public class ArticleDatabaseHelper {
         context.getContentResolver().delete(ArticleTable.CONTENT_URI,
                 ArticleTable.KEY_ARTICLE_NUM + "=?",
                 new String[]{String.valueOf(articleNum)});
+    }
+
+    public static void delete(Context context, List<String> articleList) {
+        String args = TextUtils.join(", ", articleList);
+        context.getContentResolver().delete(ArticleTable.CONTENT_URI,
+                ArticleTable.KEY_ARTICLE_NUM + " IN ("+args +")",
+                null);
     }
 
     public static void update(Context context, ArticleDB articleDB) {

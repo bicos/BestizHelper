@@ -289,7 +289,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
             element = elements.get(0);
 
             String val;
-            for (Element e : elements.select("img")) { // img src attribute에 http 안붙는 예외 처리
+            for (Element e : elements.select("img,iframe")) { // img, iframe src attribute에 http 안붙는 예외 처리
                 if (e != null && e.hasAttr("src")) {
                     val = e.attr("src");
                     if (!TextUtils.isEmpty(val) && (!val.startsWith("http:") && !val.startsWith("https:"))) {
@@ -297,6 +297,15 @@ public class BestizBoxDetailActivity extends BaseActivity {
                     }
                 }
             }
+
+//            for (Element e : elements.select("iframe")) { // iframe src attribute에 http 안붙는 예외 처리
+//                if (e != null && e.hasAttr("src")) {
+//                    val = e.attr("src");
+//                    if (!TextUtils.isEmpty(val) && (!val.startsWith("http:") && !val.startsWith("https:"))) {
+//                        e.attr("src", "http:" + val);
+//                    }
+//                }
+//            }
 
             String contents = element.getElementsByAttributeValue("style", "line-height:160%").html();
 
@@ -787,23 +796,33 @@ public class BestizBoxDetailActivity extends BaseActivity {
                 return true;
             }
 
-            if (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("javascript:")) {
-                return super.shouldOverrideUrlLoading(view, url);
-            } else {
-                Intent intent = null;
-                try {
-                    intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
-                    startActivity(intent);
-                } catch (URISyntaxException e) {
-                    handleURISyntaxException(e);
-                    e.printStackTrace();
-                } catch (ActivityNotFoundException e) {
-                    handleActivityNotFoundException(e, intent);
-                    e.printStackTrace();
+            Uri uri = Uri.parse(url);
+
+            if (uri != null && (uri.getScheme().equals("http") || uri.getScheme().equals("https") || uri.getScheme().equals("javascript"))) {
+                if (uri.getHost().contains("bestiz.net")) {
+                    return super.shouldOverrideUrlLoading(view, url);
+                } else {
+                    return sendOutside(url);
                 }
-                return true;
+            } else {
+                return sendOutside(url);
             }
         }
+    }
+
+    private boolean sendOutside(String url) {
+        Intent intent = null;
+        try {
+            intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+            startActivity(intent);
+        } catch (URISyntaxException e) {
+            handleURISyntaxException(e);
+            e.printStackTrace();
+        } catch (ActivityNotFoundException e) {
+            handleActivityNotFoundException(e, intent);
+            e.printStackTrace();
+        }
+        return true;
     }
 
     private class BestizWebChromeClient extends WebChromeClient {

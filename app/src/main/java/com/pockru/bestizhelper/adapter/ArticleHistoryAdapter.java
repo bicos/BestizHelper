@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -15,13 +16,16 @@ import android.widget.TextView;
 import com.pockru.bestizhelper.R;
 import com.pockru.bestizhelper.database.DatabaseContract;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ArticleHistoryAdapter extends CursorAdapter {
 	private Activity mContext;
 	private String mBoardNo;
 	private int mType;
 
 	public ArticleHistoryAdapter(Activity context, String boardNo, int type) {
-		super(context,getDefaultCursor(context, boardNo, type), false);
+		super(context,getDefaultCursor(context, boardNo, type), true);
 		mContext = context;
 		mBoardNo = boardNo;
 		mType = type;
@@ -37,7 +41,7 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		return LayoutInflater.from(context).inflate(R.layout.item_main_article, parent , false);
+		return LayoutInflater.from(context).inflate(R.layout.item_main_article, parent, false);
 	}
 
 	@Override
@@ -49,6 +53,12 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 		holder.tvHit.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_HIT))));
 		holder.tvVote.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_VOTE))));
 		holder.tvComment.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_COMMENT))));
+
+		if (deleteList.contains(cursor.getString(cursor.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_NUM)))){
+			view.setBackgroundColor(Color.parseColor("#f4f4f4"));
+		} else {
+			view.setBackgroundResource(0);
+		}
 	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -60,6 +70,32 @@ public class ArticleHistoryAdapter extends CursorAdapter {
 			changeCursor(c);
 		}
 		notifyDataSetChanged();
+	}
+
+	private List<String> deleteList = new ArrayList<>();
+
+	public void addDeleteList(int position) {
+		Cursor c = (Cursor) getItem(position);
+		String articleNum = c.getString(c.getColumnIndex(DatabaseContract.ArticleTable.KEY_ARTICLE_NUM));
+		if(deleteList.contains(articleNum)) {
+			deleteList.remove(articleNum);
+		} else {
+			deleteList.add(articleNum);
+		}
+		notifyDataSetChanged();
+	}
+
+	public void clearDeleteList() {
+		deleteList.clear();
+		notifyDataSetChanged();
+	}
+
+	public int getDeleteItemCount() {
+		return deleteList.size();
+	}
+
+	public List<String> getDeleteItemList() {
+		return deleteList;
 	}
 
 	private class ViewHolder {
