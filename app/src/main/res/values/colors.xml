@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="primary">#E1E1E1</color>
+    <color name="primary_dark">#E1E1E1</color>
+    <color name="accent">#F0F0F0</color>
+
     <color name="row_color">#E1E1E1</color>
     <color name="detail_row_color">#F0F0F0</color>
 
     <color name="text_default">#333333</color>
     <color name="text_gray">#f0f0f0</color>
-    
+
     <color name="write_btn_bg">#E1E1E1</color>
-    
+
 </resources>
