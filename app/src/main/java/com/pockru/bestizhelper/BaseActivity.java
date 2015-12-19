@@ -102,7 +102,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 	@Override
 	protected void onDestroy() {
 		BestizNetworkConn.getInstance(getApplicationContext()).cancel();
-		urlList.clear();
+//		urlList.clear();
 
 		super.onDestroy();
 	}
@@ -146,7 +146,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 		return result;
 	}
 
-	ArrayList<String> urlList = new ArrayList<>();
+//	ArrayList<String> urlList = new ArrayList<>();
 
 	public void requestNetwork(final int flag, String url, final ArrayList<NameValuePair> params) {
 		if (params != null) {
@@ -189,11 +189,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 		final String finalUrl = url;
 
-		if (urlList.contains(finalUrl)) {
-			return;
-		} else {
-			urlList.add(finalUrl);
-		}
+//		if (urlList.contains(finalUrl)) {
+//			return;
+//		} else {
+//			urlList.add(finalUrl);
+//		}
 
 		RequestInfo info = new RequestInfo();
 		info.setUrl(finalUrl);
@@ -235,7 +235,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 				super.onPostExecute(result);
 				dismissProgress();
 
-				urlList.remove(finalUrl);
+//				urlList.remove(finalUrl);
 
 				if (result != null && result.contains("history.back()")) {
 					Document html = Jsoup.parse(result);

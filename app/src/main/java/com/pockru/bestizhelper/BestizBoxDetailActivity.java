@@ -92,7 +92,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
     private ValueCallback<Uri> mUploadMessage;
 
     // 파이어버드 관련
-    private Firebase mRef;
+//    private Firebase mRef;
     private UserData mUserData;
 
     // 아티클 db 관련
@@ -147,7 +147,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
         pb = (ProgressBar) findViewById(R.id.progressBar1);
 
-        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(BOARD_ID).child(ARTICLE_NUMBER);
+//        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(BOARD_ID).child(ARTICLE_NUMBER);
         mUserData = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 
         requestNetwork(FLAG_REQ_DETAIL_ARTICLE, atcUrl);
@@ -501,7 +501,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
             case R.id.btn_comment:
                 String comment = etComment.getText().toString();
                 if (mUserData != null) {
-                    mRef.push().setValue(new CommentData(mUserData.name, comment));
+//                    mRef.push().setValue(new CommentData(mUserData.name, comment));
                 }
 
                 requestNetwork(FLAG_REQ_COMMENT,
