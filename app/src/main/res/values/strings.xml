@@ -117,7 +117,7 @@
 
     <!-- 공지사항 -->
     <string name="notice_dialog_title">공지사항</string>
-	<string name="notice_dialog_desc">ver.1.5.5\n\n1. 게잡 불판 변경</string>
+	<string name="notice_dialog_desc">ver.1.5.6\n\n1. 게잡 불판 변경\n2. 히스토리 페이지 추가 \n3. 게잡 불판 변경</string>
 	
 	<!-- 모드선택 -->
 	<string name="mode_select_dialog_title">모드선택</string>

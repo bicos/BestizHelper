@@ -70,7 +70,6 @@ public class CommentAlarmFragment extends Fragment{
         }
 
         Firebase query = new Firebase(UrlConstants.FIREBASE_URL).child(boardId).child(articleNo);
-        Log.i("test", "query : "+query.getPath());
         adapter = new CommentAlarmAdapter(title, link, query);
         listView.setAdapter(adapter);
     }

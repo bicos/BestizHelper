@@ -9,7 +9,7 @@ public class Constants {
 	public static final String IMG_PREFIX_NAME = "bestiz_img";
 
 	public static final String GEACHON_ID = "ghm2";
-	public static final String GEAJAP_ID = "jd1510";
+	public static final String GEAJAP_ID = "jd1512";
 	public static final String GEABAL_ID = "gjbal";
 	public static final String GEABOM_ID = "jb1312";
 	public static final String GEAYEO_ID = "jy0807";

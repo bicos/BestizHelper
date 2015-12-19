@@ -40,17 +40,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.Firebase;
 import com.pockru.bestizhelper.asynctask.ImgDownloadTask;
 import com.pockru.bestizhelper.data.ArticleDB;
 import com.pockru.bestizhelper.data.ArticleDetailData;
-import com.pockru.bestizhelper.data.CommentData;
 import com.pockru.bestizhelper.data.Constants;
 import com.pockru.bestizhelper.data.UserData;
 import com.pockru.bestizhelper.database.helper.ArticleDatabaseHelper;
 import com.pockru.bestizhelper.database.helper.MemberDatabaseHelper;
 import com.pockru.bestizhelper.dialog.WriteDialog;
-import com.pockru.firebase.UrlConstants;
 import com.pockru.network.BestizParamsUtil;
 import com.pockru.network.BestizUrlUtil;
 import com.pockru.utils.Utils;
@@ -92,7 +89,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
     private ValueCallback<Uri> mUploadMessage;
 
     // 파이어버드 관련
-    private Firebase mRef;
+//    private Firebase mRef;
     private UserData mUserData;
 
     // 아티클 db 관련
@@ -147,7 +144,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
         pb = (ProgressBar) findViewById(R.id.progressBar1);
 
-        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(BOARD_ID).child(ARTICLE_NUMBER);
+//        mRef = new Firebase(UrlConstants.FIREBASE_URL).child(BOARD_ID).child(ARTICLE_NUMBER);
         mUserData = MemberDatabaseHelper.getData(getApplicationContext(), BASE_SERVER_URL);
 
         requestNetwork(FLAG_REQ_DETAIL_ARTICLE, atcUrl);
@@ -467,7 +464,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
         tvName.setText(data.getUserName());
         tvHit.setText(data.getAtcHit());
         wvContents.getSettings().setDefaultFontSize(14);
-        wvContents.loadDataWithBaseURL(Uri.parse(atcUrl).getHost(), data.getAtcContents(), "text/html", "utf-8", atcUrl);
+        wvContents.loadDataWithBaseURL(null, data.getAtcContents(), "text/html", "utf-8", null);
     }
 
     @SuppressLint("NewApi")
@@ -499,19 +496,51 @@ public class BestizBoxDetailActivity extends BaseActivity {
                         setNegativeButton("취소", null).show();
                 break;
             case R.id.btn_comment:
-                String comment = etComment.getText().toString();
-                if (mUserData != null) {
-                    mRef.push().setValue(new CommentData(mUserData.name, comment));
-                }
+                if (isLogin) {
+                    String comment = etComment.getText().toString();
+                    if (mUserData != null) {
+//                    mRef.push().setValue(new CommentData(mUserData.name, comment));
+                    }
 
-                requestNetwork(FLAG_REQ_COMMENT,
-                        BestizUrlUtil.createCommentWriteUrl(BASE_SERVER_URL),
-                        BestizParamsUtil.createWriteCommentParams(BOARD_ID, ARTICLE_NUMBER, comment));
+                    requestNetwork(FLAG_REQ_COMMENT,
+                            BestizUrlUtil.createCommentWriteUrl(BASE_SERVER_URL),
+                            BestizParamsUtil.createWriteCommentParams(BOARD_ID, ARTICLE_NUMBER, comment));
+                } else {
+                    Utils.showAlternateAlertDialog(BestizBoxDetailActivity.this,
+                            "알림",
+                            "로그인을 하셔야 코멘트를 쓰실 수 있습니다. 로그인을 하시겠습니까?",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    showLoginDialog();
+                                }
+                            });
+                }
                 break;
             default:
                 break;
         }
 
+    }
+
+    private void showLoginDialog() {
+        final View loginView = Utils.getView(this, R.layout.layout_login);
+        
+        Utils.showCompositeDialog(this, getString(R.string.menu_login), loginView, new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+
+                EditText id = (EditText) loginView.findViewById(R.id.editText_login_id);
+                EditText pwd = (EditText) loginView.findViewById(R.id.editText_login_pwd);
+
+                loginId = id.getText().toString();
+                loginPwd = pwd.getText().toString();
+
+                requestNetwork(FLAG_REQ_LOGIN,
+                        BestizUrlUtil.createLoginUrl(BASE_SERVER_URL),
+                        BestizParamsUtil.createLoginParams(BOARD_ID, id.getText().toString(), pwd.getText().toString()));
+            }
+        });
     }
 
     @Override
@@ -575,25 +604,8 @@ public class BestizBoxDetailActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.menu_login:
             case R.id.sub_menu_login:
-                final View loginView = Utils.getView(this, R.layout.layout_login);
-
-                Utils.showCompositeDialog(this, getString(R.string.menu_login), loginView, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        EditText id = (EditText) loginView.findViewById(R.id.editText_login_id);
-                        EditText pwd = (EditText) loginView.findViewById(R.id.editText_login_pwd);
-
-                        loginId = id.getText().toString();
-                        loginPwd = pwd.getText().toString();
-
-                        requestNetwork(FLAG_REQ_LOGIN,
-                                BestizUrlUtil.createLoginUrl(BASE_SERVER_URL),
-                                BestizParamsUtil.createLoginParams(BOARD_ID, id.getText().toString(), pwd.getText().toString()));
-                    }
-                });
+                showLoginDialog();
                 return true;
-
             case R.id.menu_logout:
             case R.id.sub_menu_logout:
                 Utils.showAlternateAlertDialog(this, getString(R.string.menu_logout), getString(R.string.logout_msg_01), new DialogInterface.OnClickListener() {
