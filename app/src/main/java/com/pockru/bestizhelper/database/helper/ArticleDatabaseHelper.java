@@ -58,6 +58,12 @@ public class ArticleDatabaseHelper {
                 null);
     }
 
+    public static void deleteAllByType(Context context, String boardNo, int type) {
+        context.getContentResolver().delete(ArticleTable.CONTENT_URI,
+                DatabaseContract.ArticleTable.KEY_ARTICLE_URL + " LIKE ? AND (" + DatabaseContract.ArticleTable.KEY_ARTICLE_TYPE + "&" + type + ") == " + type,
+                new String[]{"%id=" + boardNo + "%"});
+    }
+
     public static void update(Context context, ArticleDB articleDB) {
         ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
 

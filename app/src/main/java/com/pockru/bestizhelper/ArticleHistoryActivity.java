@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -34,19 +35,19 @@ public class ArticleHistoryActivity extends BaseActivity {
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
-        BoardData data = (BoardData) getIntent().getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
+        mBoardData = (BoardData) getIntent().getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
 
         mTabHost.addTab(
-                mTabHost.newTabSpec("viewArticle").setIndicator("내가 본 게시물", null),
-                ArticleHistoryFragment.class, createBundle(data, ArticleDB.TYPE_VIEW));
+                mTabHost.newTabSpec(String.valueOf(ArticleDB.TYPE_VIEW)).setIndicator("내가 본 게시물", null),
+                ArticleHistoryFragment.class, createBundle(mBoardData, ArticleDB.TYPE_VIEW));
 
         mTabHost.addTab(
-                mTabHost.newTabSpec("writeArticle").setIndicator("내가 작성한 게시물", null),
-                ArticleHistoryFragment.class, createBundle(data, ArticleDB.TYPE_WRITE));
+                mTabHost.newTabSpec(String.valueOf(ArticleDB.TYPE_WRITE)).setIndicator("내가 작성한 게시물", null),
+                ArticleHistoryFragment.class, createBundle(mBoardData, ArticleDB.TYPE_WRITE));
 
         mTabHost.addTab(
-                mTabHost.newTabSpec("favoriteArticle").setIndicator("즐겨찾기", null),
-                ArticleHistoryFragment.class, createBundle(data, ArticleDB.TYPE_FAVORITE));
+                mTabHost.newTabSpec(String.valueOf(ArticleDB.TYPE_FAVORITE)).setIndicator("즐겨찾기", null),
+                ArticleHistoryFragment.class, createBundle(mBoardData, ArticleDB.TYPE_FAVORITE));
     }
 
     private Bundle createBundle(BoardData data, int type) {
@@ -73,22 +74,26 @@ public class ArticleHistoryActivity extends BaseActivity {
         return true;
     }
 
+    private MenuItem deleteAll;
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if (menu == null) {
             return false;
         }
 
+        deleteAll = menu.findItem(R.id.sub_menu_delete_all);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.sub_menu_delete:
-                boolean isDeleteMode = !item.isChecked();
+        final ArticleHistoryFragment fragment = (ArticleHistoryFragment) getSupportFragmentManager().findFragmentByTag(mTabHost.getCurrentTabTag());
 
-                final ArticleHistoryFragment fragment = (ArticleHistoryFragment) getSupportFragmentManager().findFragmentByTag(mTabHost.getCurrentTabTag());
+        switch (item.getItemId()) {
+            case R.id.sub_menu_delete: {
+                boolean isDeleteMode = !item.isChecked();
 
                 if (isDeleteMode) {
                     changeDeleteMode(fragment, item, true);
@@ -111,6 +116,24 @@ public class ArticleHistoryActivity extends BaseActivity {
                     }
                 }
                 return true;
+            }
+            case R.id.sub_menu_delete_all: {
+                new AlertDialog.Builder(ArticleHistoryActivity.this)
+                        .setTitle("알림")
+                        .setMessage("게시물을 전부 삭제하시겠습니까?")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ArticleDatabaseHelper.deleteAllByType(getApplicationContext(),
+                                        mBoardData.id,
+                                        Integer.valueOf(mTabHost.getCurrentTabTag()));
+                                changeDeleteMode(fragment, item, false);
+                            }
+                        })
+                        .setNegativeButton("취소", null)
+                        .show();
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -121,7 +144,10 @@ public class ArticleHistoryActivity extends BaseActivity {
             getSupportActionBar().setTitle(isDeleteMode ? "삭제" : "히스토리");
         }
         fragment.setMode(isDeleteMode);
-        item.setIcon(getDrawable(isDeleteMode ? R.drawable.ic_done_black_24dp : R.drawable.ic_delete_black_24dp));
+        item.setIcon(ContextCompat.getDrawable(this, isDeleteMode ? R.drawable.ic_done_black_24dp : R.drawable.ic_delete_black_24dp));
         item.setChecked(isDeleteMode);
+        if (deleteAll != null) {
+            deleteAll.setVisible(isDeleteMode);
+        }
     }
 }
