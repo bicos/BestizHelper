@@ -160,13 +160,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 		final Map<String, String> requestProperty = new HashMap<String, String>();
 
-		// referer setting
-		if (!privUrl.equals("")) {
-			// BestizBoxApplication.getClientInstance().addHeader("Referer",
-			// privUrl);
-			requestProperty.put("Referer", privUrl);
-		}
-
+		requestProperty.put("Upgrade-Insecure-Requests", "1");
 		// cookie setting
 		// List<Cookie> cookieList = cookieStore.getCookies();
 		// if (cookieList != null) {

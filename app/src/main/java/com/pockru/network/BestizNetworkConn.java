@@ -2,6 +2,7 @@ package com.pockru.network;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.webkit.CookieManager;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -70,7 +71,9 @@ import javax.net.ssl.X509TrustManager;
  */
 
 public class BestizNetworkConn {
-	
+
+	private String refererUrl = "http://www.bestiz.net";
+
 	/** The conn. */
 	private HttpURLConnection conn = null;
 	
@@ -86,7 +89,7 @@ public class BestizNetworkConn {
 //	private String siteName;
 	
 	/**  USER AGENT. */
-	protected String USER_AGENT = "Mozilla/5.0 (Linux; Android 4.4; Nexus 5 Build/KRT16M) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36";
+	protected String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36";
 	
 	/**  로그인 요청 후 응답 헤더 필드. */
 	private Map<String,List<String>> headerFields;
@@ -452,13 +455,16 @@ public class BestizNetworkConn {
 		requestProperty.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 		requestProperty.put("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4");
 		requestProperty.put("Connection", "keep-alive");
-//		requestProperty.put("Accept-Encoding", "gzip, deflate, sdch");
-		requestProperty.put("Content-Type", "application/x-www-form-urlencoded");
-//		requestProperty.put("Cookie", CookieManager.getInstance().getCookie(url));
+		requestProperty.put("Accept-Encoding", "gzip, deflate, sdch");
+//		requestProperty.put("Content-Type", "application/x-www-form-urlencoded");
+		if (TextUtils.isEmpty(refererUrl) == false) {
+			requestProperty.put("Referer", refererUrl);
+		}
+		requestProperty.put("Cookie", CookieManager.getInstance().getCookie(url));
 //		if (TextUtils.isEmpty(loginCookies) == false) {
 //			requestProperty.put("Cookie", loginCookies);
 //		}
-		
+		refererUrl = url;
 		return requestProperty;
 	}
 	
