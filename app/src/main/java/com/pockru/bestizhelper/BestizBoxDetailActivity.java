@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Vibrator;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -298,19 +299,31 @@ public class BestizBoxDetailActivity extends BaseActivity {
                 }
             }
 
-//            for (Element e : elements.select("iframe")) { // iframe src attribute에 http 안붙는 예외 처리
-//                if (e != null && e.hasAttr("src")) {
-//                    val = e.attr("src");
-//                    if (!TextUtils.isEmpty(val) && (!val.startsWith("http:") && !val.startsWith("https:"))) {
-//                        e.attr("src", "http:" + val);
-//                    }
-//                }
-//            }
+            // header 셋팅
+            mArticleDetailData.setArticleHeader(doc.getElementsByTag("head").toString());
 
-            String contents = element.getElementsByAttributeValue("style", "line-height:160%").html();
+            String contents = "<span style=\"line-height:160%\">"
+                    + element.getElementsByAttributeValue("style", "line-height:160%").html()
+                    + "</span>";
 
             // 리얼 콘텐츠만 따로 저장
             mArticleDetailData.setAtcRealContents(contents.substring(0, contents.indexOf("<!--\"<-->")));
+
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            int adWidth = (int) ((displayMetrics.widthPixels / displayMetrics.density) * 0.96);
+            int adHeight = 60 * adWidth / 468;
+
+            // 구글  ad  셋팅
+            contents += "<script type=\"text/javascript\"><!--\n" +
+                    "google_ad_client = \"ca-pub-9983182837973562\";\n" +
+                    "/* 468_60tb */\n" +
+                    "google_ad_slot = \"6088703786\";\n" +
+                    "google_ad_width = "+adWidth+";\n" +
+                    "google_ad_height = "+adHeight+";\n" +
+                    "//-->\n" +
+                    "</script><script type=\"text/javascript\"\n" +
+                    "src=\"http://pagead2.googlesyndication.com/pagead/show_ads.js\">\n" +
+                    "</script>";
 
             // comment 셋팅
             element = doc.getElementsByAttributeValueContaining("cellpadding", "3").get(0).attr("width", "100%");
@@ -322,31 +335,6 @@ public class BestizBoxDetailActivity extends BaseActivity {
                 tmpElements.remove();
             }
 
-            Elements tr = element.select("tr");
-            mArticleDetailData.setCommentCnt(tr.size());
-            for (int i = 0; i < tr.size(); i++) {
-                Elements td = tr.get(i).select("td");
-                for (int j = 0; j < td.size(); j++) {
-                    switch (j) {
-                        case 0:
-                            // td.get(j).attr("width", "15%");
-                            break;
-                        case 1:
-                            td.get(j).attr("width", "80%");
-                            break;
-                        case 2:
-                            td.get(j).attr("width", "4%");
-                            break;
-                        case 3:
-                            td.get(j).attr("width", "1%");
-                            if (td.get(j).select("a") == null) {
-                                td.get(j).remove();
-                            }
-                        default:
-                            break;
-                    }
-                }
-            }
             // 삭제 링크 변경
             Elements atags = element.select("a");
             for (int i = 0; i < atags.size(); i++) {
@@ -356,7 +344,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
                 }
             }
 
-            contents += element.toString();
+            contents += "<br/><br/>"+element.toString();
             mArticleDetailData.setAtcContents(contents);
 
             setCurrentLayout(mArticleDetailData);

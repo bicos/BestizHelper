@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sv_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -155,19 +154,6 @@
         android:orientation="horizontal"
         android:visibility="gone" >
     </LinearLayout>
-
-    <!--<ScrollView-->
-        <!--android:id="@+id/scroll_debug"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:visibility="gone" >-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/tv_debug"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:background="#ffffff" />-->
-    <!--</ScrollView>-->
 
     <ProgressBar
         android:id="@+id/progressBar1"

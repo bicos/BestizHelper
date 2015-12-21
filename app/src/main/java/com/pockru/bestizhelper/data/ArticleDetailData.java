@@ -17,6 +17,7 @@ public class ArticleDetailData {
 	private int articleType;
 
 	private ArrayList<CommentUserData> commentUserList = new ArrayList<CommentUserData>();
+	private String articleHeader;
 
 	public String getUserName() {
 		return userName;
@@ -55,11 +56,9 @@ public class ArticleDetailData {
 	}
 
 	public void setAtcContents(String atcContents) {
-
-		atcContents = atcContents.replaceAll("src=.?//www.youtube.com", "src=\"http://www.youtube.com");
-
 		this.atcContents = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
-				+ "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
+				+ "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head>"
+				+ getArticleHeader()
 				+ "<meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width\" />"
 				+ "</head><body>" + atcContents.replaceAll("\\+", " ") + "</body></html>";
 
@@ -119,5 +118,13 @@ public class ArticleDetailData {
 
 	public void setArticleType(int articleType) {
 		this.articleType = articleType;
+	}
+
+	public void setArticleHeader(String articleHeader) {
+		this.articleHeader = articleHeader;
+	}
+
+	public String getArticleHeader() {
+		return articleHeader;
 	}
 }
