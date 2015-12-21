@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ClipboardManager.OnPrimaryClipChangedListener;
@@ -13,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -60,7 +58,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -109,6 +109,8 @@ public class BestizBoxMainActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        CookieSyncManager.createInstance(this);
 
         mBoardData = (BoardData) getIntent().getSerializableExtra(Constants.INTENT_NAME_BOARD_DATA);
         if (mBoardData != null) {
@@ -300,16 +302,33 @@ public class BestizBoxMainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * @param page
+     * @param keyword
+     * @param sn
+     * @param ss
+     * @param sc
+     */
     private void movePage(String page, String keyword, String sn, String ss, String sc) {
+        Uri uri = Uri.parse(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
+        uri = uri.buildUpon()
+                .appendQueryParameter("page", page)
+                .appendQueryParameter("id", BOARD_ID)
+                .appendQueryParameter("no", "")
+                .appendQueryParameter("select_arrange", "headnum")
+                .appendQueryParameter("desc", "asc")
+                .appendQueryParameter("category", "")
+                .appendQueryParameter("sn", sn)
+                .appendQueryParameter("ss", ss)
+                .appendQueryParameter("sc", sc)
+                .appendQueryParameter("divpage", "15")
+                .appendQueryParameter("page", page).build();
 
-        mWebView.postUrl(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID),
-                URLEncodedUtilsHC4.format(BestizParamsUtil.createMovePageParams(BOARD_ID,
-                                page,
-                                keyword,
-                                sn,
-                                ss,
-                                sc),
-                        "euc-kr").getBytes());
+        if (TextUtils.isEmpty(keyword)== false) {
+            uri = uri.buildUpon().appendQueryParameter("keyword", keyword).build();
+        }
+
+        mWebView.loadUrl(uri.toString(), getDefaultHeader());
     }
 
     // private void memo() {
@@ -340,17 +359,9 @@ public class BestizBoxMainActivity extends BaseActivity {
     }
 
     private void comment(String comment, String no) {
-        CookieSyncManager.createInstance(this);
-        CookieManager cookieManager = CookieManager.getInstance();
-        String cookie = cookieManager.getCookie(privUrl);
-
-        Map<String, String> extraHeaders = new HashMap<String, String>();
-        extraHeaders.put("Referer", privUrl);
-        extraHeaders.put("Set-Cookie", cookie);
-
         mWebView.loadUrl(BestizUrlUtil.createCommentWriteUrl(BASE_SERVER_URL,
                 BestizParamsUtil.createWriteCommentParams(BOARD_ID, no, comment)),
-                extraHeaders);
+                getDefaultHeader());
     }
 
     private void setAutoLogin(String id, String pwd, String baseUrl) {
@@ -372,14 +383,29 @@ public class BestizBoxMainActivity extends BaseActivity {
     }
 
     private void search(boolean sn, boolean ss, boolean sc, String keyword) {
-        mWebView.postUrl(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID),
-                URLEncodedUtilsHC4.format(BestizParamsUtil.createMovePageParams(
-                        BOARD_ID,
-                        "1",
-                        keyword,
-                        sn ? "on" : "off",
-                        ss ? "on" : "off",
-                        sc ? "on" : "off"), "euc-kr").getBytes());
+        Uri uri = Uri.parse(BestizUrlUtil.createBoardListUrl(BASE_SERVER_URL, BOARD_ID));
+        uri = uri.buildUpon()
+                .appendQueryParameter("id", BOARD_ID)
+                .appendQueryParameter("no", "")
+                .appendQueryParameter("select_arrange", "headnum")
+                .appendQueryParameter("desc", "asc")
+                .appendQueryParameter("category", "")
+                .appendQueryParameter("sn", sn ? "on" : "off")
+                .appendQueryParameter("ss", ss ? "on" : "off")
+                .appendQueryParameter("sc", sc ? "on" : "off")
+                .appendQueryParameter("divpage", "25")
+                .appendQueryParameter("page", "1")
+//                .appendQueryParameter("keyword", keyword) // %EC%96%B4%ED%94%8C%0A
+                .build();
+
+        String keywordQuery = "";
+        try {
+            keywordQuery = "&keyword=" + URLEncoder.encode(keyword, "euc-kr");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        mWebView.loadUrl(uri.toString() + keywordQuery, getDefaultHeader());
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -630,8 +656,7 @@ public class BestizBoxMainActivity extends BaseActivity {
 
             if (TextUtils.isEmpty(url) == false) {
                 Uri uri = Uri.parse(url);
-
-                if (uri != null) {
+                if (uri != null && uri.isOpaque() == false) {
                     no = uri.getQueryParameter("no");
                     keyword = uri.getQueryParameter("keyword");
                     sn = uri.getQueryParameter("sn");
@@ -640,8 +665,8 @@ public class BestizBoxMainActivity extends BaseActivity {
                 } else {
                     no = "";
                     keyword = "";
-                    sn="";
-                    ss= "";
+                    sn = "";
+                    ss = "";
                     sc = "";
                 }
             }
@@ -823,6 +848,22 @@ public class BestizBoxMainActivity extends BaseActivity {
         }
 
         return 1;
+    }
+
+    private Map<String, String> getDefaultHeader(){
+        Map<String, String> extraHeaders = new HashMap<String, String>();
+        try {
+            CookieManager cookieManager = CookieManager.getInstance();
+            String cookie = cookieManager.getCookie(privUrl);
+
+            extraHeaders.put("Referer", privUrl);
+            extraHeaders.put("Set-Cookie", cookie);
+            extraHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return extraHeaders;
     }
 
 }

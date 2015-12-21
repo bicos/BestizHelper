@@ -6,6 +6,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by 래형 on 2015-12-12.
@@ -94,6 +96,24 @@ public class BestizParamsUtil {
         params.add(new BasicNameValuePair("divpage", "15"));
         if (keyword != null)
             params.add(new BasicNameValuePair("keyword", keyword));
+        return params;
+    }
+
+    public static Map<String, String> createMovePageHashParams(String boardId, String page, String keyword, String sn, String ss, String sc) {
+        Map<String, String> params = new HashMap<>();
+        params.put("page", page);
+        params.put("id", boardId);
+        params.put("no", "");
+        params.put("select_arrange", "headnum");
+        params.put("desc", "asc");
+        params.put("category", "");
+        params.put("sn", sn);
+        params.put("ss", ss);
+        params.put("sc", sc);
+        params.put("divpage", "15");
+        params.put("page", page);
+        if (keyword != null)
+            params.put("keyword", keyword);
         return params;
     }
 
