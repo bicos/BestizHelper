@@ -29,18 +29,16 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services-base:8.3.0'
-    compile 'com.google.android.gms:play-services-analytics:8.3.0'
-    compile 'com.google.android.gms:play-services-gcm:8.3.0'
-    compile 'com.google.android.gms:play-services-ads:8.3.0'
+    compile 'com.google.android.gms:play-services-base:8.4.0'
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+    compile 'com.google.android.gms:play-services-gcm:8.4.0'
+    compile 'com.google.android.gms:play-services-ads:8.4.0'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.android.support:support-v4:23.1.1'
     compile 'org.jsoup:jsoup:1.8.2'
     compile 'com.tumblr:jumblr:0.0.11'
     compile 'oauth.signpost:signpost-commonshttp4:1.2.1.2'
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.firebase:firebase-client-android:2.4.0'
     compile 'com.android.support:multidex:1.0.1'
     compile group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'
