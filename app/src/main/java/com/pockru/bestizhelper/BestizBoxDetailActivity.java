@@ -461,7 +461,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
         tvName.setText(data.getUserName());
         tvHit.setText(data.getAtcHit());
         wvContents.getSettings().setDefaultFontSize(14);
-        wvContents.loadDataWithBaseURL(null, data.getAtcContents(), "text/html", "utf-8", null);
+        wvContents.loadDataWithBaseURL(Uri.parse(atcUrl).getHost(), data.getAtcContents(), "text/html", "utf-8", atcUrl);
     }
 
     @SuppressLint("NewApi")
