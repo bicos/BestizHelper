@@ -311,7 +311,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
 
             DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             int adWidth = (int) ((displayMetrics.widthPixels / displayMetrics.density) * 0.96);
-            int adHeight = 60 * adWidth / 468;
+//            int adHeight = 60 * adWidth / 468;
 
             // 구글  ad  셋팅
             contents += "<script type=\"text/javascript\"><!--\n" +
@@ -319,7 +319,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
                     "/* 468_60tb */\n" +
                     "google_ad_slot = \"6088703786\";\n" +
                     "google_ad_width = "+adWidth+";\n" +
-                    "google_ad_height = "+adHeight+";\n" +
+                    "google_ad_height = 100;\n" +
                     "//-->\n" +
                     "</script><script type=\"text/javascript\"\n" +
                     "src=\"http://pagead2.googlesyndication.com/pagead/show_ads.js\">\n" +
@@ -344,7 +344,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
                 }
             }
 
-            contents += "<br/><br/>"+element.toString();
+            contents += element.toString();
             mArticleDetailData.setAtcContents(contents);
 
             setCurrentLayout(mArticleDetailData);
