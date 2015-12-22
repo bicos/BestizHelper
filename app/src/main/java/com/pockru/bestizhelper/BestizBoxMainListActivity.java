@@ -83,7 +83,7 @@ public class BestizBoxMainListActivity extends BaseActivity {
     private ListView mListMain;
     private ArticleListAdapter mAdapter;
 
-    private AdView adView;
+//    private AdView adView;
 
     private Button btnWrite;
     private int maxTansY, transY;
@@ -114,15 +114,15 @@ public class BestizBoxMainListActivity extends BaseActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        adView = new AdView(this);
-        adView.setAdUnitId(getString(R.string.ad_unit_id));
-        adView.setAdSize(AdSize.BANNER);
+//        adView = new AdView(this);
+//        adView.setAdUnitId(getString(R.string.ad_unit_id));
+//        adView.setAdSize(AdSize.BANNER);
 
-        LinearLayout layout = (LinearLayout) findViewById(R.id.adViewContainer);
-        layout.addView(adView);
+//        LinearLayout layout = (LinearLayout) findViewById(R.id.adViewContainer);
+//        layout.addView(adView);
 
-        AdRequest request = new AdRequest.Builder().setGender(AdRequest.GENDER_FEMALE).build();
-        adView.loadAd(request);
+//        AdRequest request = new AdRequest.Builder().setGender(AdRequest.GENDER_FEMALE).build();
+//        adView.loadAd(request);
 
         mSwipeMain = (SwipeRefreshLayout) findViewById(R.id.swipe_main);
         mListMain = (ListView) findViewById(R.id.lv_main);
@@ -379,22 +379,22 @@ public class BestizBoxMainListActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        adView.pause();
+//        adView.pause();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        adView.resume();
+//        adView.resume();
         super.onResume();
     }
 
     @Override
     protected void onDestroy() {
-        if (adView != null) {
-            adView.removeAllViews();
-            adView.destroy();
-        }
+//        if (adView != null) {
+//            adView.removeAllViews();
+//            adView.destroy();
+//        }
         super.onDestroy();
     }
 

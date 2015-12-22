@@ -117,7 +117,7 @@
 
     <!-- 공지사항 -->
     <string name="notice_dialog_title">공지사항</string>
-	<string name="notice_dialog_desc">ver.1.5.7\n\n1. 베스트님을 위해 베스티즈 웹사이트 광고를 상세화면에 달아드렸습니다.</string>
+	<string name="notice_dialog_desc">ver.1.5.9\n\n1. 사진을 올릴 때 나는 크래쉬 수정하였습니다. 2. 광고를 제거하였습니다. \n\n참고로 말씀드리는거지만 회원 데이터는 일절 수집하지 않으니 안심하고 사용해 주시기 바랍니다.</string>
 	
 	<!-- 모드선택 -->
 	<string name="mode_select_dialog_title">모드선택</string>

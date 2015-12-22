@@ -29,7 +29,7 @@ public class BoardSelectActivity extends BaseActivity {
 	private static final int BTN_TYPE_WEB = 0;
 	private static final int BTN_TYPE_MOBILE = 1;
 
-	private AdView adView;
+//	private AdView adView;
 
 	private RadioGroup rgMode;
 	private RadioButton btnWeb;
@@ -42,15 +42,15 @@ public class BoardSelectActivity extends BaseActivity {
 		
 		getSupportActionBar().hide();
 
-		adView = new AdView(this);
-		adView.setAdUnitId(getString(R.string.ad_unit_id));
-		adView.setAdSize(AdSize.BANNER);
+//		adView = new AdView(this);
+//		adView.setAdUnitId(getString(R.string.ad_unit_id));
+//		adView.setAdSize(AdSize.BANNER);
 		
-		LinearLayout layout = (LinearLayout) findViewById(R.id.adViewContainer);
-		layout.addView(adView);
+//		LinearLayout layout = (LinearLayout) findViewById(R.id.adViewContainer);
+//		layout.addView(adView);
 		
-		AdRequest request = new AdRequest.Builder().setGender(AdRequest.GENDER_FEMALE).build();
-		adView.loadAd(request);
+//		AdRequest request = new AdRequest.Builder().setGender(AdRequest.GENDER_FEMALE).build();
+//		adView.loadAd(request);
 
 		rgMode = (RadioGroup) findViewById(R.id.rg_select_mode);
 		rgMode.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -81,22 +81,22 @@ public class BoardSelectActivity extends BaseActivity {
 
 	@Override
 	protected void onPause() {
-		adView.pause();
+//		adView.pause();
 		super.onPause();
 	}
 	
 	@Override
 	protected void onResume() {
-		adView.resume();
+//		adView.resume();
 		super.onResume();
 	}
 	
 	@Override
 	protected void onDestroy() {
-		if (adView != null) {
-	        adView.removeAllViews();
-	        adView.destroy();
-	    }
+//		if (adView != null) {
+//	        adView.removeAllViews();
+//	        adView.destroy();
+//	    }
 		super.onDestroy();
 	}
 

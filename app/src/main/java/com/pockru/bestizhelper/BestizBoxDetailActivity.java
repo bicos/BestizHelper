@@ -309,21 +309,21 @@ public class BestizBoxDetailActivity extends BaseActivity {
             // 리얼 콘텐츠만 따로 저장
             mArticleDetailData.setAtcRealContents(contents.substring(0, contents.indexOf("<!--\"<-->")));
 
-            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            int adWidth = (int) ((displayMetrics.widthPixels / displayMetrics.density) * 0.96);
+//            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+//            int adWidth = (int) ((displayMetrics.widthPixels / displayMetrics.density) * 0.96);
 //            int adHeight = 60 * adWidth / 468;
 
             // 구글  ad  셋팅
-            contents += "<script type=\"text/javascript\"><!--\n" +
-                    "google_ad_client = \"ca-pub-9983182837973562\";\n" +
-                    "/* 468_60tb */\n" +
-                    "google_ad_slot = \"6088703786\";\n" +
-                    "google_ad_width = "+adWidth+";\n" +
-                    "google_ad_height = 100;\n" +
-                    "//-->\n" +
-                    "</script><script type=\"text/javascript\"\n" +
-                    "src=\"http://pagead2.googlesyndication.com/pagead/show_ads.js\">\n" +
-                    "</script>";
+//            contents += "<script type=\"text/javascript\"><!--\n" +
+//                    "google_ad_client = \"ca-pub-9983182837973562\";\n" +
+//                    "/* 468_60tb */\n" +
+//                    "google_ad_slot = \"6088703786\";\n" +
+//                    "google_ad_width = "+adWidth+";\n" +
+//                    "google_ad_height = 100;\n" +
+//                    "//-->\n" +
+//                    "</script><script type=\"text/javascript\"\n" +
+//                    "src=\"http://pagead2.googlesyndication.com/pagead/show_ads.js\">\n" +
+//                    "</script>";
 
             // comment 셋팅
             element = doc.getElementsByAttributeValueContaining("cellpadding", "3").get(0).attr("width", "100%");
@@ -461,7 +461,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
         tvName.setText(data.getUserName());
         tvHit.setText(data.getAtcHit());
         wvContents.getSettings().setDefaultFontSize(14);
-        wvContents.loadDataWithBaseURL(Uri.parse(atcUrl).getHost(), data.getAtcContents(), "text/html", "utf-8", atcUrl);
+        wvContents.loadDataWithBaseURL(null, data.getAtcContents(), "text/html", "utf-8", null);
     }
 
     @SuppressLint("NewApi")
