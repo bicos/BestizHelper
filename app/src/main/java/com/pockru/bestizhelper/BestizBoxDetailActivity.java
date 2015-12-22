@@ -631,11 +631,12 @@ public class BestizBoxDetailActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         switch (requestCode) {
-
-            case Constants.REQ_FILECHOOSER:
+            case REQ_FILECHOOSER:
                 Uri result = data == null || resultCode != RESULT_OK ? null : data.getData();
-                mUploadMessage.onReceiveValue(result);
-                mUploadMessage = null;
+                if (mUploadMessage != null) {
+                    mUploadMessage.onReceiveValue(result);
+                    mUploadMessage = null;
+                }
 
             default:
                 break;
@@ -833,7 +834,7 @@ public class BestizBoxDetailActivity extends BaseActivity {
             Intent i = new Intent(Intent.ACTION_GET_CONTENT);
             i.addCategory(Intent.CATEGORY_OPENABLE);
             i.setType("*/*");
-            startActivityForResult(Intent.createChooser(i, "파일 선택"), Constants.REQ_FILECHOOSER);
+            startActivityForResult(Intent.createChooser(i, "파일 선택"), REQ_FILECHOOSER);
 
         }
 

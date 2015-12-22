@@ -34,9 +34,6 @@ import java.util.ArrayList;
  */
 public class WriteDialog extends AlertDialog {
 
-    public static final int REQ_CODE_GET_PHOTO = 100;
-    public static final int REQ_CODE_TUMBLR_AUTH = 104;
-
     private ArrayList<ImageData> imgList;
 
     private EditText subject;
@@ -131,15 +128,15 @@ public class WriteDialog extends AlertDialog {
             public void onClick(View v) {
                 if (TextUtils.isEmpty(Preference.getTumblrToken(context.getApplicationContext()))
                         || TextUtils.isEmpty(Preference.getTumblrSecret(context.getApplicationContext()))) {
-                    ((Activity)context).startActivityForResult(new Intent(context, TumblrOAuthActivity.class), REQ_CODE_TUMBLR_AUTH);
+                    ((Activity)context).startActivityForResult(new Intent(context, TumblrOAuthActivity.class), BaseActivity.REQ_CODE_TUMBLR_AUTH);
                 } else {
                     if (Utils.isOverCurrentAndroidVersion(Build.VERSION_CODES.KITKAT) >= 0) {
                         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        ((Activity)context).startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                        ((Activity)context).startActivityForResult(intent, BaseActivity.REQ_CODE_GET_PHOTO);
                     } else {
                         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                         intent.setType("image/*");
-                        ((Activity)context).startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                        ((Activity)context).startActivityForResult(intent, BaseActivity.REQ_CODE_GET_PHOTO);
                     }
                 }
             }
@@ -213,21 +210,21 @@ public class WriteDialog extends AlertDialog {
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQ_CODE_GET_PHOTO:
+            case BaseActivity.REQ_CODE_GET_PHOTO:
                 if (isShowing()) {
                     uploadPictures(Preference.getTumblrToken(context.getApplicationContext()),
                             Preference.getTumblrSecret(context.getApplicationContext()),
                             data.getData());
                 }
                 break;
-            case REQ_CODE_TUMBLR_AUTH:
+            case BaseActivity.REQ_CODE_TUMBLR_AUTH:
                 if (Utils.isOverCurrentAndroidVersion(Build.VERSION_CODES.KITKAT) >= 0) {
                     Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    ((Activity)context).startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                    ((Activity)context).startActivityForResult(intent, BaseActivity.REQ_CODE_GET_PHOTO);
                 } else {
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                     intent.setType("image/*");
-                    ((Activity)context).startActivityForResult(intent, REQ_CODE_GET_PHOTO);
+                    ((Activity)context).startActivityForResult(intent, BaseActivity.REQ_CODE_GET_PHOTO);
                 }
                 break;
         }

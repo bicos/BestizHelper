@@ -54,8 +54,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected static final int NETWORK_WIFI = 2;
 	protected static final int NETWORK_NOT_AVAILABLE = 3;
 
-	//
+	// onActivityResult값
+	public static final int REQ_CODE_GET_PHOTO = 100;
 	public static final int REQ_FILECHOOSER = 102;
+	public static final int REQ_CODE_TUMBLR_AUTH = 104;
 	public static final int REQ_CODE_DETAIL_ARTICLE = 103;
 
 	// 네트워크 플래그 관련

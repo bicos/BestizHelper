@@ -859,6 +859,7 @@ public class BestizBoxMainActivity extends BaseActivity {
             extraHeaders.put("Referer", privUrl);
             extraHeaders.put("Set-Cookie", cookie);
             extraHeaders.put("Content-Type", "application/x-www-form-urlencoded");
+            extraHeaders.put("Accept-Encoding", "gzip, deflate, sdch");
         } catch (Exception e) {
             e.printStackTrace();
         }
