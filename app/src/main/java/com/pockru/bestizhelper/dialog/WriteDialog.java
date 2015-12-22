@@ -8,20 +8,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.pockru.bestizhelper.BaseActivity;
 import com.pockru.bestizhelper.R;
 import com.pockru.bestizhelper.data.ImageData;
 import com.pockru.bestizhelper.tumblr.TumblrOAuthActivity;
+import com.pockru.bestizhelper.view.NetworkImageView;
 import com.pockru.network.BestizParamsUtil;
 import com.pockru.network.BestizUrlUtil;
 import com.pockru.preference.Preference;
@@ -55,10 +52,7 @@ public class WriteDialog extends AlertDialog {
     public WriteDialog(Context context, String host, String boardId, String articleNo) {
         super(context);
         if (context instanceof BaseActivity.CommentAlarmAddProvider) {
-            Log.i("test", "context is CommentAlarmAddProvider");
             this.provider = (BaseActivity.CommentAlarmAddProvider) context;
-        } else {
-            Log.i("test", "context is not CommentAlarmAddProvider");
         }
         this.context = context;
         this.host = host;
@@ -167,22 +161,21 @@ public class WriteDialog extends AlertDialog {
     public void addImageToContainer(final String imgUrl) {
         hsvImage.setVisibility(View.VISIBLE);
 
-        final ImageView iv = new ImageView(getContext());
-        iv.setAdjustViewBounds(true);
-
-        int size = (int) getContext().getResources().getDimension(R.dimen.img_default_size);
-
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(size, size);
-        iv.setLayoutParams(params);
-        iv.setPadding(5, 0, 5, 0);
+        final NetworkImageView iv = new NetworkImageView(context);
 
         if (!TextUtils.isEmpty(imgUrl)) {
-            ImageData data = new ImageData(imgUrl, false);
+            final ImageData data = new ImageData(imgUrl, false);
             imgList.add(data);
+            iv.loadImage(imgUrl);
+            iv.getBtnDelele().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    imgList.remove(data);
+                    containerImg.removeView(iv);
+                }
+            });
+            containerImg.addView(iv);
         }
-
-        Glide.with(context).load(imgUrl).into(iv);
-        containerImg.addView(iv);
     }
 
     public void clearImgList() {
@@ -233,10 +226,9 @@ public class WriteDialog extends AlertDialog {
     private BaseActivity.TumblrImgUpload taskUploadImg;
 
     private void uploadPictures(String token, String secret, Uri uploadUri) {
+        String path = Utils.getRealPathFromURI(uploadUri, context);
         taskUploadImg = new BaseActivity.TumblrImgUpload(context, this);
-        taskUploadImg.execute(token,
-                secret,
-                Utils.getRealPathFromURI(uploadUri, context));
+        taskUploadImg.execute(token, secret, path);
     }
 
     public void setWriteTitle(String title) {

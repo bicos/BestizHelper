@@ -39,7 +39,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -429,11 +428,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 					post.setPhoto(new Photo(new File(params[2])));
 					post.save();
 					return (PhotoPost) client.blogPost(post.getBlogName(), post.getId());
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
